@@ -1,0 +1,28 @@
+{
+  "giovanni": {
+    "username": "giovanni",
+    "passwordHash": "9c1ca2725e8c21f0133f5eb1babe59f8b40201f6a8a61a5e2bae3a4014eb06e4",
+    "salt": "VZofE7Q/X7Ggvj4I7gEQaQ\u003d\u003d",
+    "stats": {
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "currentStreak": 0,
+      "maxStreak": 0,
+      "perfectPuzzle": 0
+    }
+  },
+  "omar": {
+    "username": "omar",
+    "passwordHash": "253b7ac94941f28d7b40308d5871007bb9637f7a2200c04eb110a5c7a2676545",
+    "salt": "UWWww0P2yZheKZW5Iu3kSA\u003d\u003d",
+    "stats": {
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "currentStreak": 0,
+      "maxStreak": 0,
+      "perfectPuzzle": 0
+    }
+  }
+}
