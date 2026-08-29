@@ -51,4 +51,15 @@ public class PlayerGameState {
         int penaltyFromMistakes = this.mistakes * 4;
         return pointsFromCorrect - penaltyFromMistakes;
     }
+
+    public GameOutcome getOutcome(){
+        if (this.correctGroups != null && this.correctGroups.size() >= 3) {
+            return GameOutcome.WON;
+        }
+        if(this.mistakes >= 4){
+            return GameOutcome.LOST_BY_MISTAKES;
+        }
+
+        return null;
+    }
 }
