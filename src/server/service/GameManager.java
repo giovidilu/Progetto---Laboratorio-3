@@ -13,6 +13,7 @@ import server.repository.GameRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -266,6 +267,59 @@ public class GameManager {
             GameOutcome newOutcome = playerState.getOutcome();
             return new ProposalResult(MoveOutcome.WRONG, newOutcome, null, playerState);
         }
+    }
+
+    /**
+     * Consolida e archivia lo stato della partita corrente in GameRepository,
+     * calcolando le statistiche aggregate ed avviando il round successivo.
+     *
+     * @return Il GameRecord consolidato della partita appena conclusa.
+     */
+    public synchronized GameRecord rotateGame() {
+        // 1. Recupero dei gruppi corretti dal template del round concluso
+        List<WordGroup> allGroups = this.activeGame.getGameTemplate().getGroups();
+
+        // 2. Copia difensiva della mappa degli stati dei giocatori
+        Map<String, PlayerGameState> playerStatesSnapshot = new HashMap<>(this.activePlayerStates);
+
+        // 3. Calcolo delle statistiche aggregate
+        int totalParticipants = playerStatesSnapshot.size();
+        int participantsFinished = 0;
+        int participantsWon = 0;
+        int totalScoreSum = 0;
+
+        for (PlayerGameState state : playerStatesSnapshot.values()) {
+            GameOutcome outcome = state.getOutcome();
+            if (outcome != null) {
+                participantsFinished++;
+                if (outcome == GameOutcome.WON) {
+                    participantsWon++;
+                }
+            }
+            totalScoreSum += state.getScore();
+        }
+
+        double averageScore = (totalParticipants > 0)
+                ? ((double) totalScoreSum / totalParticipants)
+                : 0.0;
+
+        // 4. Creazione del GameRecord e inserimento nel repository
+        GameRecord finishedRecord = new GameRecord(
+            this.currentGameId,
+            totalParticipants,
+            participantsFinished,
+            participantsWon,
+            averageScore,
+            allGroups,
+            playerStatesSnapshot
+        );
+
+        this.gameRepository.addGameRecord(finishedRecord);
+
+        // 5. Avvio della nuova partita e pulizia di activePlayerStates
+        startNewActiveGame();
+
+        return finishedRecord;
     }
 
     public synchronized int getCurrentGameId() {
