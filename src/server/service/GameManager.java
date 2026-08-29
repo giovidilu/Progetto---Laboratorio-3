@@ -1,9 +1,12 @@
 package server.service;
 
 import common.model.Game;
+import common.model.GameOutcome;
 import common.model.GameRecord;
 import common.model.GameTemplate;
+import common.model.MoveOutcome;
 import common.model.PlayerGameState;
+import common.model.ProposalResult;
 import common.model.WordGroup;
 import common.protocol.response.payload.GameInfoPayload;
 import server.repository.GameRepository;
@@ -150,6 +153,119 @@ public class GameManager {
             }
         }
         return result;
+    }
+
+    /**
+     * Valuta una proposta di 4 parole inviata da un utente per la partita attiva.
+     * Metodo sincronizzato per garantire la consistenza dello stato di gioco e dei punteggi.
+     *
+     * @param username Nome dell'utente sottomittente.
+     * @param words    Lista di 4 parole candidate a formare un gruppo tematico.
+     * @return ProposalResult contenente l'esito della mossa, l'eventuale esito finale e lo stato aggiornato.
+     */
+    public synchronized ProposalResult submitProposal(String username, List<String> words) {
+        // =========================================================================
+        // FASE 1: Verifica di ammissibilità temporale e di stato (ALREADY_COMPLETED)
+        // =========================================================================
+        long now = System.currentTimeMillis();
+        boolean isTimeExpired = (now >= this.activeGame.getEndTime());
+
+        // Se il tempo è scaduto, blocca subito senza registrare utenti inattivi nella mappa
+        if (isTimeExpired) {
+            PlayerGameState existingState = this.activePlayerStates.get(username);
+            GameOutcome outcome = (existingState != null) ? existingState.getOutcome() : null;
+            return new ProposalResult(MoveOutcome.ALREADY_COMPLETED, outcome, null, existingState);
+        }
+
+        // Tempo valido: recupera lo stato esistente o registra il giocatore nella partita attiva
+        PlayerGameState playerState = this.activePlayerStates.computeIfAbsent(
+            username,
+            u -> new PlayerGameState(u, this.currentGameId)
+        );
+
+        GameOutcome currentOutcome = playerState.getOutcome();
+        if (currentOutcome != null) {
+            return new ProposalResult(MoveOutcome.ALREADY_COMPLETED, currentOutcome, null, playerState);
+        }
+
+        // =========================================================================
+        // FASE 2: Validazione sintattica della quadrupla (MALFORMED)
+        // =========================================================================
+        if (words == null || words.size() != 4) {
+            return new ProposalResult(MoveOutcome.MALFORMED, null, null, playerState);
+        }
+
+        Set<String> proposalSet = new HashSet<>();
+        for (String w : words) {
+            if (w == null || w.trim().isEmpty()) {
+                return new ProposalResult(MoveOutcome.MALFORMED, null, null, playerState);
+            }
+            proposalSet.add(w.trim().toUpperCase());
+        }
+
+        // Verifica unicità (esattamente 4 parole distinte)
+        if (proposalSet.size() != 4) {
+            return new ProposalResult(MoveOutcome.MALFORMED, null, null, playerState);
+        }
+
+        // Verifica appartenenza alle 16 parole della partita attiva
+        Set<String> allGameWords = new HashSet<>();
+        for (String w : this.activeGame.getShuffledWords()) {
+            allGameWords.add(w.toUpperCase());
+        }
+
+        if (!allGameWords.containsAll(proposalSet)) {
+            return new ProposalResult(MoveOutcome.MALFORMED, null, null, playerState);
+        }
+
+        // =========================================================================
+        // FASE 3: Validazione semantica rispetto ai progressi del giocatore (MALFORMED)
+        // =========================================================================
+        Set<String> alreadyGuessedWords = new HashSet<>();
+        for (WordGroup group : playerState.getCorrectGroups()) {
+            if (group != null && group.getWords() != null) {
+                for (String w : group.getWords()) {
+                    alreadyGuessedWords.add(w.toUpperCase());
+                }
+            }
+        }
+
+        // Se la proposta include parole già indovinate in precedenza dallo stesso utente
+        for (String w : proposalSet) {
+            if (alreadyGuessedWords.contains(w)) {
+                return new ProposalResult(MoveOutcome.MALFORMED, null, null, playerState);
+            }
+        }
+
+        // =========================================================================
+        // FASE 4: Valutazione del raggruppamento tematico (CORRECT o WRONG)
+        // =========================================================================
+        WordGroup matchedGroup = null;
+        for (WordGroup group : this.activeGame.getGameTemplate().getGroups()) {
+            if (group != null && group.getWords() != null) {
+                Set<String> groupWords = new HashSet<>();
+                for (String gw : group.getWords()) {
+                    groupWords.add(gw.toUpperCase());
+                }
+
+                if (groupWords.equals(proposalSet)) {
+                    matchedGroup = group;
+                    break;
+                }
+            }
+        }
+
+        if (matchedGroup != null) {
+            // Proposta Corretta
+            playerState.addCorrectGroup(matchedGroup);
+            GameOutcome newOutcome = playerState.getOutcome();
+            return new ProposalResult(MoveOutcome.CORRECT, newOutcome, matchedGroup, playerState);
+        } else {
+            // Proposta Sbagliata
+            playerState.incrementMistakes();
+            GameOutcome newOutcome = playerState.getOutcome();
+            return new ProposalResult(MoveOutcome.WRONG, newOutcome, null, playerState);
+        }
     }
 
     public synchronized int getCurrentGameId() {
