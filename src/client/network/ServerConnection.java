@@ -14,33 +14,30 @@ import common.protocol.response.ServerResponse;
 
 import java.lang.reflect.Type;
 
+/**
+ * Gestisce la connessione TCP verso il server mediante Java NIO SocketChannel[cite: 8, 10].
+ */
 public class ServerConnection implements AutoCloseable {
     private final SocketChannel socketChannel;
     private final ByteBuffer byteBuffer;
     private static final Gson gson = new Gson();
 
-    public ServerConnection(String host, int port) throws IOException{
-
+    public ServerConnection(String host, int port) throws IOException {
         this.socketChannel = SocketChannel.open();
         this.socketChannel.connect(new InetSocketAddress(host, port));
         this.byteBuffer = ByteBuffer.allocate(4096);
     }
 
-    public void sendRequest(Request request) throws IOException{
-
+    public void sendRequest(Request request) throws IOException {
         byteBuffer.clear();
         
-        // Serializzazione payload e aggiunta delimitatore
+        // Serializzazione del comando JSON terminato da newline
         String jsonString = gson.toJson(request) + "\n";
-
         byte[] payloadBytes = jsonString.getBytes(StandardCharsets.UTF_8);
 
         byteBuffer.put(payloadBytes);
-
-        // Transazione del buffer alla lettura da parte del canale
         byteBuffer.flip();
 
-        // Trasmissione di tutti i byte
         while (byteBuffer.hasRemaining()) {
             socketChannel.write(byteBuffer);
         }
@@ -79,10 +76,9 @@ public class ServerConnection implements AutoCloseable {
     }
 
     @Override
-    public void close() throws IOException{
-        if(this.socketChannel != null && this.socketChannel.isOpen()){
+    public void close() throws IOException {
+        if (this.socketChannel != null && this.socketChannel.isOpen()) {
             this.socketChannel.close();
         }
     }
-    
 }

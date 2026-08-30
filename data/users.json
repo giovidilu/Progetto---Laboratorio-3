@@ -1,4 +1,17 @@
 {
+  "testeruser1": {
+    "username": "testeruser1",
+    "passwordHash": "4ad17a24e963cdf0bb6787b84a121a01e8712b437545159565a1109b1efe705a",
+    "salt": "lspGzyl3Z12un5F1mLYotQ\u003d\u003d",
+    "stats": {
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "currentStreak": 0,
+      "maxStreak": 0,
+      "perfectPuzzle": 0
+    }
+  },
   "omar": {
     "username": "omar",
     "passwordHash": "253b7ac94941f28d7b40308d5871007bb9637f7a2200c04eb110a5c7a2676545",

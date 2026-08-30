@@ -1,15 +1,16 @@
 package client.cli;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
 import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
 
 import client.network.ServerConnection;
+import common.model.ProposalResult;
 import common.protocol.request.LoginRequest;
 import common.protocol.request.LogoutRequest;
 import common.protocol.request.RegisterRequest;
@@ -30,6 +31,9 @@ import common.protocol.response.payload.LoginPayload;
 import common.protocol.response.payload.MistakeHistogram;
 import common.protocol.response.payload.PlayerStatsPayload;
 
+/**
+ * Interfaccia a riga di comando per l'interazione del giocatore con il sistema Connections[cite: 9, 10].
+ */
 public class CommandLineInterface {
     private final ServerConnection serverConnection;
     private final Scanner scanner;
@@ -57,12 +61,11 @@ public class CommandLineInterface {
                 int choice = scanner.nextInt();
                 scanner.nextLine(); // Consuma il newline rimasto nel buffer
                 
-                // Deleghiamo la gestione della scelta a un metodo separato
                 running = handleChoice(choice);
                 
             } catch (InputMismatchException e) {
                 System.out.println("Errore: Inserisci un numero intero valido.");
-                scanner.nextLine(); // Pulisce il buffer dallo scarto
+                scanner.nextLine();
             }
         }
         
@@ -87,7 +90,6 @@ public class CommandLineInterface {
     }
 
     private boolean handleChoice(int choice) {
-        
         if (!loggedIn) {
             switch (choice) {
                 case 1: {
@@ -155,353 +157,348 @@ public class CommandLineInterface {
                     }
                     return true;
                 }
-                
                 case 0:
                     return false;
                     
                 default:
                     System.out.println("Opzione non valida. Riprova.");
                     return true;
-                }
-            } else {
-                switch (choice) {
-                    case 1: {
-                        System.out.println("Inserisci le 4 parole della proposta, separate da virgola:");
-                        String line = scanner.nextLine();
+            }
+        } else {
+            switch (choice) {
+                case 1: {
+                    System.out.println("Inserisci le 4 parole della proposta, separate da virgola:");
+                    String line = scanner.nextLine();
+                    
+                    List<String> words = Arrays.asList(line.split("\\s*,\\s*"));
+                    SubmitProposalRequest request = new SubmitProposalRequest(words);
+                    
+                    try {
+                        serverConnection.sendRequest(request);
                         
-                        List<String> words = Arrays.asList(line.split("\\s*,\\s*"));
+                        // Deserializzazione del payload tipizzato ProposalResult[cite: 1]
+                        Type responseType = new TypeToken<ServerResponse<ProposalResult>>(){}.getType();
+                        ServerResponse<ProposalResult> response = serverConnection.receiveResponse(responseType);
                         
-                        SubmitProposalRequest request = new SubmitProposalRequest(words);
-                        
-                        try {
-                            serverConnection.sendRequest(request);
-                            
-                            Type responseType = new TypeToken<ServerResponse<Void>>(){}.getType();
-                            
-                            ServerResponse<Void> response = serverConnection.receiveResponse(responseType);
-                            
-                            if (response.getStatus() == ResponseCode.SUCCESS) {
-                                System.out.println("Proposta corretta!");
-                            } else {
-                                System.out.println("Proposta errata: " + response.getStatus());
-                                if (response.getMessage() != null) {
-                                    System.out.println("Dettaglio: " + response.getMessage());
+                        if (response.getStatus() == ResponseCode.SUCCESS) {
+                            ProposalResult result = response.getPayload();
+                            if (result != null) {
+                                System.out.println("Esito proposta: " + result.getMoveOutcome());
+                                if (result.getGuessedGroup() != null) {
+                                    System.out.println("Gruppo indovinato: " + result.getGuessedGroup().getTheme() + " -> " + result.getGuessedGroup().getWords());
                                 }
-                            }
-                        } catch (IOException e) {
-                            System.out.println("Errore di comunicazione con il server: " + e.getMessage());
-                        }
-                        
-                        return true;
-                    }
-                    
-                    case 2: {
-                        RequestGameInfoRequest request = new RequestGameInfoRequest();
-                        
-                        try {
-                            serverConnection.sendRequest(request);
-                            
-                            Type responseType = new TypeToken<ServerResponse<GameInfoPayload>>(){}.getType();
-                            ServerResponse<GameInfoPayload> response = serverConnection.receiveResponse(responseType);
-                            
-                            if (response.getStatus() == ResponseCode.SUCCESS) {
-                                
-                                GameInfoPayload payload = response.getPayload();
-                                System.out.println("Stato partita: " + payload.getState());
-                                System.out.println("Errori: " + payload.getErrors());
-                                System.out.println("Punteggio: " + payload.getScore());
+                                if (result.getUpdatedState() != null) {
+                                    System.out.println("Errori commessi: " + result.getUpdatedState().getMistakes() + "/4");
+                                    System.out.println("Punteggio attuale: " + result.getUpdatedState().getScore());
+                                }
+                                if (result.getGameOutcome() != null) {
+                                    System.out.println("Partita conclusa con esito: " + result.getGameOutcome());
+                                }
                             } else {
-                                System.out.println("Richiesta fallita: " + response.getStatus());
+                                System.out.println("Proposta elaborata con successo.");
                             }
-                        } catch (IOException e) {
-                            System.out.println("Errore di comunicazione con il server: " + e.getMessage());
+                        } else {
+                            System.out.println("Proposta rifiutata o non valida: " + response.getStatus());
+                            if (response.getMessage() != null) {
+                                System.out.println("Dettaglio: " + response.getMessage());
+                            }
                         }
-                        
-                        return true;
+                    } catch (IOException e) {
+                        System.out.println("Errore di comunicazione con il server: " + e.getMessage());
                     }
+                    return true;
+                }
+                
+                case 2: {
+                    RequestGameInfoRequest request = new RequestGameInfoRequest();
                     
-                    case 3: {
-                        LogoutRequest request = new LogoutRequest();
+                    try {
+                        serverConnection.sendRequest(request);
                         
-                        try {
-                            serverConnection.sendRequest(request);
-                            
-                            Type responseType = new TypeToken<ServerResponse<Void>>(){}.getType();
-                            ServerResponse<Void> response = serverConnection.receiveResponse(responseType);
-                            
-                            if (response.getStatus() == ResponseCode.SUCCESS) {
-                                this.loggedIn = false;
-                                this.currentUsername = null;
-                                
-                                System.out.println("Logout effettuato.");
-                            } else {
-                                System.out.println("Logout fallito: " + response.getStatus());
-                            }
-                        } catch (IOException e) {
-                            System.out.println("Errore di comunicazione con il server: " + e.getMessage());
+                        Type responseType = new TypeToken<ServerResponse<GameInfoPayload>>(){}.getType();
+                        ServerResponse<GameInfoPayload> response = serverConnection.receiveResponse(responseType);
+                        
+                        if (response.getStatus() == ResponseCode.SUCCESS) {
+                            GameInfoPayload payload = response.getPayload();
+                            System.out.println("Stato partita: " + payload.getState());
+                            System.out.println("Errori: " + payload.getErrors());
+                            System.out.println("Punteggio: " + payload.getScore());
+                        } else {
+                            System.out.println("Richiesta fallita: " + response.getStatus());
                         }
-                        return true;
+                    } catch (IOException e) {
+                        System.out.println("Errore di comunicazione con il server: " + e.getMessage());
                     }
+                    return true;
+                }
+                
+                case 3: {
+                    LogoutRequest request = new LogoutRequest();
+                    
+                    try {
+                        serverConnection.sendRequest(request);
+                        
+                        Type responseType = new TypeToken<ServerResponse<Void>>(){}.getType();
+                        ServerResponse<Void> response = serverConnection.receiveResponse(responseType);
+                        
+                        if (response.getStatus() == ResponseCode.SUCCESS) {
+                            this.loggedIn = false;
+                            this.currentUsername = null;
+                            System.out.println("Logout effettuato.");
+                        } else {
+                            System.out.println("Logout fallito: " + response.getStatus());
+                        }
+                    } catch (IOException e) {
+                        System.out.println("Errore di comunicazione con il server: " + e.getMessage());
+                    }
+                    return true;
+                }
 
-                    case 4: {
-                        System.out.println("\n--- Aggiornamento Credenziali ---");
-                        System.out.println("Cosa desideri aggiornare?");
-                        System.out.println("1. Solo Username");
-                        System.out.println("2. Solo Password");
-                        System.out.println("3. Entrambi");
-                        System.out.print("Scelta: ");
+                case 4: {
+                    System.out.println("\n--- Aggiornamento Credenziali ---");
+                    System.out.println("Cosa desideri aggiornare?");
+                    System.out.println("1. Solo Username");
+                    System.out.println("2. Solo Password");
+                    System.out.println("3. Entrambi");
+                    System.out.print("Scelta: ");
+                    
+                    int updateChoice;
+                    try {
+                        updateChoice = scanner.nextInt();
+                        scanner.nextLine();
+                    } catch (InputMismatchException e) {
+                        System.out.println("Errore: Inserisci un numero intero valido.");
+                        scanner.nextLine();
+                        return true;
+                    }
+                    
+                    if (updateChoice < 1 || updateChoice > 3) {
+                        System.out.println("Scelta non valida.");
+                        return true;
+                    }
+                    System.out.print("Inserisci l'attuale username: ");
+                    String oldUsername = scanner.nextLine();
+                    System.out.print("Inserisci l'attuale password: ");
+                    String oldPsw = scanner.nextLine();
+                    
+                    UpdateCredentialsRequest request = null;
+                    String newUsername = null;
+                    
+                    if (updateChoice == 1) {
+                        System.out.print("Inserisci il nuovo username: ");
+                        newUsername = scanner.nextLine();
+                        request = UpdateCredentialsRequest.forUsernameUpdate(oldUsername, oldPsw, newUsername);
+                    } else if (updateChoice == 2) {
+                        System.out.print("Inserisci la nuova password: ");
+                        String newPsw = scanner.nextLine();
+                        request = UpdateCredentialsRequest.forPasswordUpdate(oldUsername, oldPsw, newPsw);
+                    } else if (updateChoice == 3) {
+                        System.out.print("Inserisci il nuovo username: ");
+                        newUsername = scanner.nextLine();
+                        System.out.print("Inserisci la nuova password: ");
+                        String newPsw = scanner.nextLine();
+                        request = UpdateCredentialsRequest.forBothUpdate(oldUsername, oldPsw, newUsername, newPsw);
+                    }
+                    
+                    try {
+                        serverConnection.sendRequest(request);
+                        Type responseType = new TypeToken<ServerResponse<Void>>(){}.getType();
+                        ServerResponse<Void> response = serverConnection.receiveResponse(responseType);
                         
-                        int updateChoice;
+                        if (response.getStatus() == ResponseCode.SUCCESS) {
+                            if (newUsername != null) {
+                                this.currentUsername = newUsername;
+                            }
+                            System.out.println("Credenziali aggiornate con successo!");
+                        } else {
+                            System.out.println("Aggiornamento fallito: " + response.getStatus());
+                            if (response.getMessage() != null) {
+                                System.out.println("Dettaglio: " + response.getMessage());
+                            }
+                        }
+                    } catch (IOException e) {
+                        System.out.println("Errore di comunicazione con il server: " + e.getMessage());
+                    }
+                    return true;
+                }
+
+                case 5: {
+                    System.out.println("\n--- Statistiche Partita ---");
+                    System.out.print("Vuoi le statistiche della partita corrente (C) o di una passata (P)? ");
+                    String choiceGame = scanner.nextLine().trim().toUpperCase();
+                                    
+                    Integer gameId = null;
+                    if (choiceGame.equals("P")) {
+                        System.out.print("Inserisci l'ID della partita: ");
                         try {
-                            updateChoice = scanner.nextInt();
+                            gameId = scanner.nextInt();
+                            scanner.nextLine();
+                        } catch (InputMismatchException e) {
+                            System.out.println("Errore: ID partita non valido. Devi inserire un numero intero.");
+                            scanner.nextLine();
+                            return true;
+                        }
+                    } else if (!choiceGame.equals("C")) {
+                        System.out.println("Scelta non valida. Operazione annullata");
+                        return true;
+                    }
+                
+                    RequestGameStatsRequest request = (gameId != null) 
+                            ? new RequestGameStatsRequest(gameId) 
+                            : new RequestGameStatsRequest();
+                
+                    try {
+                        serverConnection.sendRequest(request);
+                        Type responseType = new TypeToken<ServerResponse<GameStatsPayload>>(){}.getType();
+                        ServerResponse<GameStatsPayload> response = serverConnection.receiveResponse(responseType);
+                    
+                        if (response.getStatus() == ResponseCode.SUCCESS) {
+                            GameStatsPayload payload = response.getPayload();
+                        
+                            if (payload.getState() == GameState.ONGOING) {
+                                System.out.println("--- Statistiche Partita in Corso ---");
+                                System.out.println("Tempo rimanente: " + payload.getTimeRemaining());
+                                System.out.println("Giocatori ancora in gioco: " + payload.getPlayersStillPlaying());
+                                System.out.println("Giocatori che hanno concluso: " + payload.getPlayersFinished());
+                                System.out.println("Vittorie: " + payload.getPlayersWon());
+                            } else {
+                                System.out.println("--- Statistiche Partita Conclusa ---");
+                                System.out.println("Giocatori partecipanti totali: " + payload.getTotalParticipants());
+                                System.out.println("Giocatori che hanno concluso: " + payload.getParticipantsFinished());
+                                System.out.println("Vittorie: " + payload.getParticipantsWon());
+                                System.out.println("Punteggio medio: " + payload.getAverageScore());
+                            }
+                        } else {
+                            System.out.println("Richiesta statistiche fallita: " + response.getStatus());
+                            if (response.getMessage() != null) {
+                                System.out.println("Dettaglio: " + response.getMessage());
+                            }
+                        }
+                    } catch (IOException e) {
+                        System.out.println("Errore di comunicazione con il server: " + e.getMessage());
+                    }
+                    return true;
+                }
+
+                case 6: {
+                    System.out.println("\n--- Classifica ---");
+                    System.out.println("Quale classifica desideri visualizzare?");
+                    System.out.println("1. Tutti i giocatori");
+                    System.out.println("2. Top k giocatori");
+                    System.out.println("3. Posizione di uno specifico giocatore");
+                    System.out.print("Scelta: ");
+                    int leadChoice;
+                    
+                    try {
+                        leadChoice = scanner.nextInt();
+                        scanner.nextLine();
+                    } catch (InputMismatchException e) {
+                        System.out.println("Errore: Inserisci un numero intero valido.");
+                        scanner.nextLine();
+                        return true;
+                    }
+                    
+                    RequestLeaderboardRequest request = null;
+                    if (leadChoice == 1) {
+                        request = RequestLeaderboardRequest.forAllPlayers();
+                    } else if (leadChoice == 2) {
+                        System.out.print("Inserisci il numero di giocatori (K) da visualizzare: ");
+                        int k;
+                        try {
+                            k = scanner.nextInt();
                             scanner.nextLine();
                         } catch (InputMismatchException e) {
                             System.out.println("Errore: Inserisci un numero intero valido.");
                             scanner.nextLine();
                             return true;
                         }
-                        
-                        if (updateChoice < 1 || updateChoice > 3) {
-                            System.out.println("Scelta non valida.");
-                            return true;
-                        }
-                        System.out.print("Inserisci l'attuale username: ");
-                        String oldUsername = scanner.nextLine();
-                        System.out.print("Inserisci l'attuale password: ");
-                        String oldPsw = scanner.nextLine();
-                        
-                        UpdateCredentialsRequest request = null;
-                        String newUsername = null;
-                        
-                        if (updateChoice == 1) {
-                            System.out.print("Inserisci il nuovo username: ");
-                            newUsername = scanner.nextLine();
-                            request = UpdateCredentialsRequest.forUsernameUpdate(oldUsername, oldPsw, newUsername);
-                        } else if (updateChoice == 2) {
-                            System.out.print("Inserisci la nuova password: ");
-                            String newPsw = scanner.nextLine();
-                            request = UpdateCredentialsRequest.forPasswordUpdate(oldUsername, oldPsw, newPsw);
-                        } else if (updateChoice == 3) {
-                            System.out.print("Inserisci il nuovo username: ");
-                            newUsername = scanner.nextLine();
-                            System.out.print("Inserisci la nuova password: ");
-                            String newPsw = scanner.nextLine();
-                            request = UpdateCredentialsRequest.forBothUpdate(oldUsername, oldPsw, newUsername, newPsw);
-                        }
-                        
-                        try {
-                            serverConnection.sendRequest(request);
-                            Type responseType = new TypeToken<ServerResponse<Void>>(){}.getType();
-                            ServerResponse<Void> response = serverConnection.receiveResponse(responseType);
-                            
-                            if (response.getStatus() == ResponseCode.SUCCESS) {
-                                // Lo stato di login non cambia: l'utente resta autenticato
-                                if (newUsername != null) {
-                                    this.currentUsername = newUsername;
-                                }
-                                
-                                System.out.println("Credenziali aggiornate con successo!");
-                            } else {
-                                System.out.println("Aggiornamento fallito: " + response.getStatus());
-                                if (response.getMessage() != null) {
-                                    System.out.println("Dettaglio: " + response.getMessage());
-                                }
-                            }
-                        } catch (IOException e) {
-                            System.out.println("Errore di comunicazione con il server: " + e.getMessage());
-                            
-                        }
-                        
+                        request = RequestLeaderboardRequest.forTopPlayers(k);
+                    } else if (leadChoice == 3) {
+                        System.out.print("Inserisci il nome del giocatore: ");
+                        String player = scanner.nextLine();
+                        request = RequestLeaderboardRequest.forPlayer(player);
+                    } else {
+                        System.out.println("Scelta non valida. Operazione annullata");
                         return true;
                     }
 
-                    case 5: {
-                        System.out.println("\n--- Statistiche Partita ---");
-                        System.out.print("Vuoi le statistiche della partita corrente (C) o di una passata (P)? ");
-                        String choiceGame = scanner.nextLine().trim().toUpperCase();
-                                        
-                        Integer gameId = null;
-                                        
-                        if (choiceGame.equals("P")) {
-                            System.out.print("Inserisci l'ID della partita: ");
-                            try {
-                                gameId = scanner.nextInt();
-                                scanner.nextLine();
-                            } catch (InputMismatchException e) {
-                                System.out.println("Errore: ID partita non valido. Devi inserire un numero intero.");
-                                scanner.nextLine();
-                                return true;
+                    try {
+                        serverConnection.sendRequest(request);
+                        Type responseType = new TypeToken<ServerResponse<LeaderboardPayload>>(){}.getType();
+                        ServerResponse<LeaderboardPayload> response = serverConnection.receiveResponse(responseType);
+                
+                        if (response.getStatus() == ResponseCode.SUCCESS) {
+                            LeaderboardPayload payload = response.getPayload();
+                            System.out.println("--- Risultati Classifica ---");
+                            
+                            if (payload.getEntries() != null && !payload.getEntries().isEmpty()) {
+                                for (LeaderboardEntry entry: payload.getEntries()) {
+                                    System.out.println(entry.getRank() + ". " +  entry.getUsername() + " - " + entry.getScore() + " punti");
+                                }
+                            } else {
+                                System.out.println("La classifica è attualmente vuota.");
                             }
-                        } else if (!choiceGame.equals("C")) {
-                            System.out.println("Scelta non valida. Operazione annullata");
-                            return true;
-                        }
-                    
-                        // Scelta del costruttore corretto in base alla presenza o meno dell'id
-                        RequestGameStatsRequest request;
-                        if (gameId != null) {
-                            request = new RequestGameStatsRequest(gameId);
                         } else {
-                            request = new RequestGameStatsRequest();
-                        }
-                    
-                        try {
-                            serverConnection.sendRequest(request);
-                            Type responseType = new TypeToken<ServerResponse<GameStatsPayload>>(){}.getType();
-                            ServerResponse<GameStatsPayload> response = serverConnection.receiveResponse(responseType);
-                        
-                            if (response.getStatus() == ResponseCode.SUCCESS) {
-                                GameStatsPayload payload = response.getPayload();
-                            
-                                if (payload.getState() == GameState.ONGOING) {
-                                    System.out.println("--- Statistiche Partita in Corso ---");
-                                    System.out.println("Tempo rimanente: " + payload.getTimeRemaining());
-                                    System.out.println("Giocatori ancora in gioco: " + payload.getPlayersStillPlaying());
-                                    System.out.println("Giocatori che hanno concluso: " + payload.getPlayersFinished());
-                                    System.out.println("Vittorie: " + payload.getPlayersWon());
-                                } else {
-                                    System.out.println("--- Statistiche Partita Conclusa ---");
-                                    System.out.println("Giocatori partecipanti totali: " + payload.getTotalParticipants());
-                                    System.out.println("Giocatori che hanno concluso: " + payload.getParticipantsFinished());
-                                    System.out.println("Vittorie: " + payload.getParticipantsWon());
-                                    System.out.println("Punteggio medio: " + payload.getAverageScore());
-                                }
-                            } else {
-                                System.out.println("Richiesta statistiche fallita: " + response.getStatus());
-                                if (response.getMessage() != null) {
-                                    System.out.println("Dettaglio: " + response.getMessage());
-                                }
+                            System.out.println("Richiesta classifica fallita: " + response.getStatus());
+                            if (response.getMessage() != null) {
+                                System.out.println("Dettaglio: " + response.getMessage());
                             }
-                        } catch (IOException e) {
-                            System.out.println("Errore di comunicazione con il server: " + e.getMessage());
                         }
-                    
-                        return true;
+                    } catch (IOException e) {
+                        System.out.println("Errore di comunicazione con il server: " + e.getMessage());
                     }
-
-                    case 6: {
-                        System.out.println("\n--- Classifica ---");
-                        System.out.println("Quale classifica desideri visualizzare?");
-                        System.out.println("1. Tutti i giocatori");
-                        System.out.println("2. Top k giocatori");
-                        System.out.println("3. Posizione di uno specifico giocatore");
-                        System.out.print("Scelta: ");
-                        int leadChoice;
-                        
-                        try{
-                            leadChoice = scanner.nextInt();
-                            scanner.nextLine();
-                        } catch (InputMismatchException e){
-                            System.out.println("Errore: Inserisci un numero intero valido.");
-                            scanner.nextLine();
-                            return true;
-                        }
-                        
-                        RequestLeaderboardRequest request = null;
-                        
-                        if(leadChoice == 1){
-                            request = RequestLeaderboardRequest.forAllPlayers();
-                        } else if(leadChoice == 2){
-                            System.out.print("Inserisci il numero di giocatori (K) da visualizzare: ");
-                            int k;
-                            try {
-                                k = scanner.nextInt();
-                                scanner.nextLine();
-                            } catch (InputMismatchException e){
-                                System.out.println("Errore: Inserisci un numero intero valido.");
-                                scanner.nextLine();
-                                return true;
-                            }
-                            request = RequestLeaderboardRequest.forTopPlayers(k);
-                        } else if(leadChoice == 3){
-                            System.out.print("Inserisci il nome del giocatore: ");
-                            String player = scanner.nextLine();
-                            request = RequestLeaderboardRequest.forPlayer(player);
-                        } else {
-                            System.out.println("Scelta non valida. Operazione annullata");
-                            return true;
-                        }
-
-                        try {
-                            serverConnection.sendRequest(request);
-                            Type responseType = new TypeToken<ServerResponse<LeaderboardPayload>>(){}.getType();
-                            ServerResponse<LeaderboardPayload> response = serverConnection.receiveResponse(responseType);
-                    
-                            if (response.getStatus() == ResponseCode.SUCCESS) {
-                                LeaderboardPayload payload = response.getPayload();
-                                System.out.println("--- Risultati Classifica ---");
-                                
-                                if(payload.getEntries() != null && !payload.getEntries().isEmpty()){
-                                    for(LeaderboardEntry entry: payload.getEntries()){
-                                        System.out.println(entry.getRank() + ". " +  entry.getUsername() + " - " + entry.getScore() + " punti");
-                                    }
-                                } else {
-                                    System.out.println("La classifica è attualmente vuota.");
-                                }
-                            } else {
-                                System.out.println("Richiesta classifica fallita: " + response.getStatus());
-                                if (response.getMessage() != null) {
-                                    System.out.println("Dettaglio: " + response.getMessage());
-                                }
-                            }
-                        } catch (IOException e) {
-                            System.out.println("Errore di comunicazione con il server: " + e.getMessage());
-                        }
-                        
-                        return true;
-                    }
-
-                    case 7: {
-                        System.out.println("\n--- Statistiche Personali ---");
-
-                        RequestPlayerStatsRequest request = new RequestPlayerStatsRequest();
-
-                        try{
-                            serverConnection.sendRequest(request);
-                            Type responseType = new TypeToken<ServerResponse<PlayerStatsPayload>>(){}.getType();
-                            ServerResponse<PlayerStatsPayload> response = serverConnection.receiveResponse(responseType);
-                    
-                            if (response.getStatus() == ResponseCode.SUCCESS) {
-                                PlayerStatsPayload payload = response.getPayload();
-                                
-                                System.out.println("Partite completate: " + payload.getPuzzlesCompleted());
-                                System.out.println("Percentuale vittorie: " + payload.getWinRate() + "%");
-                                System.out.println("Percentuale sconfitte: " + payload.getLossRate() + "%");
-                                System.out.println("Serie di vittorie attuale: " + payload.getCurrentStreak());
-                                System.out.println("Serie massima: " + payload.getMaxStreak());
-                                System.out.println("Partite perfette (0 errori): " + payload.getPerfectPuzzles());
-
-                                System.out.println("\n--- Istogramma Errori ---");
-                                MistakeHistogram histogram = payload.getMistakeHistogram();
-                                
-                                if (histogram != null) {
-                                    System.out.println("Risolte con 0 errori: " + histogram.getSolvedWith0Mistakes());
-                                    System.out.println("Risolte con 1 errore: " + histogram.getSolvedWith1Mistake());
-                                    System.out.println("Risolte con 2 errori: " + histogram.getSolvedWith2Mistakes());
-                                    System.out.println("Risolte con 3 errori: " + histogram.getSolvedWith3Mistakes());
-                                    System.out.println("Risolte con 4 errori: " + histogram.getSolvedWith4Mistakes());
-                                    System.out.println("Fallite (4 errori raggiunti): " + histogram.getFailed());
-                                    System.out.println("Non concluse in tempo: " + histogram.getNotFinished());
-                                } else {
-                                    System.out.println("Dati dell'istogramma non disponibili.");
-                                }
-                            } else {
-                                System.out.println("Richiesta statistiche personali fallita: " + response.getStatus());
-                                if(response.getMessage() != null){
-                                    System.out.println("Dettaglio: " + response.getMessage());
-                                }
-                            }
-                        } catch(IOException e){
-                            System.out.println("Errore di comunicazione con il server: " + e.getMessage());
-                        }
-
-                        return true;
-                    }
-
-                    default:
-                        System.out.println("Opzione non valida. Riprova.");
-                        return true;
+                    return true;
                 }
+
+                case 7: {
+                    System.out.println("\n--- Statistiche Personali ---");
+                    RequestPlayerStatsRequest request = new RequestPlayerStatsRequest();
+
+                    try {
+                        serverConnection.sendRequest(request);
+                        Type responseType = new TypeToken<ServerResponse<PlayerStatsPayload>>(){}.getType();
+                        ServerResponse<PlayerStatsPayload> response = serverConnection.receiveResponse(responseType);
+                
+                        if (response.getStatus() == ResponseCode.SUCCESS) {
+                            PlayerStatsPayload payload = response.getPayload();
+                            
+                            System.out.println("Partite completate: " + payload.getPuzzlesCompleted());
+                            System.out.println("Percentuale vittorie: " + payload.getWinRate() + "%");
+                            System.out.println("Percentuale sconfitte: " + payload.getLossRate() + "%");
+                            System.out.println("Serie di vittorie attuale: " + payload.getCurrentStreak());
+                            System.out.println("Serie massima: " + payload.getMaxStreak());
+                            System.out.println("Partite perfette (0 errori): " + payload.getPerfectPuzzles());
+
+                            System.out.println("\n--- Istogramma Errori ---");
+                            MistakeHistogram histogram = payload.getMistakeHistogram();
+                            
+                            if (histogram != null) {
+                                System.out.println("Risolte con 0 errori: " + histogram.getSolvedWith0Mistakes());
+                                System.out.println("Risolte con 1 errore: " + histogram.getSolvedWith1Mistake());
+                                System.out.println("Risolte con 2 errori: " + histogram.getSolvedWith2Mistakes());
+                                System.out.println("Risolte con 3 errori: " + histogram.getSolvedWith3Mistakes());
+                                System.out.println("Risolte con 4 errori: " + histogram.getSolvedWith4Mistakes());
+                                System.out.println("Fallite (4 errori raggiunti): " + histogram.getFailed());
+                                System.out.println("Non concluse in tempo: " + histogram.getNotFinished());
+                            } else {
+                                System.out.println("Dati dell'istogramma non disponibili.");
+                            }
+                        } else {
+                            System.out.println("Richiesta statistiche personali fallita: " + response.getStatus());
+                            if (response.getMessage() != null) {
+                                System.out.println("Dettaglio: " + response.getMessage());
+                            }
+                        }
+                    } catch (IOException e) {
+                        System.out.println("Errore di comunicazione con il server: " + e.getMessage());
+                    }
+                    return true;
+                }
+
+                default:
+                    System.out.println("Opzione non valida. Riprova.");
+                    return true;
             }
         }
     }
+}
