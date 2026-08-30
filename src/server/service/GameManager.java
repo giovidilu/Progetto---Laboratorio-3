@@ -20,6 +20,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Gestore centralizzato del ciclo di vita del gioco Connections.
@@ -32,6 +35,9 @@ public class GameManager {
     private final GameRepository gameRepository;
     private final long gameDurationMillis;
     private final ConcurrentHashMap<String, PlayerGameState> activePlayerStates;
+
+    private ScheduledExecutorService scheduler;
+    private final Object lifecycleLock = new Object();
 
     private int currentGameId;
     private Game activeGame;
@@ -329,4 +335,50 @@ public class GameManager {
     synchronized Game getActiveGame() {
         return this.activeGame;
     }
+
+    
+    public void start() {
+        synchronized (lifecycleLock) {
+            if (this.scheduler != null && !this.scheduler.isShutdown()) {
+                return;
+            }
+            this.scheduler = Executors.newSingleThreadScheduledExecutor();
+            this.scheduler.scheduleAtFixedRate(
+                this::safeRotate,
+                this.gameDurationMillis,
+                this.gameDurationMillis,
+                TimeUnit.MILLISECONDS
+            );
+        }
+    }
+
+    private void safeRotate() {
+        try {
+            rotateGame();
+        } catch (Throwable t) {
+            System.err.println("[GameManager] Errore imprevisto durante la rotazione periodica: " + t.getMessage());
+        }
+    }
+    
+
+    public void stop() {
+        ScheduledExecutorService exec;
+        synchronized (lifecycleLock) {
+            if (this.scheduler == null || this.scheduler.isShutdown()) {
+                return;
+            }
+            exec = this.scheduler;
+        }
+
+        exec.shutdown();
+        try {
+            if (!exec.awaitTermination(5, TimeUnit.SECONDS)) {
+                exec.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            exec.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+    }
+    
 }
