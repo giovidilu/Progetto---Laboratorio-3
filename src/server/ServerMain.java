@@ -3,7 +3,9 @@ package server;
 import server.config.ServerConfig;
 import server.handler.ClientHandler;
 import server.repository.GameRepository;
+import server.repository.GameTemplateLoader;
 import server.repository.UserRepository;
+import server.service.GameManager;
 import server.service.PersistenceManager;
 import server.service.SessionManager;
 
@@ -11,9 +13,12 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import common.model.GameTemplate;
 
 /**
  * Classe principale del Server di gioco "Connections".
@@ -27,6 +32,7 @@ public class ServerMain {
     private final GameRepository gameRepository;
     private final SessionManager sessionManager;
     private final PersistenceManager persistenceManager;
+    private final GameManager gameManager;
 
     private final ExecutorService clientThreadPool;
     private ServerSocket serverSocket;
@@ -48,6 +54,16 @@ public class ServerMain {
 
         this.userRepository.loadFromDisk();
         this.gameRepository.loadFromDisk();
+
+        GameTemplateLoader templateLoader = new GameTemplateLoader();
+        Map<Integer,GameTemplate> templates = templateLoader.loadTemplates(config.getWordsFilePath());
+
+        long gameDurationMillis = TimeUnit.MINUTES.toMillis(config.getGameDurationMinutes());
+        this.gameManager = new GameManager(
+            templates, 
+            this.gameRepository, 
+            gameDurationMillis
+        );
 
         // 2. Inizializzazione del gestore delle sessioni attive
         this.sessionManager = new SessionManager();
@@ -80,6 +96,7 @@ public class ServerMain {
 
         // Avvio del timer periodico per la persistenza
         this.persistenceManager.start();
+        this.gameManager.start();
 
         // Ciclo bloccante di ascolto e accettazione connessioni
         runServerLoop();
@@ -95,7 +112,8 @@ public class ServerMain {
                     clientSocket,
                     this.userRepository,
                     this.gameRepository,
-                    this.sessionManager
+                    this.sessionManager,
+                    this.gameManager
                 ));
 
             } catch (SocketException e) {
@@ -136,6 +154,7 @@ public class ServerMain {
                 Thread.currentThread().interrupt();
             }
 
+            gameManager.stop();
             persistenceManager.stop();
 
             System.out.println("[SHUTDOWN] Server terminato correttamente.");

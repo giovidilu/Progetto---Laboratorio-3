@@ -8,11 +8,13 @@ import com.google.gson.JsonSyntaxException;
 
 import common.dto.AuthRequest;
 import common.dto.UpdateCredentialsRequest;
+import common.model.Game;
 import common.model.User;
 import common.protocol.response.ResponseCode;
 import common.protocol.response.ServerResponse;
 import server.repository.GameRepository;
 import server.repository.UserRepository;
+import server.service.GameManager;
 import server.service.SessionManager;
 import server.util.PasswordUtil;
 
@@ -31,16 +33,19 @@ public class ClientHandler implements Runnable {
     private final UserRepository userRepository;
     private final GameRepository gameRepository;
     private final SessionManager sessionManager;
+    private final GameManager gameManager;
+
     private final Gson gson;
     private final Map<String, CommandHandler> commandMap;
 
     private String loggedInUsername;
 
-    public ClientHandler(Socket socket, UserRepository userRepository, GameRepository gameRepository, SessionManager sessionManager) {
+    public ClientHandler(Socket socket, UserRepository userRepository, GameRepository gameRepository, SessionManager sessionManager, GameManager gameManager) {
         this.socket = socket;
         this.userRepository = userRepository;
         this.gameRepository = gameRepository;
         this.sessionManager = sessionManager;
+        this.gameManager = gameManager;
         this.gson = new Gson();
         this.commandMap = new HashMap<>();
 
