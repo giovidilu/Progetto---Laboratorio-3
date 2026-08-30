@@ -7,11 +7,15 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 import common.dto.AuthRequest;
+import common.dto.GameQueryRequest;
 import common.dto.UpdateCredentialsRequest;
+import common.dto.SubmitProposalRequest;
 import common.model.Game;
+import common.model.ProposalResult;
 import common.model.User;
 import common.protocol.response.ResponseCode;
 import common.protocol.response.ServerResponse;
+import common.protocol.response.payload.GameInfoPayload;
 import server.repository.GameRepository;
 import server.repository.UserRepository;
 import server.service.GameManager;
@@ -244,11 +248,60 @@ public class ClientHandler implements Runnable {
     }
 
     private ServerResponse<?> handleSubmitProposal(JsonObject request) {
-        return ServerResponse.failWithMessage(ResponseCode.INTERNAL_SERVER_ERROR, "handleSubmitProposal non ancora implementato");
+        // 1. Controllo di autenticazione
+        if (this.loggedInUsername == null) {
+            return ServerResponse.failWithMessage(ResponseCode.NOT_LOGGED_IN, "Operazione non consentita: utente non autenticato.");
+        }
+
+        // 2. Deserializzazione e validazione di protocollo
+        SubmitProposalRequest proposalReq = gson.fromJson(request, SubmitProposalRequest.class);
+        if (proposalReq == null || proposalReq.getWords() == null) {
+            return ServerResponse.failWithMessage(ResponseCode.BAD_REQUEST, "Formato richiesta non valido: campo 'words' mancante o nullo.");
+        }
+
+        // 3. Esecuzione della proposta su GameManager
+        ProposalResult result = this.gameManager.submitProposal(this.loggedInUsername, proposalReq.getWords());
+
+        // 4. Mappatura MoveOutcome -> ServerResponse
+        switch (result.getMoveOutcome()) {
+            case MALFORMED:
+                return ServerResponse.failWithMessage(
+                    ResponseCode.MALFORMED_PROPOSAL,
+                    "Proposta malformata: le parole non appartengono al set valido o sono già state indovinate."
+                );
+            case ALREADY_COMPLETED:
+                return ServerResponse.failWithMessage(
+                    ResponseCode.BAD_REQUEST,
+                    "Partita già conclusa per questo utente o tempo scaduto."
+                );
+            case CORRECT:
+            case WRONG:
+            default:
+                return ServerResponse.successWithPayload(ResponseCode.SUCCESS, result);
+        }
     }
 
     private ServerResponse<?> handleRequestGameInfo(JsonObject request) {
-        return ServerResponse.failWithMessage(ResponseCode.INTERNAL_SERVER_ERROR, "handleRequestGameInfo non ancora implementato");
+       // 1. Controllo di autenticazione
+        if (this.loggedInUsername == null) {
+            return ServerResponse.failWithMessage(ResponseCode.NOT_LOGGED_IN, "Operazione non consentita: utente non autenticato.");
+        }
+
+        // 2. Deserializzazione tramite GameQueryRequest (gameId è null se non presente nel JSON)
+        GameQueryRequest queryReq = gson.fromJson(request, GameQueryRequest.class);
+        Integer gameId = (queryReq != null) ? queryReq.getGameId() : null;
+
+        // 3. Recupero dello stato della partita (attiva se gameId == null, storica altrimenti)
+        GameInfoPayload payload = this.gameManager.getGameInfoForPlayer(this.loggedInUsername, gameId);
+        if (payload == null) {
+            return ServerResponse.failWithMessage(
+                ResponseCode.GAME_NOT_FOUND,
+                "Partita non trovata per l'ID specificato: " + gameId
+            );
+        }
+
+        // 4. Invio delle informazioni di gioco
+        return ServerResponse.successWithPayload(ResponseCode.SUCCESS, payload);
     }
 
     private ServerResponse<?> handleRequestGameStats(JsonObject request) {
