@@ -1,1 +1,65 @@
-{}
+{
+  "1": {
+    "gameId": 1,
+    "totalParticipants": 1,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 2.0,
+    "allGroups": [
+      {
+        "theme": "WET WEATHER",
+        "words": [
+          "SNOW",
+          "HAIL",
+          "RAIN",
+          "SLEET"
+        ]
+      },
+      {
+        "theme": "NBA TEAMS",
+        "words": [
+          "HEAT",
+          "BUCKS",
+          "JAZZ",
+          "NETS"
+        ]
+      },
+      {
+        "theme": "KEYBOARD KEYS",
+        "words": [
+          "SHIFT",
+          "TAB",
+          "RETURN",
+          "OPTION"
+        ]
+      },
+      {
+        "theme": "PALINDROMES",
+        "words": [
+          "LEVEL",
+          "KAYAK",
+          "RACECAR",
+          "MOM"
+        ]
+      }
+    ],
+    "playerStates": {
+      "testeruser1": {
+        "username": "testeruser1",
+        "gameId": 1,
+        "correctGroups": [
+          {
+            "theme": "WET WEATHER",
+            "words": [
+              "SNOW",
+              "HAIL",
+              "RAIN",
+              "SLEET"
+            ]
+          }
+        ],
+        "mistakes": 1
+      }
+    }
+  }
+}

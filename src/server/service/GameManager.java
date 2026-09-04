@@ -9,6 +9,7 @@ import common.model.PlayerGameState;
 import common.model.ProposalResult;
 import common.model.WordGroup;
 import common.protocol.response.payload.GameInfoPayload;
+import common.protocol.response.payload.GameStatsPayload;
 import server.repository.GameRepository;
 
 import java.util.ArrayList;
@@ -326,6 +327,43 @@ public class GameManager {
         startNewActiveGame();
 
         return finishedRecord;
+    }
+
+    public synchronized GameStatsPayload getGameStats(Integer gameId){
+        // PARTITA ATTIVA
+        if(gameId == null || gameId.equals(this.currentGameId)){
+            int timeRemaining = (int) Math.max(0, this.activeGame.getEndTime() - System.currentTimeMillis());
+            
+            int playersFinished = 0;
+            int playersWon = 0;
+
+            for(PlayerGameState state : this.activePlayerStates.values()){
+                GameOutcome outcome = state.getOutcome();
+                if(outcome != null){
+                    playersFinished++;
+                    if(outcome == GameOutcome.WON){
+                        playersWon++;
+                    }
+                }
+            }
+
+            int playersPlaying = this.activePlayerStates.size() - playersFinished;
+
+            return GameStatsPayload.ongoingGame(timeRemaining, playersPlaying, playersFinished, playersWon);
+        }
+
+        // PARTITA FINITA
+        GameRecord record = this.gameRepository.getGameRecord(gameId);
+        if(record == null){
+            return null;
+        }
+
+        return GameStatsPayload.finishedGame(
+            record.getTotalParticipants(),
+            record.getParticipantsFinished(),
+            record.getParticipantsWon(),
+            record.getAverageScore()
+        );
     }
 
     public synchronized int getCurrentGameId() {
