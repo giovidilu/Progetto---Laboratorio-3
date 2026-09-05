@@ -18,6 +18,7 @@ import common.protocol.response.ServerResponse;
 import common.protocol.response.payload.GameInfoPayload;
 import common.protocol.response.payload.GameStatsPayload;
 import common.protocol.response.payload.LeaderboardPayload;
+import common.protocol.response.payload.PlayerStatsPayload;
 import server.repository.GameRepository;
 import server.repository.UserRepository;
 import server.service.GameManager;
@@ -357,6 +358,18 @@ public class ClientHandler implements Runnable {
     }
 
     private ServerResponse<?> handleRequestPlayerStats(JsonObject request) {
-        return ServerResponse.failWithMessage(ResponseCode.INTERNAL_SERVER_ERROR, "handleRequestPlayerStats non ancora implementato");
+        if (this.loggedInUsername == null) {
+            return ServerResponse.failWithMessage(ResponseCode.NOT_LOGGED_IN, "Operazione non consentita: utente non autenticato.");
+        }
+
+        PlayerStatsPayload payload = this.gameManager.getPlayerStats(this.loggedInUsername);
+        if (payload == null) {
+            return ServerResponse.failWithMessage(
+                ResponseCode.INTERNAL_SERVER_ERROR,
+                "Impossibile recuperare le statistiche personali per l'utente: " + this.loggedInUsername
+            );
+        }
+
+        return ServerResponse.successWithPayload(ResponseCode.SUCCESS, payload);
     }
 }
