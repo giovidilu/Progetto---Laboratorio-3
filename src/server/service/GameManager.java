@@ -80,12 +80,18 @@ public class GameManager {
     }
 
     /**
+     * Aggiorna in modo consistente e centralizzato le statistiche persistenti dell'utente.
+     */
+    private void updateUserStats(String username, GameOutcome outcome, int mistakes, int score) {
+        User user = this.userRepository.getUser(username);
+        if (user != null) {
+            user.getStats().recordGameResult(outcome, mistakes, score);
+        }
+    }
+
+    /**
      * Restituisce le informazioni sullo stato di una partita per uno specifico utente.
      * Rispetta il principio CQS: non crea voci in activePlayerStates in assenza di mosse.
-     *
-     * @param username Nome utente del richiedente.
-     * @param gameId   ID della partita richiesta (null o pari a currentGameId indica la partita attiva).
-     * @return GameInfoPayload valorizzato, oppure null se la partita richiesta non esiste.
      */
     public synchronized GameInfoPayload getGameInfoForPlayer(String username, Integer gameId) {
         if (gameId == null || gameId.equals(this.currentGameId)) {
@@ -131,10 +137,6 @@ public class GameManager {
         return GameInfoPayload.FinishedGame(finalAllocations, numberCorrectGroups, errors, score);
     }
 
-    /**
-     * Calcola le parole non ancora indovinate dal giocatore escludendo quelle
-     * dei gruppi già scoperti.
-     */
     private List<String> calculateRemainingWords(PlayerGameState playerState) {
         if (playerState == null || playerState.getCorrectGroups().isEmpty()) {
             return new ArrayList<>(this.activeGame.getShuffledWords());
@@ -156,9 +158,6 @@ public class GameManager {
         return remaining;
     }
 
-    /**
-     * Converte una lista di WordGroup in List<List<String>> per il payload
-     */
     private List<List<String>> convertToWordLists(List<WordGroup> groups) {
         if (groups == null || groups.isEmpty()) {
             return Collections.emptyList();
@@ -175,27 +174,18 @@ public class GameManager {
 
     /**
      * Valuta una proposta di 4 parole inviata da un utente per la partita attiva.
-     * Metodo sincronizzato per garantire la consistenza dello stato di gioco e dei punteggi.
-     *
-     * @param username Nome dell'utente sottomittente.
-     * @param words    Lista di 4 parole candidate a formare un gruppo tematico.
-     * @return ProposalResult contenente l'esito della mossa, l'eventuale esito finale e lo stato aggiornato.
      */
     public synchronized ProposalResult submitProposal(String username, List<String> words) {
-        // =========================================================================
         // FASE 1: Verifica di ammissibilità temporale e di stato (ALREADY_COMPLETED)
-        // =========================================================================
         long now = System.currentTimeMillis();
         boolean isTimeExpired = (now >= this.activeGame.getEndTime());
 
-        // Se il tempo è scaduto, blocca subito senza registrare utenti inattivi nella mappa
         if (isTimeExpired) {
             PlayerGameState existingState = this.activePlayerStates.get(username);
             GameOutcome outcome = (existingState != null) ? existingState.getOutcome() : null;
             return new ProposalResult(MoveOutcome.ALREADY_COMPLETED, outcome, null, existingState);
         }
 
-        // Tempo valido: recupera lo stato esistente o registra il giocatore nella partita attiva
         PlayerGameState playerState = this.activePlayerStates.computeIfAbsent(
             username,
             u -> new PlayerGameState(u, this.currentGameId)
@@ -206,9 +196,7 @@ public class GameManager {
             return new ProposalResult(MoveOutcome.ALREADY_COMPLETED, currentOutcome, null, playerState);
         }
 
-        // =========================================================================
         // FASE 2: Validazione sintattica della quadrupla (MALFORMED)
-        // =========================================================================
         if (words == null || words.size() != 4) {
             return new ProposalResult(MoveOutcome.MALFORMED, null, null, playerState);
         }
@@ -221,12 +209,10 @@ public class GameManager {
             proposalSet.add(w.trim().toUpperCase());
         }
 
-        // Verifica unicità (esattamente 4 parole distinte)
         if (proposalSet.size() != 4) {
             return new ProposalResult(MoveOutcome.MALFORMED, null, null, playerState);
         }
 
-        // Verifica appartenenza alle 16 parole della partita attiva
         Set<String> allGameWords = new HashSet<>();
         for (String w : this.activeGame.getShuffledWords()) {
             allGameWords.add(w.toUpperCase());
@@ -236,9 +222,7 @@ public class GameManager {
             return new ProposalResult(MoveOutcome.MALFORMED, null, null, playerState);
         }
 
-        // =========================================================================
         // FASE 3: Validazione semantica rispetto ai progressi del giocatore (MALFORMED)
-        // =========================================================================
         Set<String> alreadyGuessedWords = new HashSet<>();
         for (WordGroup group : playerState.getCorrectGroups()) {
             if (group != null && group.getWords() != null) {
@@ -248,16 +232,13 @@ public class GameManager {
             }
         }
 
-        // Se la proposta include parole già indovinate in precedenza dallo stesso utente
         for (String w : proposalSet) {
             if (alreadyGuessedWords.contains(w)) {
                 return new ProposalResult(MoveOutcome.MALFORMED, null, null, playerState);
             }
         }
 
-        // =========================================================================
         // FASE 4: Valutazione del raggruppamento tematico (CORRECT o WRONG)
-        // =========================================================================
         WordGroup matchedGroup = null;
         for (WordGroup group : this.activeGame.getGameTemplate().getGroups()) {
             if (group != null && group.getWords() != null) {
@@ -278,10 +259,7 @@ public class GameManager {
             playerState.addCorrectGroup(matchedGroup);
             GameOutcome newOutcome = playerState.getOutcome();
             if (newOutcome != null) {
-                User user = this.userRepository.getUser(username);
-                if (user != null) {
-                    user.getStats().recordGameResult(newOutcome, playerState.getMistakes(), playerState.getScore());
-                }
+                updateUserStats(username, newOutcome, playerState.getMistakes(), playerState.getScore());
             }
             return new ProposalResult(MoveOutcome.CORRECT, newOutcome, matchedGroup, playerState);
         } else {
@@ -289,10 +267,7 @@ public class GameManager {
             playerState.incrementMistakes();
             GameOutcome newOutcome = playerState.getOutcome();
             if (newOutcome != null) {
-                User user = this.userRepository.getUser(username);
-                if (user != null) {
-                    user.getStats().recordGameResult(newOutcome, playerState.getMistakes(), playerState.getScore());
-                }
+                updateUserStats(username, newOutcome, playerState.getMistakes(), playerState.getScore());
             }
             return new ProposalResult(MoveOutcome.WRONG, newOutcome, null, playerState);
         }
@@ -301,17 +276,11 @@ public class GameManager {
     /**
      * Consolida e archivia lo stato della partita corrente in GameRepository,
      * calcolando le statistiche aggregate ed avviando il round successivo.
-     *
-     * @return Il GameRecord consolidato della partita appena conclusa.
      */
     public synchronized GameRecord rotateGame() {
-        // 1. Recupero dei gruppi corretti dal template del round concluso
         List<WordGroup> allGroups = this.activeGame.getGameTemplate().getGroups();
-
-        // 2. Copia difensiva della mappa degli stati dei giocatori
         Map<String, PlayerGameState> playerStatesSnapshot = new HashMap<>(this.activePlayerStates);
 
-        // 3. Calcolo delle statistiche aggregate
         int totalParticipants = playerStatesSnapshot.size();
         int participantsFinished = 0;
         int participantsWon = 0;
@@ -332,7 +301,6 @@ public class GameManager {
                 ? ((double) totalScoreSum / totalParticipants)
                 : 0.0;
 
-        // 4. Creazione del GameRecord e inserimento nel repository
         GameRecord finishedRecord = new GameRecord(
             this.currentGameId,
             totalParticipants,
@@ -345,24 +313,19 @@ public class GameManager {
 
         this.gameRepository.addGameRecord(finishedRecord);
 
-        // 5. Aggiornamento delle statistiche persistenti esclusivamente per chi non ha concluso prima del tempo
+        // Aggiornamento delle statistiche persistenti esclusivamente per chi è rimasto non concluso
         for (PlayerGameState state : playerStatesSnapshot.values()) {
             if (state.getOutcome() == null) {
-                User user = this.userRepository.getUser(state.getUsername());
-                if (user != null) {
-                    user.getStats().recordGameResult(GameOutcome.DID_NOT_FINISH, state.getMistakes(), state.getScore());
-                }
+                updateUserStats(state.getUsername(), GameOutcome.DID_NOT_FINISH, state.getMistakes(), state.getScore());
             }
         }
 
-        // 6. Avvio della nuova partita e pulizia di activePlayerStates
         startNewActiveGame();
 
         return finishedRecord;
     }
 
     public synchronized GameStatsPayload getGameStats(Integer gameId) {
-        // PARTITA ATTIVA
         if (gameId == null || gameId.equals(this.currentGameId)) {
             int timeRemaining = (int) Math.max(0, this.activeGame.getEndTime() - System.currentTimeMillis());
             
@@ -384,7 +347,6 @@ public class GameManager {
             return GameStatsPayload.ongoingGame(timeRemaining, playersPlaying, playersFinished, playersWon);
         }
 
-        // PARTITA FINITA
         GameRecord record = this.gameRepository.getGameRecord(gameId);
         if (record == null) {
             return null;
@@ -398,19 +360,9 @@ public class GameManager {
         );
     }
 
-    /**
-     * Calcola la classifica globale ordinata per punteggio totale decrescente.
-     *
-     * @param topPlayers Numero di posizioni di vertice da includere (se null o <= 0, include tutti).
-     * @param playerName Nome del giocatore di cui recuperare la posizione specifica (opzionale).
-     * @return LeaderboardPayload popolato con la classifica e l'eventuale entry dell'utente,
-     *         oppure null se playerName è valorizzato ma l'utente non esiste nel repository.
-     */
     public synchronized LeaderboardPayload getLeaderboard(Integer topPlayers, String playerName) {
-        // 1. Recupero di tutti gli utenti registrati (copia difensiva, sicura da ordinare)
         List<User> allUsers = this.userRepository.getAllUsers();
 
-        // 2. Ordinamento decrescente per punteggio totale, secondario alfabetico per stabilità
         allUsers.sort((u1, u2) -> {
             int scoreCompare = Integer.compare(u2.getStats().getTotalScore(), u1.getStats().getTotalScore());
             if (scoreCompare != 0) {
@@ -419,7 +371,6 @@ public class GameManager {
             return u1.getUsername().compareTo(u2.getUsername());
         });
 
-        // 3. Costruzione delle entry con calcolo del rank ordinale (1-based)
         List<LeaderboardEntry> fullLeaderboard = new ArrayList<>();
         LeaderboardEntry targetUserEntry = null;
         for (int i = 0; i < allUsers.size(); i++) {
@@ -432,15 +383,13 @@ public class GameManager {
             }
         }
         
-        // 4. Se è stata richiesta la posizione di un utente specifico
         if (playerName != null) {
             if (targetUserEntry == null) {
-                return null; // utente non trovato
+                return null;
             }
             return new LeaderboardPayload(Collections.singletonList(targetUserEntry));
         }
 
-        // 5. Altrimenti, classifica generale (eventualmente troncata ai primi K)
         List<LeaderboardEntry> finalLeaderboard;
         if (topPlayers != null && topPlayers > 0 && topPlayers < fullLeaderboard.size()) {
             finalLeaderboard = new ArrayList<>(fullLeaderboard.subList(0, topPlayers));
