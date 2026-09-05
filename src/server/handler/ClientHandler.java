@@ -16,6 +16,7 @@ import common.model.User;
 import common.protocol.response.ResponseCode;
 import common.protocol.response.ServerResponse;
 import common.protocol.response.payload.GameInfoPayload;
+import common.protocol.response.payload.GameStatsPayload;
 import server.repository.GameRepository;
 import server.repository.UserRepository;
 import server.service.GameManager;
@@ -305,7 +306,23 @@ public class ClientHandler implements Runnable {
     }
 
     private ServerResponse<?> handleRequestGameStats(JsonObject request) {
-        return ServerResponse.failWithMessage(ResponseCode.INTERNAL_SERVER_ERROR, "handleRequestGameStats non ancora implementato");
+        if(this.loggedInUsername == null){
+            return ServerResponse.failWithMessage(ResponseCode.NOT_LOGGED_IN, "Operazione non consentita: utente non autenticato. ");
+        }
+
+        GameQueryRequest queryReq = gson.fromJson(request, GameQueryRequest.class);
+        Integer gameId = (queryReq != null) ? queryReq.getGameId() : null;
+
+        GameStatsPayload payload = this.gameManager.getGameStats(gameId);
+        if(payload == null){
+            return ServerResponse.failWithMessage(
+                ResponseCode.GAME_NOT_FOUND,
+                "Partita non trovata per l'ID specificato: " + gameId
+
+            );
+        }
+
+        return ServerResponse.successWithPayload(ResponseCode.SUCCESS, payload);
     }
 
     private ServerResponse<?> handleRequestLeaderboard(JsonObject request) {
