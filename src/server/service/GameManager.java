@@ -419,21 +419,24 @@ public class GameManager {
                 targetUserEntry = entry;
             }
         }
-
-        // 4. Validazione del parametro playerName: se richiesto ma non trovato, segnala con null
-        if (playerName != null && targetUserEntry == null) {
-            return null;
+        
+        // 4. Se è stata richiesta la posizione di un utente specifico
+        if (playerName != null) {
+            if (targetUserEntry == null) {
+                return null; // utente non trovato
+            }
+            return new LeaderboardPayload(Collections.singletonList(targetUserEntry));
         }
-
-        // 5. Filtraggio top K se richiesto
+    
+        // 5. Altrimenti, classifica generale (eventualmente troncata ai primi K)
         List<LeaderboardEntry> finalLeaderboard;
         if (topPlayers != null && topPlayers > 0 && topPlayers < fullLeaderboard.size()) {
             finalLeaderboard = new ArrayList<>(fullLeaderboard.subList(0, topPlayers));
         } else {
             finalLeaderboard = fullLeaderboard;
         }
-
-        return new LeaderboardPayload(finalLeaderboard, targetUserEntry);
+    
+        return new LeaderboardPayload(finalLeaderboard);
     }
 
 
