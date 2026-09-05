@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -278,16 +277,28 @@ public class GameManager {
             // Proposta Corretta
             playerState.addCorrectGroup(matchedGroup);
             GameOutcome newOutcome = playerState.getOutcome();
+            if (newOutcome != null) {
+                User user = this.userRepository.getUser(username);
+                if (user != null) {
+                    user.getStats().recordGameResult(newOutcome, playerState.getMistakes(), playerState.getScore());
+                }
+            }
             return new ProposalResult(MoveOutcome.CORRECT, newOutcome, matchedGroup, playerState);
         } else {
             // Proposta Sbagliata
             playerState.incrementMistakes();
             GameOutcome newOutcome = playerState.getOutcome();
+            if (newOutcome != null) {
+                User user = this.userRepository.getUser(username);
+                if (user != null) {
+                    user.getStats().recordGameResult(newOutcome, playerState.getMistakes(), playerState.getScore());
+                }
+            }
             return new ProposalResult(MoveOutcome.WRONG, newOutcome, null, playerState);
         }
     }
 
-   /**
+    /**
      * Consolida e archivia lo stato della partita corrente in GameRepository,
      * calcolando le statistiche aggregate ed avviando il round successivo.
      *
@@ -334,14 +345,13 @@ public class GameManager {
 
         this.gameRepository.addGameRecord(finishedRecord);
 
-        // 5. Aggiornamento delle statistiche persistenti dei giocatori
+        // 5. Aggiornamento delle statistiche persistenti esclusivamente per chi non ha concluso prima del tempo
         for (PlayerGameState state : playerStatesSnapshot.values()) {
-            User user = this.userRepository.getUser(state.getUsername());
-            if (user != null) {
-                GameOutcome finalOutcome = (state.getOutcome() != null)
-                        ? state.getOutcome()
-                        : GameOutcome.DID_NOT_FINISH;
-                user.getStats().recordGameResult(finalOutcome, state.getMistakes(), state.getScore());
+            if (state.getOutcome() == null) {
+                User user = this.userRepository.getUser(state.getUsername());
+                if (user != null) {
+                    user.getStats().recordGameResult(GameOutcome.DID_NOT_FINISH, state.getMistakes(), state.getScore());
+                }
             }
         }
 
@@ -351,19 +361,19 @@ public class GameManager {
         return finishedRecord;
     }
 
-    public synchronized GameStatsPayload getGameStats(Integer gameId){
+    public synchronized GameStatsPayload getGameStats(Integer gameId) {
         // PARTITA ATTIVA
-        if(gameId == null || gameId.equals(this.currentGameId)){
+        if (gameId == null || gameId.equals(this.currentGameId)) {
             int timeRemaining = (int) Math.max(0, this.activeGame.getEndTime() - System.currentTimeMillis());
             
             int playersFinished = 0;
             int playersWon = 0;
 
-            for(PlayerGameState state : this.activePlayerStates.values()){
+            for (PlayerGameState state : this.activePlayerStates.values()) {
                 GameOutcome outcome = state.getOutcome();
-                if(outcome != null){
+                if (outcome != null) {
                     playersFinished++;
-                    if(outcome == GameOutcome.WON){
+                    if (outcome == GameOutcome.WON) {
                         playersWon++;
                     }
                 }
@@ -376,7 +386,7 @@ public class GameManager {
 
         // PARTITA FINITA
         GameRecord record = this.gameRepository.getGameRecord(gameId);
-        if(record == null){
+        if (record == null) {
             return null;
         }
 
@@ -389,15 +399,13 @@ public class GameManager {
     }
 
     /**
-    * Calcola la classifica globale ordinata per punteggio totale decrescente.
-    *
-    * @param topPlayers Numero di posizioni di vertice da includere (se null o <= 0, include tutti).
-    * @param playerName Nome del giocatore di cui recuperare la posizione specifica (opzionale).
-    * @return LeaderboardPayload popolato con la classifica e l'eventuale entry dell'utente,
-    *         oppure null se playerName è valorizzato ma l'utente non esiste nel repository
-    *         (coerentemente con getGameInfoForPlayer/getGameStats: è compito del chiamante,
-    *         ClientHandler, tradurre il null in ResponseCode.PLAYER_NOT_FOUND).
-    */
+     * Calcola la classifica globale ordinata per punteggio totale decrescente.
+     *
+     * @param topPlayers Numero di posizioni di vertice da includere (se null o <= 0, include tutti).
+     * @param playerName Nome del giocatore di cui recuperare la posizione specifica (opzionale).
+     * @return LeaderboardPayload popolato con la classifica e l'eventuale entry dell'utente,
+     *         oppure null se playerName è valorizzato ma l'utente non esiste nel repository.
+     */
     public synchronized LeaderboardPayload getLeaderboard(Integer topPlayers, String playerName) {
         // 1. Recupero di tutti gli utenti registrati (copia difensiva, sicura da ordinare)
         List<User> allUsers = this.userRepository.getAllUsers();
@@ -444,35 +452,34 @@ public class GameManager {
     }
 
     public synchronized PlayerStatsPayload getPlayerStats(String username) {
-    User user = userRepository.getUser(username);
-    if (user == null) {
-        return null;
+        User user = userRepository.getUser(username);
+        if (user == null) {
+            return null;
+        }
+
+        UserStats stats = user.getStats();
+        MistakeHistogramData domainHist = stats.getMistakeHistogramData();
+
+        MistakeHistogram payloadHist = new MistakeHistogram(
+            domainHist.getSolvedWith0Mistakes(),
+            domainHist.getSolvedWith1Mistake(),
+            domainHist.getSolvedWith2Mistakes(),
+            domainHist.getSolvedWith3Mistakes(),
+            domainHist.getSolvedWith4Mistakes(),
+            domainHist.getFailed(),
+            domainHist.getNotFinished()
+        );
+
+        return new PlayerStatsPayload(
+            stats.getPuzzlesCompleted(),
+            stats.getWinRate(),
+            stats.getLossRate(),
+            stats.getCurrentStreak(),
+            stats.getMaxStreak(),
+            stats.getPerfectPuzzles(),
+            payloadHist
+        );
     }
-
-    UserStats stats = user.getStats();
-    MistakeHistogramData domainHist = stats.getMistakeHistogramData();
-
-    MistakeHistogram payloadHist = new MistakeHistogram(
-        domainHist.getSolvedWith0Mistakes(),
-        domainHist.getSolvedWith1Mistake(),
-        domainHist.getSolvedWith2Mistakes(),
-        domainHist.getSolvedWith3Mistakes(),
-        domainHist.getSolvedWith4Mistakes(),
-        domainHist.getFailed(),
-        domainHist.getNotFinished()
-    );
-
-    return new PlayerStatsPayload(
-        stats.getPuzzlesCompleted(),
-        stats.getWinRate(),
-        stats.getLossRate(),
-        stats.getCurrentStreak(),
-        stats.getMaxStreak(),
-        stats.getPerfectPuzzles(),
-        payloadHist
-    );
-}
-
 
     public synchronized int getCurrentGameId() {
         return this.currentGameId;
@@ -482,7 +489,6 @@ public class GameManager {
         return this.activeGame;
     }
 
-    
     public void start() {
         synchronized (lifecycleLock) {
             if (this.scheduler != null && !this.scheduler.isShutdown()) {
@@ -505,7 +511,6 @@ public class GameManager {
             System.err.println("[GameManager] Errore imprevisto durante la rotazione periodica: " + t.getMessage());
         }
     }
-    
 
     public void stop() {
         ScheduledExecutorService exec;
@@ -526,5 +531,4 @@ public class GameManager {
             Thread.currentThread().interrupt();
         }
     }
-    
 }

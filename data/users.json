@@ -4,12 +4,68 @@
     "passwordHash": "4ad17a24e963cdf0bb6787b84a121a01e8712b437545159565a1109b1efe705a",
     "salt": "lspGzyl3Z12un5F1mLYotQ\u003d\u003d",
     "stats": {
+      "totalScore": 0,
       "gamesPlayed": 0,
       "gamesWon": 0,
       "gamesLost": 0,
       "currentStreak": 0,
       "maxStreak": 0,
-      "perfectPuzzle": 0
+      "perfectPuzzle": 0,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 0,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 0,
+        "notFinished": 0
+      }
+    }
+  },
+  "bob": {
+    "username": "bob",
+    "passwordHash": "ae94adbe4a4f9bedf2e55d655efda201aa7fc26d96b5a6c5f9cb9cc52e429665",
+    "salt": "JV4FAKOzDdBfEPinxVVRAg\u003d\u003d",
+    "stats": {
+      "totalScore": 0,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "currentStreak": 0,
+      "maxStreak": 0,
+      "perfectPuzzle": 0,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 0,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 0,
+        "notFinished": 0
+      }
+    }
+  },
+  "alice": {
+    "username": "alice",
+    "passwordHash": "2c824f47901bae5557352b1e9afe72a2d9d461a67f85cc5d87c1d8958e104452",
+    "salt": "4m/EwCqMF9ies/Gk+eaXXQ\u003d\u003d",
+    "stats": {
+      "totalScore": -10,
+      "gamesPlayed": 1,
+      "gamesWon": 0,
+      "gamesLost": 1,
+      "currentStreak": 0,
+      "maxStreak": 0,
+      "perfectPuzzle": 0,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 0,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 1,
+        "notFinished": 0
+      }
     }
   },
   "omar": {
@@ -17,12 +73,22 @@
     "passwordHash": "253b7ac94941f28d7b40308d5871007bb9637f7a2200c04eb110a5c7a2676545",
     "salt": "UWWww0P2yZheKZW5Iu3kSA\u003d\u003d",
     "stats": {
+      "totalScore": 0,
       "gamesPlayed": 0,
       "gamesWon": 0,
       "gamesLost": 0,
       "currentStreak": 0,
       "maxStreak": 0,
-      "perfectPuzzle": 0
+      "perfectPuzzle": 0,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 0,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 0,
+        "notFinished": 0
+      }
     }
   },
   "giovanni": {
@@ -30,12 +96,22 @@
     "passwordHash": "9c1ca2725e8c21f0133f5eb1babe59f8b40201f6a8a61a5e2bae3a4014eb06e4",
     "salt": "VZofE7Q/X7Ggvj4I7gEQaQ\u003d\u003d",
     "stats": {
+      "totalScore": 0,
       "gamesPlayed": 0,
       "gamesWon": 0,
       "gamesLost": 0,
       "currentStreak": 0,
       "maxStreak": 0,
-      "perfectPuzzle": 0
+      "perfectPuzzle": 0,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 0,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 0,
+        "notFinished": 0
+      }
     }
   }
 }

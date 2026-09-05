@@ -61,5 +61,1218 @@
         "mistakes": 1
       }
     }
+  },
+  "2": {
+    "gameId": 2,
+    "totalParticipants": 1,
+    "participantsFinished": 1,
+    "participantsWon": 0,
+    "averageScore": -10.0,
+    "allGroups": [
+      {
+        "theme": "FOOTWEAR",
+        "words": [
+          "PUMP",
+          "LOAFER",
+          "BOOT",
+          "SNEAKER"
+        ]
+      },
+      {
+        "theme": "UNITS OF LENGTH",
+        "words": [
+          "FOOT",
+          "LEAGUE",
+          "YARD",
+          "MILE"
+        ]
+      },
+      {
+        "theme": "MAGAZINES",
+        "words": [
+          "TIME",
+          "US",
+          "PEOPLE",
+          "ESSENCE"
+        ]
+      },
+      {
+        "theme": "LETTER HOMOPHONES",
+        "words": [
+          "SEA",
+          "WHY",
+          "ARE",
+          "QUEUE"
+        ]
+      }
+    ],
+    "playerStates": {
+      "alice": {
+        "username": "alice",
+        "gameId": 2,
+        "correctGroups": [
+          {
+            "theme": "UNITS OF LENGTH",
+            "words": [
+              "FOOT",
+              "LEAGUE",
+              "YARD",
+              "MILE"
+            ]
+          }
+        ],
+        "mistakes": 4
+      }
+    }
+  },
+  "3": {
+    "gameId": 3,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "FACIAL FEATURES",
+        "words": [
+          "MOUTH",
+          "NOSE",
+          "EYE",
+          "CHEEK"
+        ]
+      },
+      {
+        "theme": "SYNONYMS FOR EAT",
+        "words": [
+          "WOLF",
+          "CHOW",
+          "SCARF",
+          "GOBBLE"
+        ]
+      },
+      {
+        "theme": "\"DOG BREEDS, INFORMALLY\"",
+        "words": [
+          "LAB",
+          "POM",
+          "PIT",
+          "PEKE"
+        ]
+      },
+      {
+        "theme": "MEMBERS OF A TRIO",
+        "words": [
+          "AMIGO",
+          "STOOGE",
+          "KING",
+          "TENOR"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "4": {
+    "gameId": 4,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "SNEAKER BRANDS",
+        "words": [
+          "PUMA",
+          "NIKE",
+          "REEBOK",
+          "ADIDAS"
+        ]
+      },
+      {
+        "theme": "MUSICALS BEGINNING WITH “C”",
+        "words": [
+          "CATS",
+          "CAROUSEL",
+          "CHICAGO",
+          "CABARET"
+        ]
+      },
+      {
+        "theme": "CLEANING VERBS",
+        "words": [
+          "DUST",
+          "MOP",
+          "SWEEP",
+          "VACUUM"
+        ]
+      },
+      {
+        "theme": "___ MAN SUPERHEROES",
+        "words": [
+          "SPIDER",
+          "IRON",
+          "SUPER",
+          "BAT"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "5": {
+    "gameId": 5,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "STREAMING SERVICES",
+        "words": [
+          "PRIME",
+          "PEACOCK",
+          "HULU",
+          "NETFLIX"
+        ]
+      },
+      {
+        "theme": "CONDIMENTS",
+        "words": [
+          "TARTAR",
+          "RELISH",
+          "KETCHUP",
+          "MAYO"
+        ]
+      },
+      {
+        "theme": "SYNONYMS FOR SAD",
+        "words": [
+          "BLUE",
+          "GLUM",
+          "DOWN",
+          "LOW"
+        ]
+      },
+      {
+        "theme": "CLUE CHARACTERS",
+        "words": [
+          "MUSTARD",
+          "PLUM",
+          "GREEN",
+          "SCARLET"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "6": {
+    "gameId": 6,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "MONOPOLY SQUARES",
+        "words": [
+          "GO",
+          "CHANCE",
+          "JAIL",
+          "BOARDWALK"
+        ]
+      },
+      {
+        "theme": "SHADES OF BLUE",
+        "words": [
+          "BABY",
+          "ROYAL",
+          "MIDNIGHT",
+          "POWDER"
+        ]
+      },
+      {
+        "theme": "RAPPERS",
+        "words": [
+          "FUTURE",
+          "ICE CUBE",
+          "Q-TIP",
+          "COMMON"
+        ]
+      },
+      {
+        "theme": "MEMBERS OF A SEPTET",
+        "words": [
+          "WONDER",
+          "SIN",
+          "SEA",
+          "SISTER"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "7": {
+    "gameId": 7,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "LEG PARTS",
+        "words": [
+          "KNEE",
+          "ANKLE",
+          "SHIN",
+          "THIGH"
+        ]
+      },
+      {
+        "theme": "BABY ANIMALS",
+        "words": [
+          "CUB",
+          "JOEY",
+          "CALF",
+          "KID"
+        ]
+      },
+      {
+        "theme": "SLANG FOR TOILET",
+        "words": [
+          "JOHN",
+          "THRONE",
+          "HEAD",
+          "CAN"
+        ]
+      },
+      {
+        "theme": "___ FISH THAT AREN’T FISH",
+        "words": [
+          "STAR",
+          "SILVER",
+          "JELLY",
+          "CRAY"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "8": {
+    "gameId": 8,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "BOARD GAMES",
+        "words": [
+          "CHESS",
+          "GO",
+          "CHECKERS",
+          "BACKGAMMON"
+        ]
+      },
+      {
+        "theme": "MATTRESS SIZES",
+        "words": [
+          "KING",
+          "TWIN",
+          "QUEEN",
+          "FULL"
+        ]
+      },
+      {
+        "theme": "THINGS THAT ARE RED",
+        "words": [
+          "FIRE TRUCK",
+          "RUBY",
+          "CHERRY",
+          "STOP SIGN"
+        ]
+      },
+      {
+        "theme": "THINGS WITH KEYS",
+        "words": [
+          "LOCKSMITH",
+          "PIANO",
+          "FLORIDA",
+          "CRYPTOGRAPHY"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "9": {
+    "gameId": 9,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "SPORTS",
+        "words": [
+          "SQUASH",
+          "CRICKET",
+          "POLO",
+          "FENCING"
+        ]
+      },
+      {
+        "theme": "TOPS",
+        "words": [
+          "TEE",
+          "TANK",
+          "CAMI",
+          "HALTER"
+        ]
+      },
+      {
+        "theme": "VEGETABLES",
+        "words": [
+          "CARROT",
+          "CORN",
+          "ONION",
+          "BEET"
+        ]
+      },
+      {
+        "theme": "INSECTS",
+        "words": [
+          "ANT",
+          "MANTIS",
+          "BEETLE",
+          "TERMITE"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "10": {
+    "gameId": 10,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "FRUIT",
+        "words": [
+          "KIWI",
+          "ORANGE",
+          "DATE",
+          "LEMON"
+        ]
+      },
+      {
+        "theme": "COUNTRIES",
+        "words": [
+          "JORDAN",
+          "GEORGIA",
+          "TOGO",
+          "CHAD"
+        ]
+      },
+      {
+        "theme": "BIRDS",
+        "words": [
+          "TURKEY",
+          "JAY",
+          "CRANE",
+          "SWALLOW"
+        ]
+      },
+      {
+        "theme": "ZODIAC SYMBOLS",
+        "words": [
+          "TWINS",
+          "GOAT",
+          "SCALES",
+          "FISH"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "11": {
+    "gameId": 11,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "SPICES BEGINNING WITH “C”",
+        "words": [
+          "CUMIN",
+          "CORIANDER",
+          "CLOVE",
+          "CARDAMOM"
+        ]
+      },
+      {
+        "theme": "TERMS OF ENDEARMENT",
+        "words": [
+          "SUGAR",
+          "BOO",
+          "SWEETIE",
+          "HONEY"
+        ]
+      },
+      {
+        "theme": "THINGS WITH WINGS",
+        "words": [
+          "ANGEL",
+          "BIRD",
+          "AIRPLANE",
+          "PEGASUS"
+        ]
+      },
+      {
+        "theme": "SPICE GIRLS",
+        "words": [
+          "GINGER",
+          "BABY",
+          "SCARY",
+          "POSH"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "12": {
+    "gameId": 12,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "ANIMAL GROUP NAMES",
+        "words": [
+          "SCHOOL",
+          "PACK",
+          "FLOCK",
+          "POD"
+        ]
+      },
+      {
+        "theme": "DEADLY SINS",
+        "words": [
+          "LUST",
+          "PRIDE",
+          "GREED",
+          "ENVY"
+        ]
+      },
+      {
+        "theme": "SLOW ANIMALS",
+        "words": [
+          "SLOTH",
+          "SNAIL",
+          "LORIS",
+          "TORTOISE"
+        ]
+      },
+      {
+        "theme": "TRIG FUNCTIONS",
+        "words": [
+          "TAN",
+          "SEC",
+          "COT",
+          "SIN"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "13": {
+    "gameId": 13,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "AIRLINES",
+        "words": [
+          "FRONTIER",
+          "SPIRIT",
+          "VIRGIN",
+          "UNITED"
+        ]
+      },
+      {
+        "theme": "GREEK LETTERS",
+        "words": [
+          "IOTA",
+          "DELTA",
+          "CHI",
+          "BETA"
+        ]
+      },
+      {
+        "theme": "SILENT “G”",
+        "words": [
+          "GNOME",
+          "GNOCCHI",
+          "GNAW",
+          "GNAT"
+        ]
+      },
+      {
+        "theme": "HOMOPHONES",
+        "words": [
+          "KNEW",
+          "NEW",
+          "NU",
+          "GNU"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "14": {
+    "gameId": 14,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "BEDS",
+        "words": [
+          "CANOPY",
+          "MURPHY",
+          "BUNK",
+          "TRUNDLE"
+        ]
+      },
+      {
+        "theme": "FAMOUS BROTHERS",
+        "words": [
+          "MARX",
+          "WRIGHT",
+          "JONAS",
+          "WARNER"
+        ]
+      },
+      {
+        "theme": "HONDAS",
+        "words": [
+          "PASSPORT",
+          "PILOT",
+          "ACCORD",
+          "CIVIC"
+        ]
+      },
+      {
+        "theme": "VIDEO GAME CHARACTERS",
+        "words": [
+          "LINK",
+          "SONIC",
+          "CRASH",
+          "MARIO"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "15": {
+    "gameId": 15,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "BIRD SOUNDS",
+        "words": [
+          "TWEET",
+          "CAW",
+          "CHIRP",
+          "CLUCK"
+        ]
+      },
+      {
+        "theme": "COLORS",
+        "words": [
+          "BROWN",
+          "PINK",
+          "VIOLET",
+          "TURQUOISE"
+        ]
+      },
+      {
+        "theme": "FISHING GEAR",
+        "words": [
+          "ROD",
+          "TACKLE",
+          "REEL",
+          "LURE"
+        ]
+      },
+      {
+        "theme": "FICTIONAL PIRATES",
+        "words": [
+          "SILVER",
+          "SPARROW",
+          "HOOK",
+          "JONES"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "16": {
+    "gameId": 16,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "COFFEE DRINKS",
+        "words": [
+          "ESPRESSO",
+          "LATTE",
+          "AMERICANO",
+          "CAPPUCCINO"
+        ]
+      },
+      {
+        "theme": "TREE NUTS",
+        "words": [
+          "ALMOND",
+          "PECAN",
+          "WALNUT",
+          "CASHEW"
+        ]
+      },
+      {
+        "theme": "SHADES OF GREEN",
+        "words": [
+          "FOREST",
+          "KELLY",
+          "EMERALD",
+          "OLIVE"
+        ]
+      },
+      {
+        "theme": "MR. ___",
+        "words": [
+          "BEAN",
+          "CLEAN",
+          "PEANUT",
+          "FOX"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "17": {
+    "gameId": 17,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "NECKWEAR",
+        "words": [
+          "SCARF",
+          "ASCOT",
+          "BOLO",
+          "TIE"
+        ]
+      },
+      {
+        "theme": "SHIP DIRECTIONS",
+        "words": [
+          "STERN",
+          "BOW",
+          "PORT",
+          "STARBOARD"
+        ]
+      },
+      {
+        "theme": "DETERGENTS",
+        "words": [
+          "TIDE",
+          "GAIN",
+          "ERA",
+          "ALL"
+        ]
+      },
+      {
+        "theme": "___ TRIANGLE",
+        "words": [
+          "BERMUDA",
+          "LOVE",
+          "RIGHT",
+          "ACUTE"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "18": {
+    "gameId": 18,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "\"MUSCLES, INFORMALLY\"",
+        "words": [
+          "QUAD",
+          "LAT",
+          "TRI",
+          "PEC"
+        ]
+      },
+      {
+        "theme": "AWARDS",
+        "words": [
+          "CUP",
+          "RIBBON",
+          "MEDAL",
+          "TROPHY"
+        ]
+      },
+      {
+        "theme": "TITLE TV DOCTORS",
+        "words": [
+          "GREY",
+          "HOUSE",
+          "QUINN",
+          "HOWSER"
+        ]
+      },
+      {
+        "theme": "NFL PLAYERS",
+        "words": [
+          "BILL",
+          "BEAR",
+          "COMMANDER",
+          "BROWN"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "19": {
+    "gameId": 19,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "OFF-WHITE SHADES",
+        "words": [
+          "CREAM",
+          "EGGSHELL",
+          "VANILLA",
+          "IVORY"
+        ]
+      },
+      {
+        "theme": "ANTI-VAMPIRE",
+        "words": [
+          "GARLIC",
+          "MIRROR",
+          "STAKE",
+          "CRUCIFIX"
+        ]
+      },
+      {
+        "theme": "KINDS OF MEAT",
+        "words": [
+          "PORK",
+          "BEEF",
+          "POULTRY",
+          "VENISON"
+        ]
+      },
+      {
+        "theme": "SYNONYMS FOR ARGUMENT",
+        "words": [
+          "ROW",
+          "SPAT",
+          "TIFF",
+          "QUARREL"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "20": {
+    "gameId": 20,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "GRAINS",
+        "words": [
+          "OAT",
+          "BARLEY",
+          "SPELT",
+          "RYE"
+        ]
+      },
+      {
+        "theme": "ROYAL AND NOBLE TITLES",
+        "words": [
+          "KING",
+          "EARL",
+          "BARON",
+          "PRINCE"
+        ]
+      },
+      {
+        "theme": "UNIVERSITIES",
+        "words": [
+          "RICE",
+          "DUKE",
+          "BROWN",
+          "HOWARD"
+        ]
+      },
+      {
+        "theme": "BEST DIRECTOR OSCAR WINNERS",
+        "words": [
+          "STONE",
+          "BONG",
+          "FORD",
+          "LEE"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "21": {
+    "gameId": 21,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "MUSIC GENRES",
+        "words": [
+          "POP",
+          "RAP",
+          "JAZZ",
+          "PUNK"
+        ]
+      },
+      {
+        "theme": "WEB BROWSERS",
+        "words": [
+          "OPERA",
+          "SAFARI",
+          "CHROME",
+          "EDGE"
+        ]
+      },
+      {
+        "theme": "“LITTLE WOMEN” SISTERS",
+        "words": [
+          "JO",
+          "MEG",
+          "BETH",
+          "AMY"
+        ]
+      },
+      {
+        "theme": "LIL ___ RAPPERS",
+        "words": [
+          "BABY",
+          "WAYNE",
+          "KIM",
+          "JON"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "22": {
+    "gameId": 22,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "DOG BREEDS",
+        "words": [
+          "BOXER",
+          "HUSKY",
+          "DALMATIAN",
+          "POODLE"
+        ]
+      },
+      {
+        "theme": "ANIMAL NOSES",
+        "words": [
+          "TRUNK",
+          "MUZZLE",
+          "SNOUT",
+          "BEAK"
+        ]
+      },
+      {
+        "theme": "TRAFFIC SIGNS",
+        "words": [
+          "STOP",
+          "YIELD",
+          "DETOUR",
+          "SLOW"
+        ]
+      },
+      {
+        "theme": "SOUND ___",
+        "words": [
+          "BITE",
+          "WAVE",
+          "BARRIER",
+          "ASLEEP"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "23": {
+    "gameId": 23,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "\u002760S BAND MEMBERS",
+        "words": [
+          "BEACH BOY",
+          "BEATLE",
+          "BYRD",
+          "MONKEE"
+        ]
+      },
+      {
+        "theme": "DANCE FADS",
+        "words": [
+          "TWIST",
+          "MASHED POTATO",
+          "DOUGIE",
+          "MACARENA"
+        ]
+      },
+      {
+        "theme": "MAGAZINES",
+        "words": [
+          "ROLLING STONE",
+          "WIRED",
+          "FORTUNE",
+          "VOGUE"
+        ]
+      },
+      {
+        "theme": "THINGS WITH LINKS",
+        "words": [
+          "CHAIN",
+          "WEBSITE",
+          "SAUSAGE",
+          "GOLF COURSE"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "24": {
+    "gameId": 24,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "CANDY BARS",
+        "words": [
+          "MILKY WAY",
+          "BOUNTY",
+          "CRUNCH",
+          "HEATH"
+        ]
+      },
+      {
+        "theme": "VIDEO GAME CONSOLES",
+        "words": [
+          "GENESIS",
+          "SWITCH",
+          "WII",
+          "DREAMCAST"
+        ]
+      },
+      {
+        "theme": "EAR PARTS",
+        "words": [
+          "HAMMER",
+          "ANVIL",
+          "STIRRUP",
+          "COCHLEA"
+        ]
+      },
+      {
+        "theme": "BAND NAMES MINUS NUMBERS",
+        "words": [
+          "SUM",
+          "MAROON",
+          "U",
+          "BLINK"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "25": {
+    "gameId": 25,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "DESSERTS",
+        "words": [
+          "MOUSSE",
+          "FLAN",
+          "TIRAMISU",
+          "CHEESECAKE"
+        ]
+      },
+      {
+        "theme": "MILD OATHS",
+        "words": [
+          "FUDGE",
+          "SHOOT",
+          "HECK",
+          "DARN"
+        ]
+      },
+      {
+        "theme": "ANIMALS WITH TUSKS",
+        "words": [
+          "ELEPHANT",
+          "NARWHAL",
+          "HIPPO",
+          "WARTHOG"
+        ]
+      },
+      {
+        "theme": "MUSTACHES",
+        "words": [
+          "WALRUS",
+          "HORSESHOE",
+          "PENCIL",
+          "HANDLEBAR"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "26": {
+    "gameId": 26,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "EUROPEAN COUNTRIES",
+        "words": [
+          "POLAND",
+          "GREECE",
+          "PORTUGAL",
+          "DENMARK"
+        ]
+      },
+      {
+        "theme": "SYNONYMS FOR IMITATE",
+        "words": [
+          "PARROT",
+          "MIMIC",
+          "ECHO",
+          "COPY"
+        ]
+      },
+      {
+        "theme": "TOMS",
+        "words": [
+          "PETTY",
+          "CRUISE",
+          "HOLLAND",
+          "WAITS"
+        ]
+      },
+      {
+        "theme": "WORDS SPELLED WITH ROMAN NUMERALS",
+        "words": [
+          "MIX",
+          "MILD",
+          "LIVID",
+          "DILL"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "27": {
+    "gameId": 27,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "HATS",
+        "words": [
+          "BERET",
+          "FEZ",
+          "BOWLER",
+          "FEDORA"
+        ]
+      },
+      {
+        "theme": "ORGANS",
+        "words": [
+          "HEART",
+          "KIDNEY",
+          "LIVER",
+          "LUNG"
+        ]
+      },
+      {
+        "theme": "PARTS OF A BOOK",
+        "words": [
+          "SPINE",
+          "JACKET",
+          "COVER",
+          "PAGE"
+        ]
+      },
+      {
+        "theme": "JACK ___",
+        "words": [
+          "POT",
+          "ASS",
+          "RABBIT",
+          "KNIFE"
+        ]
+      }
+    ],
+    "playerStates": {}
   }
 }
