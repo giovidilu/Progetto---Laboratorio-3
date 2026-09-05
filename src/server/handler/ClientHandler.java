@@ -17,6 +17,7 @@ import common.protocol.response.ResponseCode;
 import common.protocol.response.ServerResponse;
 import common.protocol.response.payload.GameInfoPayload;
 import common.protocol.response.payload.GameStatsPayload;
+import common.protocol.response.payload.LeaderboardPayload;
 import server.repository.GameRepository;
 import server.repository.UserRepository;
 import server.service.GameManager;
@@ -326,7 +327,33 @@ public class ClientHandler implements Runnable {
     }
 
     private ServerResponse<?> handleRequestLeaderboard(JsonObject request) {
-        return ServerResponse.failWithMessage(ResponseCode.INTERNAL_SERVER_ERROR, "handleRequestLeaderboard non ancora implementato");
+        // 1. Controllo di autenticazione
+        if (this.loggedInUsername == null) {
+            return ServerResponse.failWithMessage(ResponseCode.NOT_LOGGED_IN, "Operazione non consentita: utente non autenticato.");
+        }
+
+        // 2. Deserializzazione e validazione di protocollo tramite il DTO LeaderboardRequest
+        common.dto.LeaderboardRequest leaderboardReq = gson.fromJson(request, common.dto.LeaderboardRequest.class);
+        if (leaderboardReq == null || !leaderboardReq.isValid()) {
+            return ServerResponse.failWithMessage(ResponseCode.BAD_REQUEST, "Parametri della richiesta classifica non validi o malformati.");
+        }
+
+        // 3. Interrogazione del GameManager utilizzando il metodo corretto getTopPlayer()
+        LeaderboardPayload payload = this.gameManager.getLeaderboard(
+            leaderboardReq.getTopPlayer(), 
+            leaderboardReq.getPlayerName()
+        );
+
+        // 4. Controllo sull'esistenza del giocatore specifico (se era stato richiesto)
+        if (payload == null && leaderboardReq.getPlayerName() != null && !leaderboardReq.getPlayerName().isBlank()) {
+            return ServerResponse.failWithMessage(
+                ResponseCode.PLAYER_NOT_FOUND, 
+                "Giocatore non trovato nella classifica: " + leaderboardReq.getPlayerName()
+            );
+        }
+
+        // 5. Restituzione del successo con il payload della classifica
+        return ServerResponse.successWithPayload(ResponseCode.SUCCESS, payload);
     }
 
     private ServerResponse<?> handleRequestPlayerStats(JsonObject request) {
