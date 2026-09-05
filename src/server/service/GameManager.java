@@ -11,6 +11,7 @@ import common.model.WordGroup;
 import common.protocol.response.payload.GameInfoPayload;
 import common.protocol.response.payload.GameStatsPayload;
 import server.repository.GameRepository;
+import server.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,6 +35,7 @@ public class GameManager {
 
     private final Map<Integer, GameTemplate> templates;
     private final GameRepository gameRepository;
+    private final UserRepository userRepository;
     private final long gameDurationMillis;
     private final ConcurrentHashMap<String, PlayerGameState> activePlayerStates;
 
@@ -43,12 +45,13 @@ public class GameManager {
     private int currentGameId;
     private Game activeGame;
 
-    public GameManager(Map<Integer, GameTemplate> templates, GameRepository gameRepository, long gameDurationMillis) {
+    public GameManager(Map<Integer, GameTemplate> templates, GameRepository gameRepository, UserRepository userRepository, long gameDurationMillis) {
         if (templates == null || templates.isEmpty()) {
             throw new IllegalArgumentException("La mappa dei template non può essere nulla o vuota.");
         }
         this.templates = Collections.unmodifiableMap(templates);
         this.gameRepository = Objects.requireNonNull(gameRepository, "gameRepository non può essere null");
+        this.userRepository = Objects.requireNonNull(userRepository, "userRepository non può essere null");
         this.gameDurationMillis = gameDurationMillis;
         this.activePlayerStates = new ConcurrentHashMap<>();
 

@@ -62,6 +62,7 @@ public class ServerMain {
         this.gameManager = new GameManager(
             templates, 
             this.gameRepository, 
+            this.userRepository,
             gameDurationMillis
         );
 
