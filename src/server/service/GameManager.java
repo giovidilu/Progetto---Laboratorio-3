@@ -7,6 +7,7 @@ import common.model.GameTemplate;
 import common.model.MoveOutcome;
 import common.model.PlayerGameState;
 import common.model.ProposalResult;
+import common.model.User;
 import common.model.WordGroup;
 import common.protocol.response.payload.GameInfoPayload;
 import common.protocol.response.payload.GameStatsPayload;
@@ -279,7 +280,7 @@ public class GameManager {
         }
     }
 
-    /**
+   /**
      * Consolida e archivia lo stato della partita corrente in GameRepository,
      * calcolando le statistiche aggregate ed avviando il round successivo.
      *
@@ -326,7 +327,18 @@ public class GameManager {
 
         this.gameRepository.addGameRecord(finishedRecord);
 
-        // 5. Avvio della nuova partita e pulizia di activePlayerStates
+        // 5. Aggiornamento delle statistiche persistenti dei giocatori
+        for (PlayerGameState state : playerStatesSnapshot.values()) {
+            User user = this.userRepository.getUser(state.getUsername());
+            if (user != null) {
+                GameOutcome finalOutcome = (state.getOutcome() != null)
+                        ? state.getOutcome()
+                        : GameOutcome.DID_NOT_FINISH;
+                user.getStats().recordGameResult(finalOutcome, state.getMistakes(), state.getScore());
+            }
+        }
+
+        // 6. Avvio della nuova partita e pulizia di activePlayerStates
         startNewActiveGame();
 
         return finishedRecord;
