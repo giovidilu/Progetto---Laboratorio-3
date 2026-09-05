@@ -11,6 +11,8 @@ import common.model.User;
 import common.model.WordGroup;
 import common.protocol.response.payload.GameInfoPayload;
 import common.protocol.response.payload.GameStatsPayload;
+import common.protocol.response.payload.LeaderboardEntry;
+import common.protocol.response.payload.LeaderboardPayload;
 import server.repository.GameRepository;
 import server.repository.UserRepository;
 
@@ -20,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -380,6 +383,59 @@ public class GameManager {
             record.getAverageScore()
         );
     }
+
+    /**
+    * Calcola la classifica globale ordinata per punteggio totale decrescente.
+    *
+    * @param topPlayers Numero di posizioni di vertice da includere (se null o <= 0, include tutti).
+    * @param playerName Nome del giocatore di cui recuperare la posizione specifica (opzionale).
+    * @return LeaderboardPayload popolato con la classifica e l'eventuale entry dell'utente,
+    *         oppure null se playerName è valorizzato ma l'utente non esiste nel repository
+    *         (coerentemente con getGameInfoForPlayer/getGameStats: è compito del chiamante,
+    *         ClientHandler, tradurre il null in ResponseCode.PLAYER_NOT_FOUND).
+    */
+    public synchronized LeaderboardPayload getLeaderboard(Integer topPlayers, String playerName) {
+        // 1. Recupero di tutti gli utenti registrati (copia difensiva, sicura da ordinare)
+        List<User> allUsers = this.userRepository.getAllUsers();
+
+        // 2. Ordinamento decrescente per punteggio totale, secondario alfabetico per stabilità
+        allUsers.sort((u1, u2) -> {
+            int scoreCompare = Integer.compare(u2.getStats().getTotalScore(), u1.getStats().getTotalScore());
+            if (scoreCompare != 0) {
+                return scoreCompare;
+            }
+            return u1.getUsername().compareTo(u2.getUsername());
+        });
+
+        // 3. Costruzione delle entry con calcolo del rank ordinale (1-based)
+        List<LeaderboardEntry> fullLeaderboard = new ArrayList<>();
+        LeaderboardEntry targetUserEntry = null;
+        for (int i = 0; i < allUsers.size(); i++) {
+            User user = allUsers.get(i);
+            int rank = i + 1;
+            LeaderboardEntry entry = new LeaderboardEntry(rank, user.getUsername(), user.getStats().getTotalScore());
+            fullLeaderboard.add(entry);
+            if (playerName != null && playerName.equals(user.getUsername())) {
+                targetUserEntry = entry;
+            }
+        }
+
+        // 4. Validazione del parametro playerName: se richiesto ma non trovato, segnala con null
+        if (playerName != null && targetUserEntry == null) {
+            return null;
+        }
+
+        // 5. Filtraggio top K se richiesto
+        List<LeaderboardEntry> finalLeaderboard;
+        if (topPlayers != null && topPlayers > 0 && topPlayers < fullLeaderboard.size()) {
+            finalLeaderboard = new ArrayList<>(fullLeaderboard.subList(0, topPlayers));
+        } else {
+            finalLeaderboard = fullLeaderboard;
+        }
+
+        return new LeaderboardPayload(finalLeaderboard, targetUserEntry);
+    }
+
 
     public synchronized int getCurrentGameId() {
         return this.currentGameId;
