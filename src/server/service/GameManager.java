@@ -4,15 +4,19 @@ import common.model.Game;
 import common.model.GameOutcome;
 import common.model.GameRecord;
 import common.model.GameTemplate;
+import common.model.MistakeHistogramData;
 import common.model.MoveOutcome;
 import common.model.PlayerGameState;
 import common.model.ProposalResult;
 import common.model.User;
+import common.model.UserStats;
 import common.model.WordGroup;
 import common.protocol.response.payload.GameInfoPayload;
 import common.protocol.response.payload.GameStatsPayload;
 import common.protocol.response.payload.LeaderboardEntry;
 import common.protocol.response.payload.LeaderboardPayload;
+import common.protocol.response.payload.MistakeHistogram;
+import common.protocol.response.payload.PlayerStatsPayload;
 import server.repository.GameRepository;
 import server.repository.UserRepository;
 
@@ -427,7 +431,7 @@ public class GameManager {
             }
             return new LeaderboardPayload(Collections.singletonList(targetUserEntry));
         }
-    
+
         // 5. Altrimenti, classifica generale (eventualmente troncata ai primi K)
         List<LeaderboardEntry> finalLeaderboard;
         if (topPlayers != null && topPlayers > 0 && topPlayers < fullLeaderboard.size()) {
@@ -435,9 +439,39 @@ public class GameManager {
         } else {
             finalLeaderboard = fullLeaderboard;
         }
-    
+
         return new LeaderboardPayload(finalLeaderboard);
     }
+
+    public synchronized PlayerStatsPayload getPlayerStats(String username) {
+    User user = userRepository.getUser(username);
+    if (user == null) {
+        return null;
+    }
+
+    UserStats stats = user.getStats();
+    MistakeHistogramData domainHist = stats.getMistakeHistogramData();
+
+    MistakeHistogram payloadHist = new MistakeHistogram(
+        domainHist.getSolvedWith0Mistakes(),
+        domainHist.getSolvedWith1Mistake(),
+        domainHist.getSolvedWith2Mistakes(),
+        domainHist.getSolvedWith3Mistakes(),
+        domainHist.getSolvedWith4Mistakes(),
+        domainHist.getFailed(),
+        domainHist.getNotFinished()
+    );
+
+    return new PlayerStatsPayload(
+        stats.getPuzzlesCompleted(),
+        stats.getWinRate(),
+        stats.getLossRate(),
+        stats.getCurrentStreak(),
+        stats.getMaxStreak(),
+        stats.getPerfectPuzzles(),
+        payloadHist
+    );
+}
 
 
     public synchronized int getCurrentGameId() {
