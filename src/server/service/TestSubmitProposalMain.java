@@ -7,6 +7,7 @@ import common.model.ProposalResult;
 import common.model.WordGroup;
 import server.repository.GameRepository;
 import server.repository.GameTemplateLoader;
+import server.repository.UserRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,18 +25,25 @@ public class TestSubmitProposalMain {
         System.out.println("=== TEST ISOLAMENTO: GameManager (submitProposal - 6 Casi di Specifica) ===");
 
         String testRepoPath = "data/test_submit_proposal.json";
+        String testUserPath = "data/test_users_submit.json";
         File testFile = new File(testRepoPath);
+        File testUserFile = new File(testUserPath);
+
         if (testFile.exists()) {
             testFile.delete();
+        }
+        if (testUserFile.exists()) {
+            testUserFile.delete();
         }
 
         try {
             // 1. Inizializzazione dell'ambiente di test
             GameTemplateLoader templateLoader = new GameTemplateLoader();
-            Map<Integer, GameTemplate> templates = templateLoader.loadTemplates("Connections_Data.json");
+            Map<Integer, GameTemplate> templates = templateLoader.loadTemplates("data/Connections_Data.json");
             GameRepository gameRepo = new GameRepository(testRepoPath);
+            UserRepository userRepo = new UserRepository(testUserPath);
             long roundDuration = 60000L; // 60 secondi
-            GameManager gameManager = new GameManager(templates, gameRepo, roundDuration);
+            GameManager gameManager = new GameManager(templates, gameRepo, userRepo, roundDuration);
 
             // Estrazione dei 4 gruppi corretti del round attivo
             List<WordGroup> groups = gameManager.getActiveGame().getGameTemplate().getGroups();
@@ -99,8 +107,8 @@ public class TestSubmitProposalMain {
             // =========================================================================
             // CASO 5: Condizione di Vittoria (WON al 3° gruppo corretto)
             // =========================================================================
-            gameManager.submitProposal("alice", g1Words); // 2° gruppo -> score: 2 + 6 = 8
-            ProposalResult rWin = gameManager.submitProposal("alice", g2Words); // 3° gruppo -> score: 8 + 6 = 14[cite: 6]
+            gameManager.submitProposal("alice", g1Words);
+            ProposalResult rWin = gameManager.submitProposal("alice", g2Words);
 
             boolean caso5Ok = rWin.getMoveOutcome() == MoveOutcome.CORRECT
                     && rWin.getGameOutcome() == GameOutcome.WON
@@ -112,10 +120,10 @@ public class TestSubmitProposalMain {
             // =========================================================================
             // CASO 6: Condizione di Sconfitta (LOST_BY_MISTAKES al 4° errore su utente 'bob')
             // =========================================================================
-            gameManager.submitProposal("bob", mixedProposal); // 1° errore
-            gameManager.submitProposal("bob", mixedProposal); // 2° errore
-            gameManager.submitProposal("bob", mixedProposal); // 3° errore
-            ProposalResult rLost = gameManager.submitProposal("bob", mixedProposal); // 4° errore
+            gameManager.submitProposal("bob", mixedProposal);
+            gameManager.submitProposal("bob", mixedProposal);
+            gameManager.submitProposal("bob", mixedProposal);
+            ProposalResult rLost = gameManager.submitProposal("bob", mixedProposal);
 
             boolean caso6Ok = (rLost.getMoveOutcome() == MoveOutcome.WRONG)
                     && (rLost.getGameOutcome() == GameOutcome.LOST_BY_MISTAKES)
@@ -149,6 +157,9 @@ public class TestSubmitProposalMain {
         } finally {
             if (testFile.exists()) {
                 testFile.delete();
+            }
+            if (testUserFile.exists()) {
+                testUserFile.delete();
             }
         }
     }

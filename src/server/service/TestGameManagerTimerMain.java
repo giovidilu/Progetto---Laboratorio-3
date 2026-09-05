@@ -7,6 +7,7 @@ import common.model.ProposalResult;
 import common.model.WordGroup;
 import server.repository.GameRepository;
 import server.repository.GameTemplateLoader;
+import server.repository.UserRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,18 +24,25 @@ public class TestGameManagerTimerMain {
         System.out.println("=== TEST ISOLAMENTO: GameManager (Timer Automatico e Shutdown) ===");
 
         String testRepoPath = "data/test_game_manager_timer.json";
+        String testUserPath = "data/test_users_timer.json";
         File testFile = new File(testRepoPath);
+        File testUserFile = new File(testUserPath);
+
         if (testFile.exists()) {
             testFile.delete();
+        }
+        if (testUserFile.exists()) {
+            testUserFile.delete();
         }
 
         try {
             // 1. Inizializzazione con durata breve per il test (2000 ms)
             GameTemplateLoader templateLoader = new GameTemplateLoader();
-            Map<Integer, GameTemplate> templates = templateLoader.loadTemplates("Connections_Data.json");
+            Map<Integer, GameTemplate> templates = templateLoader.loadTemplates("data/Connections_Data.json");
             GameRepository gameRepo = new GameRepository(testRepoPath);
+            UserRepository userRepo = new UserRepository(testUserPath);
             long roundDuration = 2000L;
-            GameManager gameManager = new GameManager(templates, gameRepo, roundDuration);
+            GameManager gameManager = new GameManager(templates, gameRepo, userRepo, roundDuration);
 
             // 2. Avvio dello scheduler periodico
             gameManager.start();
@@ -92,6 +100,9 @@ public class TestGameManagerTimerMain {
         } finally {
             if (testFile.exists()) {
                 testFile.delete();
+            }
+            if (testUserFile.exists()) {
+                testUserFile.delete();
             }
         }
     }

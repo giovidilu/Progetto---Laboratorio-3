@@ -5,6 +5,7 @@ import common.protocol.response.GameState;
 import common.protocol.response.payload.GameInfoPayload;
 import server.repository.GameRepository;
 import server.repository.GameTemplateLoader;
+import server.repository.UserRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,21 +21,28 @@ public class TestGameManagerMain {
         System.out.println("=== TEST ISOLAMENTO: GameManager (getGameInfoForPlayer - Casi A e B) ===");
 
         String testRepoPath = "data/test_game_manager_info.json";
+        String testUserPath = "data/test_users_gameinfo.json";
         File testFile = new File(testRepoPath);
+        File testUserFile = new File(testUserPath);
+
         if (testFile.exists()) {
             testFile.delete();
+        }
+        if (testUserFile.exists()) {
+            testUserFile.delete();
         }
 
         try {
             // 1. Caricamento dei template
             GameTemplateLoader templateLoader = new GameTemplateLoader();
-            Map<Integer, GameTemplate> templates = templateLoader.loadTemplates("Connections_Data.json");
+            Map<Integer, GameTemplate> templates = templateLoader.loadTemplates("data/Connections_Data.json");
             System.out.println("[OK] Template caricati in memoria: " + templates.size());
 
             // 2. Inizializzazione Repository e GameManager
             GameRepository gameRepo = new GameRepository(testRepoPath);
+            UserRepository userRepo = new UserRepository(testUserPath);
             long roundDuration = 60000L; // 60 secondi
-            GameManager gameManager = new GameManager(templates, gameRepo, roundDuration);
+            GameManager gameManager = new GameManager(templates, gameRepo, userRepo, roundDuration);
 
             // ==========================================
             // CASO A: Giocatore nuovo su partita attiva (gameId == null e gameId == 1)
@@ -95,6 +103,9 @@ public class TestGameManagerMain {
         } finally {
             if (testFile.exists()) {
                 testFile.delete();
+            }
+            if (testUserFile.exists()) {
+                testUserFile.delete();
             }
         }
     }

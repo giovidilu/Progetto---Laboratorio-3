@@ -8,6 +8,7 @@ import common.protocol.response.GameState;
 import common.protocol.response.payload.GameInfoPayload;
 import server.repository.GameRepository;
 import server.repository.GameTemplateLoader;
+import server.repository.UserRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,18 +26,24 @@ public class TestGameManagerRotateMain {
         System.out.println("=== TEST ISOLAMENTO: GameManager (rotateGame e Consultazione Storica) ===");
 
         String testRepoPath = "data/test_game_manager_rotate.json";
+        String testUserPath = "data/test_users_rotate.json";
         File testFile = new File(testRepoPath);
+        File testUserFile = new File(testUserPath);
+
         if (testFile.exists()) {
             testFile.delete();
+        }
+        if (testUserFile.exists()) {
+            testUserFile.delete();
         }
 
         try {
             // 1. Inizializzazione di loader, repository e manager
             GameTemplateLoader templateLoader = new GameTemplateLoader();
-            Map<Integer, GameTemplate> templates = templateLoader.loadTemplates("Connections_Data.json");
-            GameRepository gameRepo = new GameRepository(testRepoPath);
+            Map<Integer, GameTemplate> templates = templateLoader.loadTemplates("data/Connections_Data.json");            GameRepository gameRepo = new GameRepository(testRepoPath);
+            UserRepository userRepo = new UserRepository(testUserPath);
             long roundDuration = 60000L; // 60 secondi
-            GameManager gameManager = new GameManager(templates, gameRepo, roundDuration);
+            GameManager gameManager = new GameManager(templates, gameRepo, userRepo, roundDuration);
 
             int initialGameId = gameManager.getCurrentGameId();
             List<WordGroup> groups = gameManager.getActiveGame().getGameTemplate().getGroups();
@@ -78,11 +85,6 @@ public class TestGameManagerRotateMain {
             GameRecord archivedRecord = gameRepo.getGameRecord(initialGameId);
             boolean recordExistsOk = (archivedRecord != null && archivedRecord == rotatedRecord);
 
-            // Metriche attese:
-            // - totalParticipants = 3 (alice, bob, charlie)
-            // - participantsFinished = 2 (alice per WON, charlie per LOST_BY_MISTAKES; bob era ancora in corso)
-            // - participantsWon = 1 (alice)
-            // - averageScore = (18 + 2 - 16) / 3 = 4 / 3 = 1.333...
             boolean statsOk = (archivedRecord != null)
                     && (archivedRecord.getGameId() == 1)
                     && (archivedRecord.getTotalParticipants() == 3)
@@ -98,7 +100,6 @@ public class TestGameManagerRotateMain {
             // =========================================================================
             // 5. Verifica getGameInfoForPlayer su partita storica (Caso C)
             // =========================================================================
-            // Consultazione per 'alice' (vincitrice)
             GameInfoPayload aliceHist = gameManager.getGameInfoForPlayer("alice", 1);
             boolean aliceHistOk = (aliceHist != null)
                     && (aliceHist.getState() == GameState.FINISHED)
@@ -107,7 +108,6 @@ public class TestGameManagerRotateMain {
                     && (aliceHist.getScore() == 18)
                     && (aliceHist.getFinalAllocation() != null && aliceHist.getFinalAllocation().size() == 4);
 
-            // Consultazione per 'bob' (interrotto dalla rotazione -> DNF)
             GameInfoPayload bobHist = gameManager.getGameInfoForPlayer("bob", 1);
             boolean bobHistOk = (bobHist != null)
                     && (bobHist.getState() == GameState.FINISHED)
@@ -116,7 +116,6 @@ public class TestGameManagerRotateMain {
                     && (bobHist.getScore() == 2)
                     && (bobHist.getFinalAllocation() != null && bobHist.getFinalAllocation().size() == 4);
 
-            // Consultazione per 'charlie' (sconfitto per errori)
             GameInfoPayload charlieHist = gameManager.getGameInfoForPlayer("charlie", 1);
             boolean charlieHistOk = (charlieHist != null)
                     && (charlieHist.getState() == GameState.FINISHED)
@@ -125,7 +124,6 @@ public class TestGameManagerRotateMain {
                     && (charlieHist.getScore() == -16)
                     && (charlieHist.getFinalAllocation() != null && charlieHist.getFinalAllocation().size() == 4);
 
-            // Consultazione per utente 'david' che non ha partecipato al Round 1
             GameInfoPayload davidHist = gameManager.getGameInfoForPlayer("david", 1);
             boolean davidHistOk = (davidHist != null)
                     && (davidHist.getState() == GameState.FINISHED)
@@ -164,6 +162,9 @@ public class TestGameManagerRotateMain {
         } finally {
             if (testFile.exists()) {
                 testFile.delete();
+            }
+            if (testUserFile.exists()) {
+                testUserFile.delete();
             }
         }
     }
