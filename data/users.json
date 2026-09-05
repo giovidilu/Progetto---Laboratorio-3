@@ -50,10 +50,10 @@
     "passwordHash": "2c824f47901bae5557352b1e9afe72a2d9d461a67f85cc5d87c1d8958e104452",
     "salt": "4m/EwCqMF9ies/Gk+eaXXQ\u003d\u003d",
     "stats": {
-      "totalScore": -10,
-      "gamesPlayed": 1,
+      "totalScore": -26,
+      "gamesPlayed": 2,
       "gamesWon": 0,
-      "gamesLost": 1,
+      "gamesLost": 2,
       "currentStreak": 0,
       "maxStreak": 0,
       "perfectPuzzle": 0,
@@ -63,7 +63,7 @@
         "solvedWith2Mistakes": 0,
         "solvedWith3Mistakes": 0,
         "solvedWith4Mistakes": 0,
-        "failed": 1,
+        "failed": 2,
         "notFinished": 0
       }
     }
