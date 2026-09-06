@@ -2,6 +2,7 @@ package client.cli;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.SocketException;
 import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Scanner;
 import com.google.gson.reflect.TypeToken;
 
 import client.network.ServerConnection;
+import client.network.UdpNotificationListener;
 import common.model.ProposalResult;
 import common.protocol.request.LoginRequest;
 import common.protocol.request.LogoutRequest;
@@ -32,7 +34,7 @@ import common.protocol.response.payload.MistakeHistogram;
 import common.protocol.response.payload.PlayerStatsPayload;
 
 /**
- * Interfaccia a riga di comando per l'interazione del giocatore con il sistema Connections[cite: 9, 10].
+ * Interfaccia a riga di comando per l'interazione del giocatore con il sistema Connections.
  */
 public class CommandLineInterface {
     private final ServerConnection serverConnection;
@@ -40,12 +42,14 @@ public class CommandLineInterface {
 
     private boolean loggedIn;
     private String currentUsername;
+    private UdpNotificationListener udpListener;
 
     public CommandLineInterface(ServerConnection serverConnection, Scanner scanner) {
         this.serverConnection = serverConnection;
         this.scanner = scanner;
         this.loggedIn = false;
         this.currentUsername = null;
+        this.udpListener = null;
     }
 
     public void run() {
@@ -69,6 +73,8 @@ public class CommandLineInterface {
             }
         }
         
+        // Pulizia finale risorse di rete asincrone in uscita
+        stopUdpListener();
         System.out.println("Chiusura del client in corso...");
     }
 
@@ -125,7 +131,16 @@ public class CommandLineInterface {
                     System.out.print("Password: ");
                     String psw = scanner.nextLine();
                     
-                    LoginRequest request = new LoginRequest(username, psw);
+                    // Inizializzazione del listener UDP prima dell'invio della richiesta
+                    try {
+                        this.udpListener = new UdpNotificationListener();
+                    } catch (SocketException e) {
+                        System.out.println("Errore nell'allocazione del socket UDP per le notifiche: " + e.getMessage());
+                        return true;
+                    }
+
+                    int localUdpPort = this.udpListener.getLocalPort();
+                    LoginRequest request = new LoginRequest(username, psw, localUdpPort);
                     
                     try {
                         serverConnection.sendRequest(request);
@@ -136,10 +151,13 @@ public class CommandLineInterface {
                         if (response.getStatus() == ResponseCode.SUCCESS) {
                             this.loggedIn = true;
                             this.currentUsername = username;
+                            
+                            // Avvio dell'ascolto asincrono in background
+                            this.udpListener.start();
+                            
                             System.out.println("Login effettuato con successo!");
                             
                             LoginPayload payload = response.getPayload();
-                            
                             if (payload != null) {
                                 System.out.println("Parole della partita: " + payload.getWords());
                                 System.out.println("Errori commessi: " + payload.getErrors());
@@ -147,17 +165,21 @@ public class CommandLineInterface {
                                 System.out.println("Punteggio corrente: " + payload.getScore());
                             }
                         } else {
+                            // Se il login fallisce, liberiamo il socket UDP allocato
+                            stopUdpListener();
                             System.out.println("Login fallito: " + response.getStatus());
                             if (response.getMessage() != null) {
                                 System.out.println("Dettaglio: " + response.getMessage());
                             }
                         }
                     } catch (IOException e) {
+                        stopUdpListener();
                         System.out.println("Errore di comunicazione con il server: " + e.getMessage());
                     }
                     return true;
                 }
                 case 0:
+                    stopUdpListener();
                     return false;
                     
                 default:
@@ -176,7 +198,6 @@ public class CommandLineInterface {
                     try {
                         serverConnection.sendRequest(request);
                         
-                        // Deserializzazione del payload tipizzato ProposalResult[cite: 1]
                         Type responseType = new TypeToken<ServerResponse<ProposalResult>>(){}.getType();
                         ServerResponse<ProposalResult> response = serverConnection.receiveResponse(responseType);
                         
@@ -244,6 +265,7 @@ public class CommandLineInterface {
                         if (response.getStatus() == ResponseCode.SUCCESS) {
                             this.loggedIn = false;
                             this.currentUsername = null;
+                            stopUdpListener();
                             System.out.println("Logout effettuato.");
                         } else {
                             System.out.println("Logout fallito: " + response.getStatus());
@@ -499,6 +521,13 @@ public class CommandLineInterface {
                     System.out.println("Opzione non valida. Riprova.");
                     return true;
             }
+        }
+    }
+
+    private void stopUdpListener() {
+        if (this.udpListener != null) {
+            this.udpListener.stop();
+            this.udpListener = null;
         }
     }
 }

@@ -1741,5 +1741,373 @@
       }
     ],
     "playerStates": {}
+  },
+  "38": {
+    "gameId": 38,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "TREES",
+        "words": [
+          "OAK",
+          "POPLAR",
+          "ASH",
+          "CEDAR"
+        ]
+      },
+      {
+        "theme": "LAND FORMATIONS",
+        "words": [
+          "MOUNTAIN",
+          "VALLEY",
+          "CANYON",
+          "PLATEAU"
+        ]
+      },
+      {
+        "theme": "BAGEL FLAVORS",
+        "words": [
+          "ONION",
+          "PLAIN",
+          "POPPY",
+          "EVERYTHING"
+        ]
+      },
+      {
+        "theme": "STREETS ON SCREEN",
+        "words": [
+          "ELM",
+          "JUMP",
+          "SESAME",
+          "FEAR"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "39": {
+    "gameId": 39,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "TIMEKEEPING DEVICES",
+        "words": [
+          "WATCH",
+          "CLOCK",
+          "SUNDIAL",
+          "HOURGLASS"
+        ]
+      },
+      {
+        "theme": "HAIRSTYLES",
+        "words": [
+          "BOB",
+          "CROP",
+          "PIXIE",
+          "SHAG"
+        ]
+      },
+      {
+        "theme": "UNITS OF MEASURE",
+        "words": [
+          "MOLE",
+          "SECOND",
+          "NEWTON",
+          "HERTZ"
+        ]
+      },
+      {
+        "theme": "DR. ___",
+        "words": [
+          "PEPPER",
+          "EVIL",
+          "NO",
+          "J"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "40": {
+    "gameId": 40,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "WOODWINDS",
+        "words": [
+          "FLUTE",
+          "CLARINET",
+          "BASSOON",
+          "OBOE"
+        ]
+      },
+      {
+        "theme": "COVERINGS",
+        "words": [
+          "LID",
+          "TOP",
+          "COVER",
+          "CAP"
+        ]
+      },
+      {
+        "theme": "SUNGLASSES",
+        "words": [
+          "AVIATOR",
+          "CAT EYE",
+          "WAYFARER",
+          "WRAPAROUND"
+        ]
+      },
+      {
+        "theme": "SEALS",
+        "words": [
+          "MONK",
+          "HARBOR",
+          "HARP",
+          "HOODED"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "41": {
+    "gameId": 41,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "BOTTLED WATER BRANDS",
+        "words": [
+          "FIJI",
+          "VOSS",
+          "DASANI",
+          "EVIAN"
+        ]
+      },
+      {
+        "theme": "SLANG FOR COFFEE",
+        "words": [
+          "MUD",
+          "JOE",
+          "BREW",
+          "JAVA"
+        ]
+      },
+      {
+        "theme": "ISLAND COUNTRIES",
+        "words": [
+          "PALAU",
+          "JAPAN",
+          "CUBA",
+          "MALTA"
+        ]
+      },
+      {
+        "theme": "CEREAL MASCOTS",
+        "words": [
+          "POP",
+          "SAM",
+          "TONY",
+          "LUCKY"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "42": {
+    "gameId": 42,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "SCUBA GEAR",
+        "words": [
+          "MASK",
+          "SNORKEL",
+          "TANK",
+          "FINS"
+        ]
+      },
+      {
+        "theme": "PUNCTUATION MARKS",
+        "words": [
+          "PERIOD",
+          "HYPHEN",
+          "COLON",
+          "COMMA"
+        ]
+      },
+      {
+        "theme": "RUN QUICKLY",
+        "words": [
+          "DASH",
+          "BOLT",
+          "RACE",
+          "SPRINT"
+        ]
+      },
+      {
+        "theme": "___ CAT",
+        "words": [
+          "JUNGLE",
+          "HOUSE",
+          "FAT",
+          "DOJA"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "43": {
+    "gameId": 43,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "SYNONYMS FOR ANGRY",
+        "words": [
+          "IRATE",
+          "FURIOUS",
+          "LIVID",
+          "INCENSED"
+        ]
+      },
+      {
+        "theme": "THINGS THAT ARE YELLOW",
+        "words": [
+          "CANARY",
+          "SCHOOL BUS",
+          "BANANA",
+          "SUNFLOWER"
+        ]
+      },
+      {
+        "theme": "MARINE BIRDS",
+        "words": [
+          "GULL",
+          "BOOBY",
+          "PELICAN",
+          "PUFFIN"
+        ]
+      },
+      {
+        "theme": "___ BOYS",
+        "words": [
+          "LOST",
+          "BEACH",
+          "BEASTIE",
+          "HARDY"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "44": {
+    "gameId": 44,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "STATES OF MATTER",
+        "words": [
+          "SOLID",
+          "PLASMA",
+          "GAS",
+          "LIQUID"
+        ]
+      },
+      {
+        "theme": "EDIT MENU COMMANDS",
+        "words": [
+          "PASTE",
+          "CUT",
+          "UNDO",
+          "COPY"
+        ]
+      },
+      {
+        "theme": "DEFEAT BADLY",
+        "words": [
+          "TRASH",
+          "CRUSH",
+          "SHELLAC",
+          "ROUT"
+        ]
+      },
+      {
+        "theme": "ANAGRAMS",
+        "words": [
+          "SLATE",
+          "TESLA",
+          "STALE",
+          "LEAST"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "45": {
+    "gameId": 45,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "MODES OF TRANSPORTATION",
+        "words": [
+          "PLANE",
+          "BOAT",
+          "CAR",
+          "TRAIN"
+        ]
+      },
+      {
+        "theme": "NBA PLAYERS",
+        "words": [
+          "SUN",
+          "THUNDER",
+          "KING",
+          "MAGIC"
+        ]
+      },
+      {
+        "theme": "FAST FOOD CHAINS",
+        "words": [
+          "SONIC",
+          "CHECKERS",
+          "SUBWAY",
+          "OUTBACK"
+        ]
+      },
+      {
+        "theme": "BAND NAMES MINUS COLORS",
+        "words": [
+          "DAY",
+          "STRIPES",
+          "FLOYD",
+          "SABBATH"
+        ]
+      }
+    ],
+    "playerStates": {}
   }
 }
