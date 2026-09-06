@@ -301,6 +301,7 @@ public class GameManager {
         List<WordGroup> allGroups = this.activeGame.getGameTemplate().getGroups();
         Map<String, PlayerGameState> playerStatesSnapshot = new HashMap<>(this.activePlayerStates);
 
+        // 1. Calcolo statistiche aggregate
         int totalParticipants = playerStatesSnapshot.size();
         int participantsFinished = 0;
         int participantsWon = 0;
@@ -321,8 +322,10 @@ public class GameManager {
                 ? ((double) totalScoreSum / totalParticipants)
                 : 0.0;
 
+        // 2. Creazione e archiviazione del GameRecord
+        int finishedGameId = this.currentGameId;
         GameRecord finishedRecord = new GameRecord(
-            this.currentGameId,
+            finishedGameId,
             totalParticipants,
             participantsFinished,
             participantsWon,
@@ -330,17 +333,19 @@ public class GameManager {
             allGroups,
             playerStatesSnapshot
         );
-
         this.gameRepository.addGameRecord(finishedRecord);
 
-        // Aggiornamento delle statistiche persistenti esclusivamente per chi è rimasto non concluso
+        // 3. Aggiornamento statistiche persistenti per chi non ha concluso
         for (PlayerGameState state : playerStatesSnapshot.values()) {
             if (state.getOutcome() == null) {
                 updateUserStats(state.getUsername(), GameOutcome.DID_NOT_FINISH, state.getMistakes(), state.getScore());
             }
         }
 
-        // 6. Invio delle notifiche asincrone UDP ai partecipanti al round
+        // 4. Avanzamento del ciclo di vita: inizializzazione della nuova partita attiva
+        startNewActiveGame();
+
+        // 5. Invio notifiche asincrone UDP: ora finishedGameId appartiene allo storico
         if (this.udpNotifier != null && this.sessionManager != null) {
             GameStatsPayload finishedStats = GameStatsPayload.finishedGame(
                 finishedRecord.getTotalParticipants(),
@@ -355,14 +360,14 @@ public class GameManager {
                 try {
                     InetSocketAddress endpoint = this.sessionManager.getUdpEndpoint(username);
                     if (endpoint != null) {
-                        GameInfoPayload playerInfo = getGameInfoForPlayer(username, finishedRecord.getGameId());
+                        // Invocazione che ora accede correttamente a record storico e soluzioni
+                        GameInfoPayload playerInfo = getGameInfoForPlayer(username, finishedGameId);
                         GameFinishedNotificationPayload notifPayload = new GameFinishedNotificationPayload(
-                            finishedRecord.getGameId(),
+                            finishedGameId,
                             playerInfo,
                             finishedStats
                         );
-                        String jsonMessage = gson.toJson(notifPayload);
-                        this.udpNotifier.sendNotification(endpoint, jsonMessage);
+                        this.udpNotifier.sendNotification(endpoint, gson.toJson(notifPayload));
                     }
                 } catch (Exception e) {
                     System.err.println("[GameManager] Invio notifica UDP fallito per " + username + ": " + e.getMessage());
@@ -370,11 +375,7 @@ public class GameManager {
             }
         }
 
-        // 7. Avvio della nuova partita e pulizia di activePlayerStates
-        startNewActiveGame();
-
         return finishedRecord;
-
     }
 
     public synchronized GameStatsPayload getGameStats(Integer gameId) {
