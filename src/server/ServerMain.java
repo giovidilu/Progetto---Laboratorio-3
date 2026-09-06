@@ -8,6 +8,7 @@ import server.repository.UserRepository;
 import server.service.GameManager;
 import server.service.PersistenceManager;
 import server.service.SessionManager;
+import server.service.UdpNotifier;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -31,6 +32,7 @@ public class ServerMain {
     private final UserRepository userRepository;
     private final GameRepository gameRepository;
     private final SessionManager sessionManager;
+    private final UdpNotifier udpNotifier;
     private final PersistenceManager persistenceManager;
     private final GameManager gameManager;
 
@@ -43,7 +45,7 @@ public class ServerMain {
      * inizializza le strutture dati condivise e il thread pool.
      *
      * @param config Configurazione caricata da file properties.
-     * @throws IOException Se il caricamento dei dati da disco fallisce.
+     * @throws IOException Se il caricamento dei dati da disco fallisce o se il bind UDP fallisce.
      */
     public ServerMain(ServerConfig config) throws IOException {
         this.config = config;
@@ -55,21 +57,26 @@ public class ServerMain {
         this.userRepository.loadFromDisk();
         this.gameRepository.loadFromDisk();
 
+        // 2. Caricamento template (firma reale: costruttore senza argomenti + loadTemplates(path))
         GameTemplateLoader templateLoader = new GameTemplateLoader();
-        Map<Integer,GameTemplate> templates = templateLoader.loadTemplates(config.getWordsFilePath());
+        Map<Integer, GameTemplate> templates = templateLoader.loadTemplates(config.getWordsFilePath());
 
+        // 3. Inizializzazione gestore sessioni e canale UDP per notifiche asincrone
+        this.sessionManager = new SessionManager();
+        this.udpNotifier = new UdpNotifier(config.getUdpPort());
+
+        // 4. Inizializzazione GameManager con costruttore completo a 6 parametri
         long gameDurationMillis = TimeUnit.MINUTES.toMillis(config.getGameDurationMinutes());
         this.gameManager = new GameManager(
             templates, 
             this.gameRepository, 
             this.userRepository,
+            this.sessionManager,
+            this.udpNotifier,
             gameDurationMillis
         );
 
-        // 2. Inizializzazione del gestore delle sessioni attive
-        this.sessionManager = new SessionManager();
-
-        // 3. Inizializzazione del gestore del salvataggio periodico su disco
+        // 5. Inizializzazione del gestore del salvataggio periodico su disco
         this.persistenceManager = new PersistenceManager(
             this.userRepository,
             this.gameRepository,
@@ -77,7 +84,7 @@ public class ServerMain {
             TimeUnit.MINUTES
         );
 
-        // 4. Thread pool dinamico per gestire i thread worker dei client
+        // 6. Thread pool dinamico per gestire i thread worker dei client
         this.clientThreadPool = Executors.newCachedThreadPool();
         this.running = true;
     }
@@ -93,9 +100,9 @@ public class ServerMain {
 
         // Apertura del socket TCP sulla porta configurata
         this.serverSocket = new ServerSocket(config.getTcpPort());
-        System.out.println("[SERVER] In ascolto sulla porta TCP: " + config.getTcpPort());
+        System.out.println("[SERVER] In ascolto sulla porta TCP: " + config.getTcpPort() + " e porta UDP: " + config.getUdpPort());
 
-        // Avvio del timer periodico per la persistenza
+        // Avvio dei timer periodici per persistenza e turni di gioco
         this.persistenceManager.start();
         this.gameManager.start();
 
@@ -103,7 +110,6 @@ public class ServerMain {
         runServerLoop();
     }
 
-    
     private void runServerLoop() {
         while (running) {
             try {
@@ -137,6 +143,7 @@ public class ServerMain {
             System.out.println("\n[SHUTDOWN] Arresto del server avviato...");
             this.running = false;
 
+            // 1. Chiusura del ServerSocket TCP per non accettare nuove connessioni
             if (serverSocket != null && !serverSocket.isClosed()) {
                 try {
                     serverSocket.close();
@@ -145,6 +152,7 @@ public class ServerMain {
                 }
             }
 
+            // 2. Chiusura del thread pool dei client
             clientThreadPool.shutdown();
             try {
                 if (!clientThreadPool.awaitTermination(5, TimeUnit.SECONDS)) {
@@ -155,8 +163,20 @@ public class ServerMain {
                 Thread.currentThread().interrupt();
             }
 
-            gameManager.stop();
-            persistenceManager.stop();
+            // 3. Arresto di GameManager prima del socket UDP
+            if (gameManager != null) {
+                gameManager.stop();
+            }
+
+            // 4. Chiusura del socket UDP del server
+            if (udpNotifier != null) {
+                udpNotifier.close();
+            }
+
+            // 5. Arresto e flush finale su disco
+            if (persistenceManager != null) {
+                persistenceManager.stop();
+            }
 
             System.out.println("[SHUTDOWN] Server terminato correttamente.");
         }));
