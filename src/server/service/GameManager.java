@@ -11,6 +11,7 @@ import common.model.ProposalResult;
 import common.model.User;
 import common.model.UserStats;
 import common.model.WordGroup;
+import common.protocol.response.payload.GameFinishedNotificationPayload;
 import common.protocol.response.payload.GameInfoPayload;
 import common.protocol.response.payload.GameStatsPayload;
 import common.protocol.response.payload.LeaderboardEntry;
@@ -20,6 +21,7 @@ import common.protocol.response.payload.PlayerStatsPayload;
 import server.repository.GameRepository;
 import server.repository.UserRepository;
 
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,6 +35,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.google.gson.Gson;
+
 /**
  * Gestore centralizzato del ciclo di vita del gioco Connections.
  * Mantiene lo stato della partita attiva e fornisce l'accesso allo stato
@@ -45,6 +49,8 @@ public class GameManager {
     private final UserRepository userRepository;
     private final long gameDurationMillis;
     private final ConcurrentHashMap<String, PlayerGameState> activePlayerStates;
+    private  final SessionManager sessionManager;
+    private  final UdpNotifier udpNotifier;
 
     private ScheduledExecutorService scheduler;
     private final Object lifecycleLock = new Object();
@@ -52,17 +58,31 @@ public class GameManager {
     private int currentGameId;
     private Game activeGame;
 
-    public GameManager(Map<Integer, GameTemplate> templates, GameRepository gameRepository, UserRepository userRepository, long gameDurationMillis) {
+    public GameManager(Map<Integer, GameTemplate> templates, 
+                       GameRepository gameRepository, 
+                       UserRepository userRepository, 
+                       SessionManager sessionManager, 
+                       UdpNotifier udpNotifier, 
+                       long gameDurationMillis) {
         if (templates == null || templates.isEmpty()) {
             throw new IllegalArgumentException("La mappa dei template non può essere nulla o vuota.");
         }
         this.templates = Collections.unmodifiableMap(templates);
         this.gameRepository = Objects.requireNonNull(gameRepository, "gameRepository non può essere null");
         this.userRepository = Objects.requireNonNull(userRepository, "userRepository non può essere null");
+        this.sessionManager = sessionManager;
+        this.udpNotifier = udpNotifier;
         this.gameDurationMillis = gameDurationMillis;
         this.activePlayerStates = new ConcurrentHashMap<>();
 
         startNewActiveGame();
+    }
+
+    public GameManager(Map<Integer, GameTemplate> templates, 
+                       GameRepository gameRepository, 
+                       UserRepository userRepository, 
+                       long gameDurationMillis) {
+        this(templates, gameRepository, userRepository, null, null, gameDurationMillis);
     }
 
     public synchronized void startNewActiveGame() {
@@ -320,9 +340,41 @@ public class GameManager {
             }
         }
 
+        // 6. Invio delle notifiche asincrone UDP ai partecipanti al round
+        if (this.udpNotifier != null && this.sessionManager != null) {
+            GameStatsPayload finishedStats = GameStatsPayload.finishedGame(
+                finishedRecord.getTotalParticipants(),
+                finishedRecord.getParticipantsFinished(),
+                finishedRecord.getParticipantsWon(),
+                finishedRecord.getAverageScore()
+            );
+
+            Gson gson = new Gson();
+
+            for (String username : playerStatesSnapshot.keySet()) {
+                try {
+                    InetSocketAddress endpoint = this.sessionManager.getUdpEndpoint(username);
+                    if (endpoint != null) {
+                        GameInfoPayload playerInfo = getGameInfoForPlayer(username, finishedRecord.getGameId());
+                        GameFinishedNotificationPayload notifPayload = new GameFinishedNotificationPayload(
+                            finishedRecord.getGameId(),
+                            playerInfo,
+                            finishedStats
+                        );
+                        String jsonMessage = gson.toJson(notifPayload);
+                        this.udpNotifier.sendNotification(endpoint, jsonMessage);
+                    }
+                } catch (Exception e) {
+                    System.err.println("[GameManager] Invio notifica UDP fallito per " + username + ": " + e.getMessage());
+                }
+            }
+        }
+
+        // 7. Avvio della nuova partita e pulizia di activePlayerStates
         startNewActiveGame();
 
         return finishedRecord;
+
     }
 
     public synchronized GameStatsPayload getGameStats(Integer gameId) {
