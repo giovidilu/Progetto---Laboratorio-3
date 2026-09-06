@@ -1465,5 +1465,281 @@
       }
     ],
     "playerStates": {}
+  },
+  "32": {
+    "gameId": 32,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "SHOE PARTS",
+        "words": [
+          "SOLE",
+          "TONGUE",
+          "LACE",
+          "HEEL"
+        ]
+      },
+      {
+        "theme": "BOARD GAMES",
+        "words": [
+          "TROUBLE",
+          "SORRY",
+          "CLUE",
+          "RISK"
+        ]
+      },
+      {
+        "theme": "FICTIONAL SPIES",
+        "words": [
+          "HUNT",
+          "SMART",
+          "BOND",
+          "RYAN"
+        ]
+      },
+      {
+        "theme": "RUBBER ___",
+        "words": [
+          "CEMENT",
+          "SOUL",
+          "BAND",
+          "DUCKIE"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "33": {
+    "gameId": 33,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "BOATS",
+        "words": [
+          "TUG",
+          "JUNK",
+          "FERRY",
+          "YACHT"
+        ]
+      },
+      {
+        "theme": "SANDWICHES",
+        "words": [
+          "CLUB",
+          "SUB",
+          "CUBAN",
+          "MELT"
+        ]
+      },
+      {
+        "theme": "CUTS OF BEEF",
+        "words": [
+          "SHANK",
+          "FLANK",
+          "LOIN",
+          "ROUND"
+        ]
+      },
+      {
+        "theme": "NICKNAMES THAT ARE VERBS",
+        "words": [
+          "CHUCK",
+          "ROB",
+          "SUE",
+          "JOSH"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "34": {
+    "gameId": 34,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "PLEASANT SMELLS",
+        "words": [
+          "BOUQUET",
+          "SCENT",
+          "FRAGRANCE",
+          "AROMA"
+        ]
+      },
+      {
+        "theme": "MUSIC GENRES",
+        "words": [
+          "FUNK",
+          "COUNTRY",
+          "SOUL",
+          "BLUES"
+        ]
+      },
+      {
+        "theme": "ROCK PAPER SCISSORS",
+        "words": [
+          "ROCK",
+          "SHOOT",
+          "SCISSORS",
+          "PAPER"
+        ]
+      },
+      {
+        "theme": "MALE ANIMALS",
+        "words": [
+          "BUCK",
+          "BULL",
+          "JACK",
+          "BOAR"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "35": {
+    "gameId": 35,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "U.S. COINS",
+        "words": [
+          "NICKEL",
+          "QUARTER",
+          "PENNY",
+          "DIME"
+        ]
+      },
+      {
+        "theme": "METAL ELEMENTS",
+        "words": [
+          "TIN",
+          "LEAD",
+          "IRON",
+          "ZINC"
+        ]
+      },
+      {
+        "theme": "LUCKY CHARMS MARSHMALLOWS",
+        "words": [
+          "HORSESHOE",
+          "RAINBOW",
+          "CLOVER",
+          "MOON"
+        ]
+      },
+      {
+        "theme": "___ AND ___",
+        "words": [
+          "HALF",
+          "NECK",
+          "SO",
+          "AGAIN"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "36": {
+    "gameId": 36,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "MARSUPIALS",
+        "words": [
+          "WOMBAT",
+          "KANGAROO",
+          "KOALA",
+          "WALLABY"
+        ]
+      },
+      {
+        "theme": "CHOCOLATE BARS",
+        "words": [
+          "MARS",
+          "CHUNKY",
+          "CRUNCH",
+          "MOUNDS"
+        ]
+      },
+      {
+        "theme": "SLANG FOR MONEY",
+        "words": [
+          "PAPER",
+          "CHEDDAR",
+          "DOUGH",
+          "STACKS"
+        ]
+      },
+      {
+        "theme": "NAKED ___",
+        "words": [
+          "EYE",
+          "TRUTH",
+          "GUN",
+          "MOLE RAT"
+        ]
+      }
+    ],
+    "playerStates": {}
+  },
+  "37": {
+    "gameId": 37,
+    "totalParticipants": 0,
+    "participantsFinished": 0,
+    "participantsWon": 0,
+    "averageScore": 0.0,
+    "allGroups": [
+      {
+        "theme": "MARINE MAMMALS",
+        "words": [
+          "SEAL",
+          "DOLPHIN",
+          "OTTER",
+          "MANATEE"
+        ]
+      },
+      {
+        "theme": "BIKE PARTS",
+        "words": [
+          "SPOKE",
+          "CHAIN",
+          "SADDLE",
+          "BRAKE"
+        ]
+      },
+      {
+        "theme": "SYNONYMS FOR SELL",
+        "words": [
+          "MOVE",
+          "HAWK",
+          "PEDDLE",
+          "VEND"
+        ]
+      },
+      {
+        "theme": "COUNTRIES WHEN “A” IS ADDED",
+        "words": [
+          "CUB",
+          "CHIN",
+          "MALT",
+          "TONG"
+        ]
+      }
+    ],
+    "playerStates": {}
   }
 }
