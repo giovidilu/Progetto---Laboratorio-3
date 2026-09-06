@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -176,14 +177,18 @@ public class ClientHandler implements Runnable {
             return ServerResponse.failWithMessage(ResponseCode.INVALID_CREDENTIALS, "Credenziali non valide.");
         }
 
-        boolean sessionAcquired = sessionManager.login(user.getUsername());
+        InetSocketAddress udpEndpoint = null;
+        if (authReq.getUdpPort() != null && authReq.getUdpPort() > 0 && authReq.getUdpPort() <= 65535) {
+            udpEndpoint = new InetSocketAddress(this.socket.getInetAddress(), authReq.getUdpPort());
+        }
+
+        boolean sessionAcquired = sessionManager.login(user.getUsername(), udpEndpoint);
         if (!sessionAcquired) {
             return ServerResponse.failWithMessage(ResponseCode.BAD_REQUEST, "Utente già connesso su un'altra sessione.");
         }
 
         this.loggedInUsername = user.getUsername();
         
-        // Al momento restituiamo successo; verrà integrato LoginPayload con i dati di GameManager
         return ServerResponse.successWithoutPayload(ResponseCode.SUCCESS);
     }
 
@@ -228,8 +233,9 @@ public class ClientHandler implements Runnable {
         }
 
         if (newUsername != null && !newUsername.equals(updateReq.getOldUsername()) && this.loggedInUsername != null) {
+            InetSocketAddress existingEndpoint = sessionManager.getUdpEndpoint(updateReq.getOldUsername());
             sessionManager.logout(updateReq.getOldUsername());
-            sessionManager.login(newUsername);
+            sessionManager.login(newUsername, existingEndpoint);
             this.loggedInUsername = newUsername;
         }
 
