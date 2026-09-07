@@ -137,6 +137,52 @@
       }
     }
   },
+  "utenteVerifica": {
+    "username": "utenteVerifica",
+    "passwordHash": "90b9b6bee8d088cde361a729acac2f139a4f8dfcea6303b3bcb50f37e97891f4",
+    "salt": "8ukvf18reM1btwfq1PUrVA\u003d\u003d",
+    "stats": {
+      "totalScore": 0,
+      "gamesPlayed": 1,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "currentStreak": 0,
+      "maxStreak": 0,
+      "perfectPuzzle": 0,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 0,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 0,
+        "notFinished": 1
+      }
+    }
+  },
+  "user_1788798037623": {
+    "username": "user_1788798037623",
+    "passwordHash": "7f5caeb624e99a79ace968518a652643e2ad939dc4f3d263eca57cb4e9fd0a0f",
+    "salt": "twxxMhy3sFh7l8RzEDbaKQ\u003d\u003d",
+    "stats": {
+      "totalScore": 0,
+      "gamesPlayed": 1,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "currentStreak": 0,
+      "maxStreak": 0,
+      "perfectPuzzle": 0,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 0,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 0,
+        "notFinished": 1
+      }
+    }
+  },
   "alice3": {
     "username": "alice3",
     "passwordHash": "c29d1e4debc1dc83a3207777f299396496099d6171393580d6029bbe439efbf8",
