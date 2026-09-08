@@ -32,6 +32,7 @@ public class UserRepository {
     public synchronized void loadFromDisk() throws IOException {
         Path path = Paths.get(this.filePath);
         if(!Files.exists(path) || Files.size(path) == 0){ 
+            System.out.println("[USER-REPO] File " + filePath + " non trovato o vuoto: inizializzazione nuovo archivio utenti.");
             return;
         }
 

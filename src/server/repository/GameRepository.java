@@ -33,6 +33,7 @@ public class GameRepository {
     public synchronized void loadFromDisk() throws IOException {
         Path path = Paths.get(this.filePath);
         if (!Files.exists(path)) { 
+            System.out.println("[GAME-REPO] File " + filePath + " non trovato o vuoto: inizializzazione nuovo archivio partite.");
             return; 
         }
 
