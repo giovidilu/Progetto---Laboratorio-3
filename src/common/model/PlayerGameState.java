@@ -47,9 +47,10 @@ public class PlayerGameState {
     }
 
     public int getScore(){
-        int pointsFromCorrect = this.correctGroups.size() * 6;
-        int penaltyFromMistakes = this.mistakes * 4;
-        return pointsFromCorrect - penaltyFromMistakes;
+        int scoredGroups = Math.min(this.correctGroups.size(), 3);
+        int pointsFromCorrect = scoredGroups * 6;
+        int pointsFromMistakes = this.mistakes * -4;
+        return pointsFromCorrect + pointsFromMistakes;
     }
 
     public GameOutcome getOutcome(){

@@ -114,6 +114,29 @@
       }
     }
   },
+  "winTester_1788879175232": {
+    "username": "winTester_1788879175232",
+    "passwordHash": "509d59f5eca485673de7d964095bd29f55682894ea7de4648f6deac95cc524a7",
+    "salt": "8DH/+729AEyzbeeLUfpmYQ\u003d\u003d",
+    "stats": {
+      "totalScore": 24,
+      "gamesPlayed": 1,
+      "gamesWon": 1,
+      "gamesLost": 0,
+      "currentStreak": 1,
+      "maxStreak": 1,
+      "perfectPuzzle": 1,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 1,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 0,
+        "notFinished": 0
+      }
+    }
+  },
   "updUser_1788874917484_renamed_final": {
     "username": "updUser_1788874917484_renamed_final",
     "passwordHash": "4db40d780fea4a9e6017eace609c424e657b95cc80449eba4c386fe4dfc2617e",
@@ -450,6 +473,29 @@
       "perfectPuzzle": 0,
       "mistakeHistogram": {
         "solvedWith0Mistakes": 0,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 0,
+        "notFinished": 0
+      }
+    }
+  },
+  "winTester_1788879361728": {
+    "username": "winTester_1788879361728",
+    "passwordHash": "d676fc8e37030982bdaf25849325655686883069ded17b2feea47fd82b10e44f",
+    "salt": "w43P6x15A2p2cRgAa/+ORA\u003d\u003d",
+    "stats": {
+      "totalScore": 24,
+      "gamesPlayed": 1,
+      "gamesWon": 1,
+      "gamesLost": 0,
+      "currentStreak": 1,
+      "maxStreak": 1,
+      "perfectPuzzle": 1,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 1,
         "solvedWith1Mistake": 0,
         "solvedWith2Mistakes": 0,
         "solvedWith3Mistakes": 0,
