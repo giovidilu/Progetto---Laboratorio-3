@@ -61,6 +61,22 @@ public class TestProtocolMain {
                 // 9. Aggiornamento credenziali -> SUCCESS
                 sendAndVerify(out, in, "{\"operation\":\"updateCredentials\",\"oldUsername\":\"" + testUser + "\",\"oldPsw\":\"" + testPsw + "\",\"newPsw\":\"nuovaPsw456\"}", "Aggiornamento credenziali");
 
+                // Test Top-K: verifica troncamento classifica a esattamente 3 elementi
+                sendAndVerify(out, in,
+                    "{\"operation\":\"requestLeaderboard\",\"topPlayers\":3}",
+                    "Classifica Top-3 utenti");
+                
+                // Test Regressione Storico: verifica lettura di una partita conclusa
+                // Se esiste già una partita con ID 1 in games.json, interroga quell'ID
+                int historicalGameId = 1; 
+                sendAndVerify(out, in,
+                    "{\"operation\":\"requestGameInfo\",\"gameId\":" + historicalGameId + "}",
+                    "Info partita storica conclusa (atteso FinishedGame)");
+                
+                sendAndVerify(out, in,
+                    "{\"operation\":\"requestGameStats\",\"gameId\":" + historicalGameId + "}",
+                    "Stats partita storica conclusa (atteso FinishedGame)");
+
                 // 10. Logout utente -> SUCCESS (ora eseguito al termine delle operazioni)
                 sendAndVerify(out, in, "{\"operation\":\"logout\"}", "Logout finale");
             
