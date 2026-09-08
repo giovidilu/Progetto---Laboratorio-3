@@ -28,7 +28,7 @@
     "salt": "COryOI8TtT8z6nGwpB4tBg\u003d\u003d",
     "stats": {
       "totalScore": 0,
-      "gamesPlayed": 0,
+      "gamesPlayed": 1,
       "gamesWon": 0,
       "gamesLost": 0,
       "currentStreak": 0,
@@ -41,7 +41,7 @@
         "solvedWith3Mistakes": 0,
         "solvedWith4Mistakes": 0,
         "failed": 0,
-        "notFinished": 0
+        "notFinished": 1
       }
     }
   },
@@ -64,6 +64,52 @@
         "solvedWith3Mistakes": 0,
         "solvedWith4Mistakes": 0,
         "failed": 2,
+        "notFinished": 0
+      }
+    }
+  },
+  "user_1788858240909": {
+    "username": "user_1788858240909",
+    "passwordHash": "b042fe52265c1d4b495642e2b06f32908214fa3115b85dd648fdab48dbf5ce2f",
+    "salt": "B2Hd6sHX3z5kQ0vDcXTI0Q\u003d\u003d",
+    "stats": {
+      "totalScore": 0,
+      "gamesPlayed": 1,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "currentStreak": 0,
+      "maxStreak": 0,
+      "perfectPuzzle": 0,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 0,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 0,
+        "notFinished": 1
+      }
+    }
+  },
+  "protoUserB_1788861816939": {
+    "username": "protoUserB_1788861816939",
+    "passwordHash": "f2b5ec3091686d550b61f0dfe495225184f0ae47b6741651b7a5a6899b2c86b0",
+    "salt": "SM2csFhD17diBYR6NIDc8g\u003d\u003d",
+    "stats": {
+      "totalScore": 0,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "currentStreak": 0,
+      "maxStreak": 0,
+      "perfectPuzzle": 0,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 0,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 0,
         "notFinished": 0
       }
     }
@@ -210,6 +256,29 @@
     "username": "bob",
     "passwordHash": "ae94adbe4a4f9bedf2e55d655efda201aa7fc26d96b5a6c5f9cb9cc52e429665",
     "salt": "JV4FAKOzDdBfEPinxVVRAg\u003d\u003d",
+    "stats": {
+      "totalScore": 0,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "currentStreak": 0,
+      "maxStreak": 0,
+      "perfectPuzzle": 0,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 0,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 0,
+        "notFinished": 0
+      }
+    }
+  },
+  "protoUserA_1788861816933": {
+    "username": "protoUserA_1788861816933",
+    "passwordHash": "3575ae0fc11fd9cbb79dd9f4039af310d4c5e94bd8724160dd74e91a7ec56fa4",
+    "salt": "VKss1uPMXNKdPiXWNTKDWw\u003d\u003d",
     "stats": {
       "totalScore": 0,
       "gamesPlayed": 0,

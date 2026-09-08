@@ -144,6 +144,6 @@ Tutte le istruzioni vanno eseguite dalla radice del progetto.
 - [x] Macro-4 (UDP server) — completata e testata end-to-end (2 client reali, stesso round, stessa notifica)
 - [x] Phase 5.2 (UDP client) — completata e testata end-to-end
 - [x] Completare manuale d'uso (`client.properties`, screenshot/elenco comandi)
-- [ x] Packaging JAR
-- [ ] Rilettura finale sezione 5 della specifica (formati messaggi) uno per uno
-- [ ] Sintesi finale entro il limite di 5 pagine PDF
+- [x] Packaging JAR
+- [x] Rilettura finale sezione 5 della specifica (formati messaggi) uno per uno
+- [] Sintesi finale entro il limite di 5 pagine PDF
