@@ -1,6 +1,8 @@
 package server.service;
 
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SessionManager {
@@ -53,8 +55,21 @@ public class SessionManager {
         return (session != null) ? session.udpEndpoint() : null;
     }
 
+    /**
+     * Restituisce una mappa contenente tutti gli utenti autenticati che dispongono
+     * di un endpoint UDP valido configurato per le notifiche asincrone.
+     */
+    public Map<String, InetSocketAddress> getActiveUdpEndpoints() {
+        Map<String, InetSocketAddress> endpoints = new HashMap<>();
+        activeSessions.forEach((user, session) -> {
+            if (session != null && session.udpEndpoint() != null) {
+                endpoints.put(user, session.udpEndpoint());
+            }
+        });
+        return endpoints;
+    }
+
     public void clear() {
         activeSessions.clear();
     }
-
 }

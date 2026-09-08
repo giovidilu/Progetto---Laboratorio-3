@@ -112,8 +112,7 @@ public class UdpNotificationListener {
                     + " | Vincitori: " + stats.getParticipantsWon()
                     + " | Media punteggio: " + String.format("%.2f", stats.getAverageScore()));
         }
-        System.out.println("=======================================================");
-        System.out.print("\nSeleziona un'opzione: ");
+        System.out.println("=======================================================\n");
         System.out.flush();
     }
 }

@@ -49,8 +49,8 @@ public class GameManager {
     private final UserRepository userRepository;
     private final long gameDurationMillis;
     private final ConcurrentHashMap<String, PlayerGameState> activePlayerStates;
-    private  final SessionManager sessionManager;
-    private  final UdpNotifier udpNotifier;
+    private final SessionManager sessionManager;
+    private final UdpNotifier udpNotifier;
 
     private ScheduledExecutorService scheduler;
     private final Object lifecycleLock = new Object();
@@ -99,9 +99,6 @@ public class GameManager {
         this.activePlayerStates.clear();
     }
 
-    /**
-     * Aggiorna in modo consistente e centralizzato le statistiche persistenti dell'utente.
-     */
     private void updateUserStats(String username, GameOutcome outcome, int mistakes, int score) {
         User user = this.userRepository.getUser(username);
         if (user != null) {
@@ -109,10 +106,6 @@ public class GameManager {
         }
     }
 
-    /**
-     * Restituisce le informazioni sullo stato di una partita per uno specifico utente.
-     * Rispetta il principio CQS: non crea voci in activePlayerStates in assenza di mosse.
-     */
     public synchronized GameInfoPayload getGameInfoForPlayer(String username, Integer gameId) {
         if (gameId == null || gameId == 0 || gameId.equals(this.currentGameId)) {
             int timeRemaining = (int) Math.max(0, this.activeGame.getEndTime() - System.currentTimeMillis());
@@ -192,11 +185,7 @@ public class GameManager {
         return result;
     }
 
-    /**
-     * Valuta una proposta di 4 parole inviata da un utente per la partita attiva.
-     */
     public synchronized ProposalResult submitProposal(String username, List<String> words) {
-        // FASE 1: Verifica di ammissibilità temporale e di stato (ALREADY_COMPLETED)
         long now = System.currentTimeMillis();
         boolean isTimeExpired = (now >= this.activeGame.getEndTime());
 
@@ -216,7 +205,6 @@ public class GameManager {
             return new ProposalResult(MoveOutcome.ALREADY_COMPLETED, currentOutcome, null, playerState);
         }
 
-        // FASE 2: Validazione sintattica della quadrupla (MALFORMED)
         if (words == null || words.size() != 4) {
             return new ProposalResult(MoveOutcome.MALFORMED, null, null, playerState);
         }
@@ -242,7 +230,6 @@ public class GameManager {
             return new ProposalResult(MoveOutcome.MALFORMED, null, null, playerState);
         }
 
-        // FASE 3: Validazione semantica rispetto ai progressi del giocatore (MALFORMED)
         Set<String> alreadyGuessedWords = new HashSet<>();
         for (WordGroup group : playerState.getCorrectGroups()) {
             if (group != null && group.getWords() != null) {
@@ -258,7 +245,6 @@ public class GameManager {
             }
         }
 
-        // FASE 4: Valutazione del raggruppamento tematico (CORRECT o WRONG)
         WordGroup matchedGroup = null;
         for (WordGroup group : this.activeGame.getGameTemplate().getGroups()) {
             if (group != null && group.getWords() != null) {
@@ -275,14 +261,12 @@ public class GameManager {
         }
 
         if (matchedGroup != null) {
-            // Proposta Corretta
             playerState.addCorrectGroup(matchedGroup);
             
             if (playerState.getOutcome() == GameOutcome.WON && playerState.getCorrectGroups().size() == 3) {
                 for (WordGroup templateGroup : this.activeGame.getGameTemplate().getGroups()) {
                     boolean alreadyPresent = false;
                     for (WordGroup guessed : playerState.getCorrectGroups()) {
-                        // Confronto insiemistico o per uguaglianza di gruppo
                         if (guessed.getWords().equals(templateGroup.getWords())) {
                             alreadyPresent = true;
                             break;
@@ -301,7 +285,6 @@ public class GameManager {
             }
             return new ProposalResult(MoveOutcome.CORRECT, newOutcome, matchedGroup, playerState);
         } else {
-            // Proposta Sbagliata
             playerState.incrementMistakes();
             GameOutcome newOutcome = playerState.getOutcome();
             if (newOutcome != null) {
@@ -311,10 +294,6 @@ public class GameManager {
         }
     }
 
-    /**
-     * Consolida e archivia lo stato della partita corrente in GameRepository,
-     * calcolando le statistiche aggregate ed avviando il round successivo.
-     */
     public synchronized GameRecord rotateGame() {
         List<WordGroup> allGroups = this.activeGame.getGameTemplate().getGroups();
         Map<String, PlayerGameState> playerStatesSnapshot = new HashMap<>(this.activePlayerStates);
@@ -363,7 +342,7 @@ public class GameManager {
         // 4. Avanzamento del ciclo di vita: inizializzazione della nuova partita attiva
         startNewActiveGame();
 
-        // 5. Invio notifiche asincrone UDP: ora finishedGameId appartiene allo storico
+        // 5. Invio notifiche asincrone UDP a tutti i client autenticati
         if (this.udpNotifier != null && this.sessionManager != null) {
             GameStatsPayload finishedStats = GameStatsPayload.finishedGame(
                 finishedRecord.getTotalParticipants(),
@@ -373,20 +352,20 @@ public class GameManager {
             );
 
             Gson gson = new Gson();
+            Map<String, InetSocketAddress> activeEndpoints = this.sessionManager.getActiveUdpEndpoints();
 
-            for (String username : playerStatesSnapshot.keySet()) {
+            for (Map.Entry<String, InetSocketAddress> entry : activeEndpoints.entrySet()) {
+                String username = entry.getKey();
+                InetSocketAddress endpoint = entry.getValue();
+
                 try {
-                    InetSocketAddress endpoint = this.sessionManager.getUdpEndpoint(username);
-                    if (endpoint != null) {
-                        // Invocazione che ora accede correttamente a record storico e soluzioni
-                        GameInfoPayload playerInfo = getGameInfoForPlayer(username, finishedGameId);
-                        GameFinishedNotificationPayload notifPayload = new GameFinishedNotificationPayload(
-                            finishedGameId,
-                            playerInfo,
-                            finishedStats
-                        );
-                        this.udpNotifier.sendNotification(endpoint, gson.toJson(notifPayload));
-                    }
+                    GameInfoPayload playerInfo = getGameInfoForPlayer(username, finishedGameId);
+                    GameFinishedNotificationPayload notifPayload = new GameFinishedNotificationPayload(
+                        finishedGameId,
+                        playerInfo,
+                        finishedStats
+                    );
+                    this.udpNotifier.sendNotification(endpoint, gson.toJson(notifPayload));
                 } catch (Exception e) {
                     System.err.println("[GameManager] Invio notifica UDP fallito per " + username + ": " + e.getMessage());
                 }
