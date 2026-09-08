@@ -114,7 +114,7 @@ public class GameManager {
      * Rispetta il principio CQS: non crea voci in activePlayerStates in assenza di mosse.
      */
     public synchronized GameInfoPayload getGameInfoForPlayer(String username, Integer gameId) {
-        if (gameId == null || gameId.equals(this.currentGameId)) {
+        if (gameId == null || gameId == 0 || gameId.equals(this.currentGameId)) {
             int timeRemaining = (int) Math.max(0, this.activeGame.getEndTime() - System.currentTimeMillis());
 
             PlayerGameState playerState = this.activePlayerStates.get(username);
@@ -379,7 +379,7 @@ public class GameManager {
     }
 
     public synchronized GameStatsPayload getGameStats(Integer gameId) {
-        if (gameId == null || gameId.equals(this.currentGameId)) {
+        if (gameId == null || gameId == 0 || gameId.equals(this.currentGameId)) {
             int timeRemaining = (int) Math.max(0, this.activeGame.getEndTime() - System.currentTimeMillis());
             
             int playersFinished = 0;
@@ -436,7 +436,7 @@ public class GameManager {
             }
         }
         
-        if (playerName != null) {
+        if (playerName != null && !playerName.trim().isEmpty()) {
             if (targetUserEntry == null) {
                 return null;
             }

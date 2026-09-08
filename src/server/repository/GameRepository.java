@@ -46,6 +46,9 @@ public class GameRepository {
                 int maxId = this.games.keySet().stream().max(Integer::compareTo).orElse(0);
                 this.idCounter.set(maxId);
             }
+        } catch(com.google.gson.JsonSyntaxException e){
+            System.err.println("[GAME-REPO] Formato JSON non valido in " + filePath + ", inizializzazione mappa vuota: " + e.getMessage());
+            this.games.clear();
         }
     }
 
@@ -61,11 +64,11 @@ public class GameRepository {
         }
     }
 
-    public void addGameRecord(GameRecord record) {
+    public synchronized void addGameRecord(GameRecord record) {
         games.put(record.getGameId(), record);
     }
     
-    public GameRecord getGameRecord(int gameId) {
+    public synchronized GameRecord getGameRecord(int gameId) {
         return games.get(gameId);
     }
 

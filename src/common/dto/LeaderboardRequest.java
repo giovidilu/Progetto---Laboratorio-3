@@ -23,7 +23,7 @@ public class LeaderboardRequest {
         if(playerName != null && playerName.isBlank()){
             return false;
         }
-        if(topPlayers != null && topPlayers <= 0){
+        if(topPlayers != null && topPlayers < 0){
             return false;
         }
 

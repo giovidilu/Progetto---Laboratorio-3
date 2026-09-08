@@ -300,6 +300,10 @@ public class ClientHandler implements Runnable {
         GameQueryRequest queryReq = gson.fromJson(request, GameQueryRequest.class);
         Integer gameId = (queryReq != null) ? queryReq.getGameId() : null;
 
+        if(gameId != null && gameId == 0){
+            gameId = null;
+        }
+
         // 3. Recupero dello stato della partita (attiva se gameId == null, storica altrimenti)
         GameInfoPayload payload = this.gameManager.getGameInfoForPlayer(this.loggedInUsername, gameId);
         if (payload == null) {
@@ -320,6 +324,10 @@ public class ClientHandler implements Runnable {
 
         GameQueryRequest queryReq = gson.fromJson(request, GameQueryRequest.class);
         Integer gameId = (queryReq != null) ? queryReq.getGameId() : null;
+
+        if(gameId != null && gameId == 0){
+            gameId = null;
+        }
 
         GameStatsPayload payload = this.gameManager.getGameStats(gameId);
         if(payload == null){

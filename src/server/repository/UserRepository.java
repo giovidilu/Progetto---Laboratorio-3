@@ -31,17 +31,21 @@ public class UserRepository {
 
     public synchronized void loadFromDisk() throws IOException {
         Path path = Paths.get(this.filePath);
-        if(!Files.exists(path)){ 
+        if(!Files.exists(path) || Files.size(path) == 0){ 
             return;
         }
 
         try (FileReader reader = new FileReader(filePath, StandardCharsets.UTF_8)) {
             Type type = new TypeToken<ConcurrentHashMap<String, User>>(){}.getType();
             ConcurrentHashMap<String, User> loadedUsers = gson.fromJson(reader, type);
+
             if (loadedUsers != null) {
                 this.users.clear();
                 this.users.putAll(loadedUsers);
             }
+        } catch (com.google.gson.JsonSyntaxException e){
+            System.err.println("[USER-REPO] Formato JSON non valido in " + filePath + ", inizializzazione mappa vuota: " + e.getMessage());
+            this.users.clear();
         }
     }
 
@@ -57,6 +61,7 @@ public class UserRepository {
         }
     }
 
+    
     public synchronized boolean addUser(User user) {
         User previous = users.putIfAbsent(user.getUsername(), user);
         return previous == null;

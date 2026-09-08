@@ -22,6 +22,29 @@
       }
     }
   },
+  "user_1788857788787": {
+    "username": "user_1788857788787",
+    "passwordHash": "5d12bf7193fc7fa03550e4267a4db6c228bdcbba5258608bc0cb502391d76fe2",
+    "salt": "k5S+uzRA6Udm7y+ijdXm7Q\u003d\u003d",
+    "stats": {
+      "totalScore": 0,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "currentStreak": 0,
+      "maxStreak": 0,
+      "perfectPuzzle": 0,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 0,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 0,
+        "notFinished": 0
+      }
+    }
+  },
   "alice": {
     "username": "alice",
     "passwordHash": "2c824f47901bae5557352b1e9afe72a2d9d461a67f85cc5d87c1d8958e104452",
