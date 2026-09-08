@@ -68,52 +68,6 @@
       }
     }
   },
-  "user_1788858240909": {
-    "username": "user_1788858240909",
-    "passwordHash": "b042fe52265c1d4b495642e2b06f32908214fa3115b85dd648fdab48dbf5ce2f",
-    "salt": "B2Hd6sHX3z5kQ0vDcXTI0Q\u003d\u003d",
-    "stats": {
-      "totalScore": 0,
-      "gamesPlayed": 1,
-      "gamesWon": 0,
-      "gamesLost": 0,
-      "currentStreak": 0,
-      "maxStreak": 0,
-      "perfectPuzzle": 0,
-      "mistakeHistogram": {
-        "solvedWith0Mistakes": 0,
-        "solvedWith1Mistake": 0,
-        "solvedWith2Mistakes": 0,
-        "solvedWith3Mistakes": 0,
-        "solvedWith4Mistakes": 0,
-        "failed": 0,
-        "notFinished": 1
-      }
-    }
-  },
-  "protoUserB_1788861816939": {
-    "username": "protoUserB_1788861816939",
-    "passwordHash": "f2b5ec3091686d550b61f0dfe495225184f0ae47b6741651b7a5a6899b2c86b0",
-    "salt": "SM2csFhD17diBYR6NIDc8g\u003d\u003d",
-    "stats": {
-      "totalScore": 0,
-      "gamesPlayed": 0,
-      "gamesWon": 0,
-      "gamesLost": 0,
-      "currentStreak": 0,
-      "maxStreak": 0,
-      "perfectPuzzle": 0,
-      "mistakeHistogram": {
-        "solvedWith0Mistakes": 0,
-        "solvedWith1Mistake": 0,
-        "solvedWith2Mistakes": 0,
-        "solvedWith3Mistakes": 0,
-        "solvedWith4Mistakes": 0,
-        "failed": 0,
-        "notFinished": 0
-      }
-    }
-  },
   "alice3": {
     "username": "alice3",
     "passwordHash": "c29d1e4debc1dc83a3207777f299396496099d6171393580d6029bbe439efbf8",
@@ -160,33 +114,10 @@
       }
     }
   },
-  "user_1788857788787": {
-    "username": "user_1788857788787",
-    "passwordHash": "5d12bf7193fc7fa03550e4267a4db6c228bdcbba5258608bc0cb502391d76fe2",
-    "salt": "k5S+uzRA6Udm7y+ijdXm7Q\u003d\u003d",
-    "stats": {
-      "totalScore": 0,
-      "gamesPlayed": 0,
-      "gamesWon": 0,
-      "gamesLost": 0,
-      "currentStreak": 0,
-      "maxStreak": 0,
-      "perfectPuzzle": 0,
-      "mistakeHistogram": {
-        "solvedWith0Mistakes": 0,
-        "solvedWith1Mistake": 0,
-        "solvedWith2Mistakes": 0,
-        "solvedWith3Mistakes": 0,
-        "solvedWith4Mistakes": 0,
-        "failed": 0,
-        "notFinished": 0
-      }
-    }
-  },
-  "giovanni": {
-    "username": "giovanni",
-    "passwordHash": "9c1ca2725e8c21f0133f5eb1babe59f8b40201f6a8a61a5e2bae3a4014eb06e4",
-    "salt": "VZofE7Q/X7Ggvj4I7gEQaQ\u003d\u003d",
+  "updUser_1788874917484_renamed_final": {
+    "username": "updUser_1788874917484_renamed_final",
+    "passwordHash": "4db40d780fea4a9e6017eace609c424e657b95cc80449eba4c386fe4dfc2617e",
+    "salt": "1idcEALEDkAk3DnP1rELRg\u003d\u003d",
     "stats": {
       "totalScore": 0,
       "gamesPlayed": 0,
@@ -275,6 +206,236 @@
       }
     }
   },
+  "protoUserA_1788861995757": {
+    "username": "protoUserA_1788861995757",
+    "passwordHash": "8e8c27ea06989a1c318433c568d5e720a0567da1ff437a73807c9a195e9ce238",
+    "salt": "73a5Gvv+Ap1+VWwC43kW4A\u003d\u003d",
+    "stats": {
+      "totalScore": 0,
+      "gamesPlayed": 1,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "currentStreak": 0,
+      "maxStreak": 0,
+      "perfectPuzzle": 0,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 0,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 0,
+        "notFinished": 1
+      }
+    }
+  },
+  "omar": {
+    "username": "omar",
+    "passwordHash": "253b7ac94941f28d7b40308d5871007bb9637f7a2200c04eb110a5c7a2676545",
+    "salt": "UWWww0P2yZheKZW5Iu3kSA\u003d\u003d",
+    "stats": {
+      "totalScore": 0,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "currentStreak": 0,
+      "maxStreak": 0,
+      "perfectPuzzle": 0,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 0,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 0,
+        "notFinished": 0
+      }
+    }
+  },
+  "mistakeTester_1788875038145": {
+    "username": "mistakeTester_1788875038145",
+    "passwordHash": "3da2e4bda7a9499952725541cbd725613e029693541105e5cd9ed131e79dad83",
+    "salt": "O1FMNDt2L1+KXdE3JfieMw\u003d\u003d",
+    "stats": {
+      "totalScore": -16,
+      "gamesPlayed": 1,
+      "gamesWon": 0,
+      "gamesLost": 1,
+      "currentStreak": 0,
+      "maxStreak": 0,
+      "perfectPuzzle": 0,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 0,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 1,
+        "notFinished": 0
+      }
+    }
+  },
+  "user_1788858240909": {
+    "username": "user_1788858240909",
+    "passwordHash": "b042fe52265c1d4b495642e2b06f32908214fa3115b85dd648fdab48dbf5ce2f",
+    "salt": "B2Hd6sHX3z5kQ0vDcXTI0Q\u003d\u003d",
+    "stats": {
+      "totalScore": 0,
+      "gamesPlayed": 1,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "currentStreak": 0,
+      "maxStreak": 0,
+      "perfectPuzzle": 0,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 0,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 0,
+        "notFinished": 1
+      }
+    }
+  },
+  "protoUserB_1788861816939": {
+    "username": "protoUserB_1788861816939",
+    "passwordHash": "f2b5ec3091686d550b61f0dfe495225184f0ae47b6741651b7a5a6899b2c86b0",
+    "salt": "SM2csFhD17diBYR6NIDc8g\u003d\u003d",
+    "stats": {
+      "totalScore": 0,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "currentStreak": 0,
+      "maxStreak": 0,
+      "perfectPuzzle": 0,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 0,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 0,
+        "notFinished": 0
+      }
+    }
+  },
+  "protoUserB_1788861995760": {
+    "username": "protoUserB_1788861995760",
+    "passwordHash": "9dc99ffeabbcd3d5b924cfa4b0e9115a5dc399c76a404264637bd1006bdd9bf1",
+    "salt": "rwhnfjSkQGT7ZxSXEwhm0g\u003d\u003d",
+    "stats": {
+      "totalScore": 0,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "currentStreak": 0,
+      "maxStreak": 0,
+      "perfectPuzzle": 0,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 0,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 0,
+        "notFinished": 0
+      }
+    }
+  },
+  "user_1788857788787": {
+    "username": "user_1788857788787",
+    "passwordHash": "5d12bf7193fc7fa03550e4267a4db6c228bdcbba5258608bc0cb502391d76fe2",
+    "salt": "k5S+uzRA6Udm7y+ijdXm7Q\u003d\u003d",
+    "stats": {
+      "totalScore": 0,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "currentStreak": 0,
+      "maxStreak": 0,
+      "perfectPuzzle": 0,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 0,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 0,
+        "notFinished": 0
+      }
+    }
+  },
+  "giovanni": {
+    "username": "giovanni",
+    "passwordHash": "9c1ca2725e8c21f0133f5eb1babe59f8b40201f6a8a61a5e2bae3a4014eb06e4",
+    "salt": "VZofE7Q/X7Ggvj4I7gEQaQ\u003d\u003d",
+    "stats": {
+      "totalScore": 0,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "currentStreak": 0,
+      "maxStreak": 0,
+      "perfectPuzzle": 0,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 0,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 0,
+        "notFinished": 0
+      }
+    }
+  },
+  "concurrentUser_1788881914305": {
+    "username": "concurrentUser_1788881914305",
+    "passwordHash": "cf629a3c77a9d3e5f00b1e09ffce8db4165e084869b7d4c7c9e5ea688c8e9153",
+    "salt": "ogpulfZO8VbTkm6O+pkrlg\u003d\u003d",
+    "stats": {
+      "totalScore": 0,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "currentStreak": 0,
+      "maxStreak": 0,
+      "perfectPuzzle": 0,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 0,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 0,
+        "notFinished": 0
+      }
+    }
+  },
+  "winTester_1788875212752": {
+    "username": "winTester_1788875212752",
+    "passwordHash": "7c8cb6c83c74288f7d14ae43e7e5dfbfa7ae33529529884ee0598ca8ab9f5694",
+    "salt": "ptslsjGBlTorZ0n9uzfPtw\u003d\u003d",
+    "stats": {
+      "totalScore": 18,
+      "gamesPlayed": 1,
+      "gamesWon": 1,
+      "gamesLost": 0,
+      "currentStreak": 1,
+      "maxStreak": 1,
+      "perfectPuzzle": 1,
+      "mistakeHistogram": {
+        "solvedWith0Mistakes": 1,
+        "solvedWith1Mistake": 0,
+        "solvedWith2Mistakes": 0,
+        "solvedWith3Mistakes": 0,
+        "solvedWith4Mistakes": 0,
+        "failed": 0,
+        "notFinished": 0
+      }
+    }
+  },
   "protoUserA_1788861816933": {
     "username": "protoUserA_1788861816933",
     "passwordHash": "3575ae0fc11fd9cbb79dd9f4039af310d4c5e94bd8724160dd74e91a7ec56fa4",
@@ -341,29 +502,6 @@
         "solvedWith4Mistakes": 0,
         "failed": 0,
         "notFinished": 1
-      }
-    }
-  },
-  "omar": {
-    "username": "omar",
-    "passwordHash": "253b7ac94941f28d7b40308d5871007bb9637f7a2200c04eb110a5c7a2676545",
-    "salt": "UWWww0P2yZheKZW5Iu3kSA\u003d\u003d",
-    "stats": {
-      "totalScore": 0,
-      "gamesPlayed": 0,
-      "gamesWon": 0,
-      "gamesLost": 0,
-      "currentStreak": 0,
-      "maxStreak": 0,
-      "perfectPuzzle": 0,
-      "mistakeHistogram": {
-        "solvedWith0Mistakes": 0,
-        "solvedWith1Mistake": 0,
-        "solvedWith2Mistakes": 0,
-        "solvedWith3Mistakes": 0,
-        "solvedWith4Mistakes": 0,
-        "failed": 0,
-        "notFinished": 0
       }
     }
   }
