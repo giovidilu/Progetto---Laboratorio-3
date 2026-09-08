@@ -277,6 +277,24 @@ public class GameManager {
         if (matchedGroup != null) {
             // Proposta Corretta
             playerState.addCorrectGroup(matchedGroup);
+            
+            if (playerState.getOutcome() == GameOutcome.WON && playerState.getCorrectGroups().size() == 3) {
+                for (WordGroup templateGroup : this.activeGame.getGameTemplate().getGroups()) {
+                    boolean alreadyPresent = false;
+                    for (WordGroup guessed : playerState.getCorrectGroups()) {
+                        // Confronto insiemistico o per uguaglianza di gruppo
+                        if (guessed.getWords().equals(templateGroup.getWords())) {
+                            alreadyPresent = true;
+                            break;
+                        }
+                    }
+                    if (!alreadyPresent) {
+                        playerState.addCorrectGroup(templateGroup);
+                        break;
+                    }
+                }
+            }
+
             GameOutcome newOutcome = playerState.getOutcome();
             if (newOutcome != null) {
                 updateUserStats(username, newOutcome, playerState.getMistakes(), playerState.getScore());
