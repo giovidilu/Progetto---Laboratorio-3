@@ -1,0 +1,4 @@
+bin/
+.vscode/
+data/users.json
+data/games.json
