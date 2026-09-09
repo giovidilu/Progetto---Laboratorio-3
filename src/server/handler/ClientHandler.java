@@ -37,11 +37,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ClientHandler implements Runnable {
+    private static final boolean DEBUG = false;
+
     private final Socket socket;
     private final UserRepository userRepository;
     private final GameRepository gameRepository;
     private final SessionManager sessionManager;
     private final GameManager gameManager;
+    
 
     private final Gson gson;
     private final Map<String, CommandHandler> commandMap;
@@ -83,9 +86,13 @@ public class ClientHandler implements Runnable {
         ) {
             String line;
             while ((line = in.readLine()) != null) {
-                System.out.println("[SERVER DEBUG] Richiesta ricevuta: " + line);
+                if (DEBUG) {
+                    System.out.println("[SERVER DEBUG] Richiesta ricevuta: " + line);
+                }
                 ServerResponse<?> response = processRequest(line);
-                System.out.println("[SERVER DEBUG] Invio risposta: " + gson.toJson(response));
+                if (DEBUG) {
+                    System.out.println("[SERVER DEBUG] Invio risposta: " + gson.toJson(response));
+                }
                 out.println(gson.toJson(response));
             }
         } catch (IOException e) {

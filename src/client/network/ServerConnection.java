@@ -18,6 +18,8 @@ import java.lang.reflect.Type;
  * Gestisce la connessione TCP verso il server mediante Java NIO SocketChannel[cite: 8, 10].
  */
 public class ServerConnection implements AutoCloseable {
+    private static final boolean DEBUG = false;
+
     private final SocketChannel socketChannel;
     private final ByteBuffer byteBuffer;
     private static final Gson gson = new Gson();
@@ -71,7 +73,9 @@ public class ServerConnection implements AutoCloseable {
             byteBuffer.compact();
         }
         String jsonResponse = byteArray.toString(StandardCharsets.UTF_8.name());
-        System.out.println("[DEBUG RICEZIONE] JSON grezzo: " + jsonResponse);
+        if (DEBUG) {
+            System.out.println("[DEBUG RICEZIONE] JSON grezzo: " + jsonResponse);
+        }
         return gson.fromJson(jsonResponse, payloadType);
     }
 
