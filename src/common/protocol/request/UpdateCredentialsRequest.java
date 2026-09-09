@@ -1,5 +1,12 @@
 package common.protocol.request;
 
+/**
+ * Richiesta di protocollo per l'aggiornamento sicuro di username, password o entrambi.
+ * <p>
+ * Richiede la validazione preventiva delle credenziali correnti. L'istanziazione è vincolata
+ * a factory method statici per garantire combinazioni di campi coerenti con il protocollo.
+ * Immutabile e thread-safe.
+ */
 public class UpdateCredentialsRequest extends Request {
     
     private final String oldUsername;
@@ -7,10 +14,6 @@ public class UpdateCredentialsRequest extends Request {
     private final String newUsername;
     private final String newPsw;
 
-    /**
-     * Costruttore privato. L'istanziazione dall'esterno deve avvenire 
-     * obbligatoriamente tramite i metodi factory statici.
-     */
     private UpdateCredentialsRequest(String oldUsername, String oldPsw, String newUsername, String newPsw) {
         super("updateCredentials");
         this.oldUsername = oldUsername;
@@ -20,23 +23,37 @@ public class UpdateCredentialsRequest extends Request {
     }
 
     /**
-     * Per aggiornare sia Username che Psw
+     * Crea una richiesta per aggiornare contestualmente sia username che password.
+     *
+     * @param oldUsername username attualmente associato all'account
+     * @param oldPsw password corrente necessaria per la validazione
+     * @param newUsername nuovo username da impostare
+     * @param newPsw nuova password da impostare
+     * @return istanza configurata per il rinnovo completo delle credenziali
      */
     public static UpdateCredentialsRequest forBothUpdate(String oldUsername, String oldPsw, String newUsername, String newPsw) {
         return new UpdateCredentialsRequest(oldUsername, oldPsw, newUsername, newPsw);
     }
 
     /**
-     * Per aggiornare solo Username
-     * Il campo newPsw viene esplicitamente impostato a null.
+     * Crea una richiesta per aggiornare esclusivamente lo username.
+     *
+     * @param oldUsername username attualmente associato all'account
+     * @param oldPsw password corrente necessaria per la validazione
+     * @param newUsername nuovo username desiderato
+     * @return istanza configurata per l'aggiornamento del solo username
      */
     public static UpdateCredentialsRequest forUsernameUpdate(String oldUsername, String oldPsw, String newUsername) {
         return new UpdateCredentialsRequest(oldUsername, oldPsw, newUsername, null);
     }
 
     /**
-     * Per aggiornare solo Psw
-     * Il campo newUsername viene esplicitamente impostato a null.
+     * Crea una richiesta per aggiornare esclusivamente la password.
+     *
+     * @param oldUsername username attualmente associato all'account
+     * @param oldPsw password corrente necessaria per la validazione
+     * @param newPsw nuova password da impostare
+     * @return istanza configurata per l'aggiornamento della sola password
      */
     public static UpdateCredentialsRequest forPasswordUpdate(String oldUsername, String oldPsw, String newPsw) {
         return new UpdateCredentialsRequest(oldUsername, oldPsw, null, newPsw);

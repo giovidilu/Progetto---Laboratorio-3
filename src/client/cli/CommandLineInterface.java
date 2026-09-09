@@ -34,7 +34,12 @@ import common.protocol.response.payload.MistakeHistogram;
 import common.protocol.response.payload.PlayerStatsPayload;
 
 /**
- * Interfaccia a riga di comando per l'interazione del giocatore con il sistema Connections.
+ * Gestore dell'interfaccia a riga di comando (CLI) per l'interazione dell'utente.
+ * <p>
+ * Coordina il ciclo di acquisizione dei comandi da console, l'inoltro delle richieste
+ * sincrone al server tramite connessione TCP persistente e anche  della gestione dello stato
+ * di autenticazione locale del giocatore, inclusa la ricezione asincrona UDP.
+ * Non è thread-safe ed è concepita per essere eseguita sul main thread del client.
  */
 public class CommandLineInterface {
     private final ServerConnection serverConnection;
@@ -44,6 +49,12 @@ public class CommandLineInterface {
     private String currentUsername;
     private UdpNotificationListener udpListener;
 
+    /**
+     * Inizializza l'interfaccia CLI associandola alla connessione di rete e al flusso di input.
+     *
+     * @param serverConnection canale di comunicazione attivo verso il server
+     * @param scanner sorgente di lettura dell'input utente da console
+     */
     public CommandLineInterface(ServerConnection serverConnection, Scanner scanner) {
         this.serverConnection = serverConnection;
         this.scanner = scanner;
@@ -52,6 +63,13 @@ public class CommandLineInterface {
         this.udpListener = null;
     }
 
+    /**
+     * Avvia il ciclo principale di lettura dei comandi e interazione con l'utente.
+     * <p>
+     * Il metodo è bloccante e termina solo quando l'utente sceglie esplicitamente di uscire
+     * o a seguito di un errore fatale di I/O sulla connessione di rete.
+     * Prima di fare il return, garantisce sempre l'arresto e il rilascio delle risorse UDP ausiliarie.
+     */
     public void run() {
         boolean running = true;
         System.out.println("=== Benvenuto in Connections ===");
@@ -86,6 +104,17 @@ public class CommandLineInterface {
         }
     }
 
+    /**
+     * Elabora l'azione selezionata dall'utente in base allo stato corrente di sessione.
+     * <p>
+     * Ha effetti collaterali: invia richieste TCP al server, aggiorna lo stato interno di sessione
+     * ({@code loggedIn}, {@code currentUsername}) e avvia/arresta il listener UDP asincrono in fase
+     * di login/logout.
+     *
+     * @param choice opzione numerica selezionata
+     * @return {@code true} se il ciclo principale deve continuare, {@code false} se è richiesta
+     *         la terminazione del client o se si è verificato un errore fatale di connessione
+     */
     private boolean handleChoice(int choice) {
         if (!loggedIn) {
             switch (choice) {

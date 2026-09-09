@@ -36,6 +36,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Task worker eseguito su thread pool per gestire l'intero ciclo di vita di una connessione client TCP.
+ * <p>
+ * Decodifica i messaggi JSON ricevuti, esegue il dispatching ai metodi handler appropriati tramite
+ * tabella di comandi e invia le risposte di protocollo. Gestisce lo stato locale di autenticazione
+ * del socket garantendo la pulizia della sessione e la chiusura delle risorse al momento della disconnessione.
+ * Ogni istanza è confinata sul singolo thread che la esegue.
+ */
 public class ClientHandler implements Runnable {
     private static final boolean DEBUG = false;
 
@@ -51,6 +59,15 @@ public class ClientHandler implements Runnable {
 
     private String loggedInUsername;
 
+    /**
+     * Costruisce l'handler per il socket client collegando i servizi e repository condivisi.
+     *
+     * @param socket socket TCP associato al client connesso
+     * @param userRepository repository condiviso degli utenti
+     * @param gameRepository repository condiviso dei record di gioco
+     * @param sessionManager gestore delle sessioni attive e degli endpoint UDP
+     * @param gameManager coordinatore della logica di gioco globale
+     */
     public ClientHandler(Socket socket, UserRepository userRepository, GameRepository gameRepository, SessionManager sessionManager, GameManager gameManager) {
         this.socket = socket;
         this.userRepository = userRepository;
@@ -77,6 +94,12 @@ public class ClientHandler implements Runnable {
         commandMap.put("requestPlayerStats", this::handleRequestPlayerStats);
     }
 
+    /**
+     * Ciclo principale di lettura riga per riga (stream delimitato da newline), elaborazione
+     * dei comandi e scrittura delle risposte sul canale TCP.
+     * <p>
+     * Al termine garantisce il rilascio della sessione e la chiusura ordinata del socket.
+     */
     @Override
     public void run() {
         System.out.println("[WORKER] Gestione client avviata su thread: " + Thread.currentThread().getName());
@@ -102,6 +125,9 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    /**
+     * Valida sintatticamente la stringa JSON e ne indirizza l'elaborazione al gestore associato.
+     */
     private ServerResponse<?> processRequest(String rawJson) {
         try {
             JsonElement element = JsonParser.parseString(rawJson);
@@ -129,6 +155,9 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    /**
+     * Libera le risorse di rete e rimuove l'eventuale sessione attiva dal {@link SessionManager}.
+     */
     private void cleanup() {
         if (loggedInUsername != null) {
             sessionManager.logout(loggedInUsername);
@@ -143,8 +172,6 @@ public class ClientHandler implements Runnable {
             System.err.println("[CLIENT] Errore durante la chiusura del socket: " + e.getMessage());
         }
     }
-
-    // --- Gestori delle operazioni ---
 
     private ServerResponse<?> handleRegister(JsonObject request) {
         AuthRequest authReq = gson.fromJson(request, AuthRequest.class);
@@ -264,21 +291,17 @@ public class ClientHandler implements Runnable {
     }
 
     private ServerResponse<?> handleSubmitProposal(JsonObject request) {
-        // 1. Controllo di autenticazione
         if (this.loggedInUsername == null) {
             return ServerResponse.failWithMessage(ResponseCode.NOT_LOGGED_IN, "Operazione non consentita: utente non autenticato.");
         }
 
-        // 2. Deserializzazione e validazione di protocollo
         SubmitProposalRequest proposalReq = gson.fromJson(request, SubmitProposalRequest.class);
         if (proposalReq == null || proposalReq.getWords() == null) {
             return ServerResponse.failWithMessage(ResponseCode.BAD_REQUEST, "Formato richiesta non valido: campo 'words' mancante o nullo.");
         }
 
-        // 3. Esecuzione della proposta su GameManager
         ProposalResult result = this.gameManager.submitProposal(this.loggedInUsername, proposalReq.getWords());
 
-        // 4. Mappatura MoveOutcome -> ServerResponse
         switch (result.getMoveOutcome()) {
             case MALFORMED:
                 return ServerResponse.failWithMessage(
@@ -298,12 +321,10 @@ public class ClientHandler implements Runnable {
     }
 
     private ServerResponse<?> handleRequestGameInfo(JsonObject request) {
-       // 1. Controllo di autenticazione
         if (this.loggedInUsername == null) {
             return ServerResponse.failWithMessage(ResponseCode.NOT_LOGGED_IN, "Operazione non consentita: utente non autenticato.");
         }
 
-        // 2. Deserializzazione tramite GameQueryRequest (gameId è null se non presente nel JSON)
         GameQueryRequest queryReq = gson.fromJson(request, GameQueryRequest.class);
         Integer gameId = (queryReq != null) ? queryReq.getGameId() : null;
 
@@ -311,7 +332,6 @@ public class ClientHandler implements Runnable {
             gameId = null;
         }
 
-        // 3. Recupero dello stato della partita (attiva se gameId == null, storica altrimenti)
         GameInfoPayload payload = this.gameManager.getGameInfoForPlayer(this.loggedInUsername, gameId);
         if (payload == null) {
             return ServerResponse.failWithMessage(
@@ -320,7 +340,6 @@ public class ClientHandler implements Runnable {
             );
         }
 
-        // 4. Invio delle informazioni di gioco
         return ServerResponse.successWithPayload(ResponseCode.SUCCESS, payload);
     }
 
@@ -341,7 +360,6 @@ public class ClientHandler implements Runnable {
             return ServerResponse.failWithMessage(
                 ResponseCode.GAME_NOT_FOUND,
                 "Partita non trovata per l'ID specificato: " + gameId
-
             );
         }
 
@@ -349,24 +367,20 @@ public class ClientHandler implements Runnable {
     }
 
     private ServerResponse<?> handleRequestLeaderboard(JsonObject request) {
-        // 1. Controllo di autenticazione
         if (this.loggedInUsername == null) {
             return ServerResponse.failWithMessage(ResponseCode.NOT_LOGGED_IN, "Operazione non consentita: utente non autenticato.");
         }
 
-        // 2. Deserializzazione e validazione di protocollo tramite il DTO LeaderboardRequest
         common.dto.LeaderboardRequest leaderboardReq = gson.fromJson(request, common.dto.LeaderboardRequest.class);
         if (leaderboardReq == null || !leaderboardReq.isValid()) {
             return ServerResponse.failWithMessage(ResponseCode.BAD_REQUEST, "Parametri della richiesta classifica non validi o malformati.");
         }
 
-        // 3. Interrogazione del GameManager utilizzando il metodo corretto getTopPlayer()
         LeaderboardPayload payload = this.gameManager.getLeaderboard(
             leaderboardReq.getTopPlayer(), 
             leaderboardReq.getPlayerName()
         );
 
-        // 4. Controllo sull'esistenza del giocatore specifico (se era stato richiesto)
         if (payload == null && leaderboardReq.getPlayerName() != null && !leaderboardReq.getPlayerName().isBlank()) {
             return ServerResponse.failWithMessage(
                 ResponseCode.PLAYER_NOT_FOUND, 
@@ -374,7 +388,6 @@ public class ClientHandler implements Runnable {
             );
         }
 
-        // 5. Restituzione del successo con il payload della classifica
         return ServerResponse.successWithPayload(ResponseCode.SUCCESS, payload);
     }
 

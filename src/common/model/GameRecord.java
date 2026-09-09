@@ -6,6 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Record storico e statistico di una partita conclusa.
+ * <p>
+ * Mantiene la soluzione completa dei gruppi, le metriche aggregate di partecipazione
+ * e la mappa immutabile degli stati individuali di ciascun partecipante.
+ * Classe thread-safe per sola lettura.
+ */
 public class GameRecord {
     private final int gameId;
     private int totalParticipants;
@@ -16,6 +23,17 @@ public class GameRecord {
     private final List<WordGroup> allGroups;
     private final Map<String, PlayerGameState> playerStates;
 
+    /**
+     * Inizializza il record storico consolidando le strutture dati interne in collezioni non modificabili.
+     *
+     * @param gameId identificativo univoco della partita
+     * @param totalParticipants numero totale di giocatori che hanno partecipato alla sessione
+     * @param participantsFinished numero di giocatori che hanno completato la partita
+     * @param participantsWon numero di giocatori che hanno vinto
+     * @param averageScore punteggio medio conseguito dai partecipanti
+     * @param allGroups elenco dei 4 gruppi costituenti la soluzione
+     * @param playerStates mappa degli stati individuali indicizzata per username
+     */
     public GameRecord(int gameId, int totalParticipants, int participantsFinished, 
                       int participantsWon, double averageScore, 
                       List<WordGroup> allGroups, Map<String, PlayerGameState> playerStates) {

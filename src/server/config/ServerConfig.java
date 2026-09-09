@@ -6,6 +6,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+/**
+ * Gestore immutabile della configurazione del server.
+ * <p>
+ * Carica e valida all'avvio i parametri di rete (porte TCP e UDP), i percorsi
+ * di persistenza JSON e i vincoli temporali del gioco (durata turni, intervallo di flush).
+ * Classe thread-safe: dopo la costruzione lo stato interno è interamente in sola lettura.
+ */
 public class ServerConfig {
     private final String serverHost;
     private final int tcpPort;
@@ -18,6 +25,12 @@ public class ServerConfig {
     private final long flushInterval;
     private final long gameDurationMinutes;
 
+    /**
+     * Inizializza la configurazione caricando i valori dal file .properties specificato.
+     *
+     * @param configFilePath percorso del file di configurazione su disco
+     * @throws IOException se il file non esiste, si verificano errori di lettura o la configurazione non è valida
+     */
     public ServerConfig(String configFilePath) throws IOException {
         if (!Files.exists(Paths.get(configFilePath))) {
             throw new IOException("File di configurazione non trovato: " + configFilePath);
@@ -60,6 +73,9 @@ public class ServerConfig {
         }
     }
 
+    /**
+     * Valida i vincoli di consistenza dei parametri di configurazione.
+     */
     private void validate() {
         if (tcpPort < 1024 || tcpPort > 65535) {
             throw new IllegalArgumentException("La porta TCP deve essere compresa tra 1024 e 65535 (valore: " + tcpPort + ").");

@@ -1,13 +1,14 @@
 package common.protocol;
 
 /**
- * Costanti per le stringhe identificative delle operazioni
- * supportate dal protocollo di comunicazione JSON (Sezione 5).
+ * Definisce i letterali stringa associati ai comandi di protocollo supportati dal sistema.
+ * <p>
+ * Corrispondono ai valori ammessi per il campo {@code operation} nei messaggi JSON di richiesta.
+ * Classe di sole costanti, non istanziabile e thread-safe.
  */
 public final class OperationType {
 
     private OperationType() {
-        // Costruttore privato per impedire l'istanziazione
     }
 
     public static final String REGISTER = "register";

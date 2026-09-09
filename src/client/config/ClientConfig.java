@@ -4,10 +4,24 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * Gestore immutabile della configurazione del client.
+ * <p>
+ * Carica e valida all'istanziazione i parametri di rete dal file di proprietà.
+ * È una classe thread-safe perchè, dopo la costruzione lo stato è costituito
+ * da campi read-only.
+ */
 public class ClientConfig {
     private String serverHost;
     private int serverPort;
 
+    /**
+     * Carica i parametri di configurazione dal percorso specificato.
+     *
+     * @param configFilePath percorso del file .properties da caricare
+     * @throws IOException se si verificano errori nell'apertura o lettura del file
+     * @throws IllegalArgumentException se il file non contiene la porta o se il valore non è numerico
+     */
     public ClientConfig(String configFilePath) throws IOException {
         
         Properties properties = new Properties();

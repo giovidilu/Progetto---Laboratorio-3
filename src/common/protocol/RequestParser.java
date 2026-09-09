@@ -16,10 +16,27 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+/**
+ * Parser per i messaggi JSON di richiesta provenienti dai client.
+ * <p>
+ * Identifica la tipologia di richiesta tramite il discriminatore {@code operation}
+ * e ne deserializza il payload nel corrispondente sottotipo di {@link Request}.
+ * Stateless e thread-safe.
+ */
 public class RequestParser {
 
     private static final Gson gson = new Gson();
     
+    /**
+     * Converte una stringa JSON nella specifica istanza di {@link Request} corrispondente.
+     * <p>
+     * Query pura (nessun effetto collaterale).
+     *
+     * @param jsonString stringa JSON inviata dal client
+     * @return istanza tipizzata della richiesta deserializzata
+     * @throws IllegalArgumentException se l'operazione non è riconosciuta, il campo {@code operation} è assente
+     *                                  o la stringa JSON è sintatticamente malformata
+     */
     public static Request parseRequest(String jsonString)throws IllegalArgumentException{
         
         JsonElement stringElement = JsonParser.parseString(jsonString);
@@ -46,11 +63,7 @@ public class RequestParser {
             case "requestPlayerStats":
                 return gson.fromJson(stringObject, RequestPlayerStatsRequest.class);
             default:
-                // Ramo di fallback per operazioni non supportate o JSON malformati
                 throw new IllegalArgumentException("Unknown operation: " + operation);
         }
     }
 }
-
-
-

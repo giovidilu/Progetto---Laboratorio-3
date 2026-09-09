@@ -1,5 +1,12 @@
 package common.model;
 
+/**
+ * Modello di aggregazione per l'istogramma degli errori e degli esiti di un utente.
+ * <p>
+ * Mantiene i contatori relativi alle partite risolte (da 0 a 4 errori), a quelle
+ * fallite per superamento del limite errori e a quelle non concluse in tempo.
+ * Non è thread-safe: l'accesso concorrente in scrittura deve essere sincronizzato esternamente.
+ */
 public class MistakeHistogramData {
     private int solvedWith0Mistakes = 0;
     private int solvedWith1Mistake = 0;
@@ -9,6 +16,14 @@ public class MistakeHistogramData {
     private int failed = 0;
     private int notFinished = 0;
 
+    /**
+     * Incrementa il contatore delle partite vinte con lo specifico numero di errori indicato.
+     * <p>
+     * Metodo con effetto collaterale (mutazione di stato).
+     *
+     * @param mistakes numero di errori commessi (atteso tra 0 e 3 per partite vinte)
+     * @throws IllegalArgumentException se il parametro {@code mistakes} è negativo o non gestito
+     */
     public void incrementSolvedWith(int mistakes){
         switch (mistakes) {
             case 0:
@@ -24,7 +39,6 @@ public class MistakeHistogramData {
                 solvedWith3Mistakes++;
                 break;
             default:
-                // Gestione difensiva: un valore fuori range è un errore logico nel server
                 throw new IllegalArgumentException("Numero di errori non valido: " + mistakes);
         }
     }

@@ -3,6 +3,16 @@ package common.protocol.response.payload;
 import common.protocol.response.GameState;
 import java.util.List;
 
+/**
+ * Payload di risposta per l'operazione {@code requestGameInfo}, che descrive lo stato
+ * o l'esito di una partita (attiva o storica) per un determinato giocatore.
+ * <p>
+ * Contiene sia campi comuni (stato, errori commessi, punteggio) sia campi alternativi
+ * a seconda che la partita sia in corso (tempo residuo, parole rimanenti, gruppi indovinati)
+ * o conclusa (soluzione integrale con ripartizione finale e gruppi totalizzati).
+ * <p>
+ * Classe immutabile e thread-safe. L'istanziazione è vincolata ai factory method statici.
+ */
 public class GameInfoPayload {
 
     private final GameState state;
@@ -34,6 +44,16 @@ public class GameInfoPayload {
         this.numberCorrectGroups = numberCorrectGroups;
     }
 
+    /**
+     * Costruisce il payload per una partita attualmente in corso.
+     *
+     * @param timeRemaining secondi residui prima della scadenza della partita
+     * @param correctGroups lista dei gruppi di parole già indovinati dal giocatore
+     * @param words elenco delle parole residue ancora da raggruppare
+     * @param errors numero di proposte errate commesse nella sessione corrente
+     * @param score punteggio provvisorio accumulato
+     * @return istanza di {@link GameInfoPayload} per partita attiva
+     */
     public static GameInfoPayload OngoingGame(Integer timeRemaining, 
                                               List<List<String>> correctGroups, 
                                               List<String> words, 
@@ -42,6 +62,15 @@ public class GameInfoPayload {
         return  new GameInfoPayload(GameState.ONGOING, errors, score, timeRemaining, words, correctGroups, null, null); 
     }
 
+    /**
+     * Costruisce il payload per una partita conclusa (per vittoria, sconfitta o tempo scaduto).
+     *
+     * @param finalAllocations assegnazione corretta e completa delle 16 parole ai 4 gruppi tematici
+     * @param numberCorrectGroups totale dei gruppi corretti individuati dal giocatore
+     * @param errors errori totali commessi nel round
+     * @param score punteggio finale ottenuto
+     * @return istanza di {@link GameInfoPayload} per partita conclusa
+     */
     public static GameInfoPayload FinishedGame(List<List<String>> finalAllocations, 
                                                Integer numberCorrectGroups, 
                                                Integer errors, 

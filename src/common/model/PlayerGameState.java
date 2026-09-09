@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Rappresenta lo stato e l'avanzamento individuale di un giocatore nella partita.
+ * <p>
+ * Traccia i gruppi individuati, gli errori commessi e determina dinamicamente punteggio ed esito.
+ * Non è thread-safe: l'accesso e la mutazione devono essere coordinati tramite sincronizzazione esterna.
+ */
 public class PlayerGameState {
     private final String username;
     private final int gameId;
@@ -33,12 +39,26 @@ public class PlayerGameState {
         return mistakes;
     }
 
+    /**
+     * Aggiunge un gruppo indovinato all'elenco di quelli risolti se non già presente.
+     * <p>
+     * Metodo con effetto collaterale (modifica lo stato interno).
+     *
+     * @param group gruppo tematico corretto da registrare
+     */
     public void addCorrectGroup(WordGroup group){
         if(group != null && !this.correctGroups.contains(group)){
             this.correctGroups.add(group);
         }
     }
 
+    /**
+     * Incrementa di un'unità gli errori commessi dall'utente nella partita.
+     * <p>
+     * Metodo con effetto collaterale.
+     *
+     * @throws IllegalStateException se l'utente ha già raggiunto il limite di 4 errori consentiti
+     */
     public void incrementMistakes() {
         if (this.mistakes >= 4) {
             throw new IllegalStateException("Raggiunto il limite massimo di 4 errori consentiti.");
@@ -46,6 +66,14 @@ public class PlayerGameState {
         this.mistakes++;
     }
 
+    /**
+     * Calcola il punteggio attuale in base ai gruppi indovinati e agli errori commessi.
+     * <p>
+     * Formula applicata da specifica: +6 per ogni gruppo corretto (fino a 3) e -4 per ogni errore.
+     * Query pura (nessun effetto collaterale).
+     *
+     * @return punteggio corrente del giocatore
+     */
     public int getScore(){
         int scoredGroups = Math.min(this.correctGroups.size(), 3);
         int pointsFromCorrect = scoredGroups * 6;
@@ -53,6 +81,14 @@ public class PlayerGameState {
         return pointsFromCorrect + pointsFromMistakes;
     }
 
+    /**
+     * Valuta l'esito della partita per il giocatore in base allo stato raggiunto.
+     * <p>
+     * Query pura (nessun effetto collaterale).
+     *
+     * @return {@link GameOutcome#WON} con almeno 3 gruppi indovinati, {@link GameOutcome#LOST_BY_MISTAKES}
+     *         con 4 errori commessi, oppure {@code null} se la partita è ancora aperta
+     */
     public GameOutcome getOutcome(){
         if (this.correctGroups != null && this.correctGroups.size() >= 3) {
             return GameOutcome.WON;

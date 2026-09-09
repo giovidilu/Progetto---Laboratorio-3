@@ -39,8 +39,12 @@ import com.google.gson.Gson;
 
 /**
  * Gestore centralizzato del ciclo di vita del gioco Connections.
- * Mantiene lo stato della partita attiva e fornisce l'accesso allo stato
- * delle partite attive e storiche.
+ * <p>
+ * Coordina lo svolgimento dell'unica partita attiva a livello globale, valida e applica
+ * le proposte inviate dai giocatori, aggiorna le statistiche individuali e storiche degli utenti,
+ * gestisce il timer di round e orchestra l'inoltro delle notifiche UDP asincrone alla conclusione.
+ * <p>
+ * Thread-safety garantita tramite sincronizzazione intrinseca sui metodi di business logic e collezioni concorrenti.
  */
 public class GameManager {
 
@@ -58,6 +62,16 @@ public class GameManager {
     private int currentGameId;
     private Game activeGame;
 
+    /**
+     * Costruisce il gestore inizializzando le dipendenze e predisponendo la prima partita attiva.
+     *
+     * @param templates mappa dei template di puzzle disponibili indicizzata per id
+     * @param gameRepository repository per l'archiviazione dello storico partite
+     * @param userRepository repository per l'aggiornamento persistente dei profili utente
+     * @param sessionManager gestore delle sessioni e degli endpoint UDP attivi
+     * @param udpNotifier componente per la trasmissione di notifiche asincrone su datagrammi
+     * @param gameDurationMillis durata prefissata di ciascuna sessione globale in millisecondi
+     */
     public GameManager(Map<Integer, GameTemplate> templates, 
                        GameRepository gameRepository, 
                        UserRepository userRepository, 
@@ -78,6 +92,9 @@ public class GameManager {
         startNewActiveGame();
     }
 
+    /**
+     * Costruttore semplificato per ambienti di test privi di stack di notifica asincrona.
+     */
     public GameManager(Map<Integer, GameTemplate> templates, 
                        GameRepository gameRepository, 
                        UserRepository userRepository, 
@@ -85,6 +102,12 @@ public class GameManager {
         this(templates, gameRepository, userRepository, null, null, gameDurationMillis);
     }
 
+    /**
+     * Inizializza un nuovo turno globale incrementando il progressivo partita, selezionando ciclicamente
+     * il template corrispondente e azzerando gli stati provvisori dei giocatori correnti.
+     * <p>
+     * Metodo con effetto collaterale, sincronizzato e thread-safe.
+     */
     public synchronized void startNewActiveGame() {
         this.currentGameId = this.gameRepository.generateGameId();
 
@@ -106,6 +129,23 @@ public class GameManager {
         }
     }
 
+    /**
+     * Restituisce lo stato di gioco per {@code username}, sulla partita corrente
+     * (se {@code gameId} è {@code null}, {@code 0}, o coincide con quella attiva)
+     * oppure su una partita storica archiviata.
+     * <p>
+     * Se l'utente non ha ancora effettuato mosse nella partita richiesta (attiva o
+     * storica), i campi di progresso (errori, punteggio, gruppi indovinati) sono
+     * riportati a zero/vuoti, senza che ciò implichi la creazione di uno stato
+     * persistente per lui.
+     * <p>
+     * Query pura (nessun effetto collaterale) e thread-safe.
+     *
+     * @param username utente per cui recuperare lo stato
+     * @param gameId id della partita, o {@code null}/{@code 0} per quella corrente
+     * @return il payload della partita corrente o storica; {@code null} se
+     *         {@code gameId} non corrisponde ad alcuna partita storica esistente
+     */
     public synchronized GameInfoPayload getGameInfoForPlayer(String username, Integer gameId) {
         if (gameId == null || gameId == 0 || gameId.equals(this.currentGameId)) {
             int timeRemaining = (int) Math.max(0, this.activeGame.getEndTime() - System.currentTimeMillis());
@@ -185,6 +225,20 @@ public class GameManager {
         return result;
     }
 
+    /**
+     * Valida ed esegue una proposta di 4 parole per la partita corrente da parte dell'utente.
+     * <p>
+     * Se la sessione è scaduta o l'utente ha già vinto/perso, la mossa viene respinta senza mutare lo stato.
+     * Se le parole sono non valide, duplicate o già indovinate, viene restituito esito {@link MoveOutcome#MALFORMED}
+     * senza addebitare penalità. In caso di esito corretto o errato, aggiorna punteggio ed errori del giocatore,
+     * verificando le condizioni di vittoria (al 3° gruppo) o sconfitta (al 4° errore) e aggiornando le statistiche utente.
+     * <p>
+     * Metodo con effetti collaterali marcati, sincronizzato e thread-safe.
+     *
+     * @param username nome identificativo del giocatore
+     * @param words quadrupla di vocaboli proposti
+     * @return esito complessivo {@link ProposalResult} contenente risultato della mossa, eventuale esito finale e stato aggiornato
+     */
     public synchronized ProposalResult submitProposal(String username, List<String> words) {
         long now = System.currentTimeMillis();
         boolean isTimeExpired = (now >= this.activeGame.getEndTime());
@@ -294,11 +348,19 @@ public class GameManager {
         }
     }
 
+    /**
+     * Conclude la partita attiva consolidando le statistiche aggregate nel {@link GameRepository},
+     * registrando l'esito DNF per i partecipanti incompleti, avviando un nuovo round e inviando
+     * le notifiche asincrone UDP con le soluzioni integrali ai client autenticati.
+     * <p>
+     * Metodo con evidenti effetti collaterali di ciclo vita, sincronizzato e thread-safe.
+     *
+     * @return il {@link GameRecord} storicizzato relativo alla partita appena terminata
+     */
     public synchronized GameRecord rotateGame() {
         List<WordGroup> allGroups = this.activeGame.getGameTemplate().getGroups();
         Map<String, PlayerGameState> playerStatesSnapshot = new HashMap<>(this.activePlayerStates);
 
-        // 1. Calcolo statistiche aggregate
         int totalParticipants = playerStatesSnapshot.size();
         int participantsFinished = 0;
         int participantsWon = 0;
@@ -319,7 +381,6 @@ public class GameManager {
                 ? ((double) totalScoreSum / totalParticipants)
                 : 0.0;
 
-        // 2. Creazione e archiviazione del GameRecord
         int finishedGameId = this.currentGameId;
         GameRecord finishedRecord = new GameRecord(
             finishedGameId,
@@ -332,17 +393,14 @@ public class GameManager {
         );
         this.gameRepository.addGameRecord(finishedRecord);
 
-        // 3. Aggiornamento statistiche persistenti per chi non ha concluso
         for (PlayerGameState state : playerStatesSnapshot.values()) {
             if (state.getOutcome() == null) {
                 updateUserStats(state.getUsername(), GameOutcome.DID_NOT_FINISH, state.getMistakes(), state.getScore());
             }
         }
 
-        // 4. Avanzamento del ciclo di vita: inizializzazione della nuova partita attiva
         startNewActiveGame();
 
-        // 5. Invio notifiche asincrone UDP a tutti i client autenticati
         if (this.udpNotifier != null && this.sessionManager != null) {
             GameStatsPayload finishedStats = GameStatsPayload.finishedGame(
                 finishedRecord.getTotalParticipants(),
@@ -375,6 +433,14 @@ public class GameManager {
         return finishedRecord;
     }
 
+    /**
+     * Restituisce le statistiche aggregate di una partita attiva o archiviata.
+     * <p>
+     * Query pura (nessun effetto collaterale) e thread-safe.
+     *
+     * @param gameId identificativo della partita, oppure {@code null}/{@code 0} per quella in corso
+     * @return payload {@link GameStatsPayload} con le metriche calcolate; {@code null} se la partita richiesta non esiste
+     */
     public synchronized GameStatsPayload getGameStats(Integer gameId) {
         if (gameId == null || gameId == 0 || gameId.equals(this.currentGameId)) {
             int timeRemaining = (int) Math.max(0, this.activeGame.getEndTime() - System.currentTimeMillis());
@@ -410,6 +476,16 @@ public class GameManager {
         );
     }
 
+    /**
+     * Calcola la classifica globale ordinata per punteggio decrescente e username alfabetico.
+     * <p>
+     * Supporta il filtraggio per podio/top-K o per singolo giocatore.
+     * Query pura (nessun effetto collaterale) e thread-safe.
+     *
+     * @param topPlayers numero massimo di posizioni da restituire (o {@code null} per tutti)
+     * @param playerName eventuale username per cui estrarre solo la posizione individuale
+     * @return il payload {@link LeaderboardPayload}; {@code null} se {@code playerName} non esiste a sistema
+     */
     public synchronized LeaderboardPayload getLeaderboard(Integer topPlayers, String playerName) {
         List<User> allUsers = this.userRepository.getAllUsers();
 
@@ -450,6 +526,14 @@ public class GameManager {
         return new LeaderboardPayload(finalLeaderboard);
     }
 
+    /**
+     * Restituisce il profilo statistico storico dell'utente indicato (partite, percentuali, streak, istogramma).
+     * <p>
+     * Query pura (nessun effetto collaterale) e thread-safe.
+     *
+     * @param username utente di cui estrarre le metriche
+     * @return payload {@link PlayerStatsPayload} popolato; {@code null} se l'utente non è registrato
+     */
     public synchronized PlayerStatsPayload getPlayerStats(String username) {
         User user = userRepository.getUser(username);
         if (user == null) {
@@ -488,6 +572,11 @@ public class GameManager {
         return this.activeGame;
     }
 
+    /**
+     * Avvia l'esecutore periodico che pianifica la rotazione automatica del gioco allo scadere del round.
+     * <p>
+     * Thread-safe e idempotente.
+     */
     public void start() {
         synchronized (lifecycleLock) {
             if (this.scheduler != null && !this.scheduler.isShutdown()) {
@@ -511,6 +600,11 @@ public class GameManager {
         }
     }
 
+    /**
+     * Arresta in modo ordinato il timer periodico di avanzamento turni.
+     * <p>
+     * Thread-safe.
+     */
     public void stop() {
         ScheduledExecutorService exec;
         synchronized (lifecycleLock) {

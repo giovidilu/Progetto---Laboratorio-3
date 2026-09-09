@@ -1,5 +1,11 @@
 package common.protocol.request;
 
+/**
+ * Classe base astratta per richieste indirizzate a una specifica partita o alla partita attiva.
+ * <p>
+ * Un identificativo {@code null} segnala implicitamente l'interesse verso la sessione corrente.
+ * Immutabile e thread-safe.
+ */
 public abstract class GameIdentifierRequest extends Request {
     private final Integer gameId;
 
@@ -17,6 +23,13 @@ public abstract class GameIdentifierRequest extends Request {
         return gameId;
     }
 
+    /**
+     * Verifica se la richiesta è rivolta alla partita in corso.
+     * <p>
+     * Query pura.
+     *
+     * @return {@code true} se {@code gameId} è nullo, {@code false} se punta a un id specifico
+     */
     public boolean isCurrentGame() {
         return gameId == null;
     }

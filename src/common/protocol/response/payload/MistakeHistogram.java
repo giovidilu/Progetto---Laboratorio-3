@@ -1,5 +1,13 @@
 package common.protocol.response.payload;
 
+/**
+ * Rappresentazione serializzabile JSON dell'istogramma degli errori personali di un utente.
+ * <p>
+ * Modella la distribuzione delle partite concluse con successo in base al numero di errori commessi
+ * (da 0 a 4), di quelle fallite al 4° errore e di quelle interrotte per tempo scaduto.
+ * <p>
+ * Classe immutabile e thread-safe.
+ */
 public class MistakeHistogram {
     private final int solvedWith0Mistakes;
     private final int solvedWith1Mistake;

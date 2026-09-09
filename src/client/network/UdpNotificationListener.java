@@ -12,6 +12,13 @@ import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+/**
+ * Ricevitore asincrono di notifiche UDP trasmesse dal server al termine delle partite.
+ * <p>
+ * Apre un {@link DatagramSocket} su porta effimera locale ed esegue un thread daemon
+ * dedicato all'ascolto e deserializzazione dei pacchetti di notifica JSON ricevuti.
+ * I metodi di controllo del ciclo di vita ({@code start}, {@code stop}) sono thread-safe.
+ */
 public class UdpNotificationListener {
 
     private final DatagramSocket socket;
@@ -19,8 +26,12 @@ public class UdpNotificationListener {
     private Thread listenerThread;
     private volatile boolean running;
 
+    /**
+     * Crea il listener allocando un {@link DatagramSocket} su una porta effimera libera.
+     *
+     * @throws SocketException se non è possibile allocare il socket UDP
+     */
     public UdpNotificationListener() throws SocketException {
-        // Apertura su porta effimera libera assegnata dal SO
         this.socket = new DatagramSocket(0);
         this.gson = new Gson();
         this.running = false;
@@ -30,6 +41,11 @@ public class UdpNotificationListener {
         return this.socket.getLocalPort();
     }
 
+    /**
+     * Avvia il thread daemon di ascolto dei pacchetti UDP se non è già in esecuzione.
+     * <p>
+     * Metodo thread-safe con side-effect sull'avvio del thread di background.
+     */
     public synchronized void start() {
         if (running) {
             return;
@@ -40,16 +56,24 @@ public class UdpNotificationListener {
         this.listenerThread.start();
     }
 
+    /**
+     * Arresta il loop di ricezione e rilascia il socket UDP sottostante.
+     * <p>
+     * Metodo thread-safe: chiude il socket forzando lo sblocco di eventuali letture bloccanti.
+     */
     public synchronized void stop() {
         this.running = false;
         if (socket != null && !socket.isClosed()) {
-            socket.close(); // Sblocca socket.receive(...) sollevando SocketException
+            socket.close();
         }
         if (listenerThread != null) {
             listenerThread.interrupt();
         }
     }
 
+    /**
+     * Loop eseguito dal thread daemon per ricevere ed elaborare i datagrammi in arrivo.
+     */
     private void listenLoop() {
         byte[] buffer = new byte[4096];
 
@@ -71,7 +95,6 @@ public class UdpNotificationListener {
                 }
 
             } catch (SocketException e) {
-                // Interruzione normale del socket causata da stop()
                 if (!running) {
                     break;
                 }

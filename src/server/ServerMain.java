@@ -22,10 +22,12 @@ import java.util.concurrent.TimeUnit;
 import common.model.GameTemplate;
 
 /**
- * Classe principale del Server di gioco "Connections".
- * Si occupa dell'inizializzazione dei repository, dell'avvio dei servizi
- * di persistenza, della gestione del ciclo di vita del ServerSocket TCP
- * e del dispatching concorrente delle connessioni client verso un thread pool.
+ * Entry point e coordinatore principale del server multithreaded del gioco Connections[cite: 50, 58].
+ * <p>
+ * Inizializza i repository in memoria dai file JSON, carica i template di gioco, avvia i servizi
+ * periodici in background (gestione partite e persistenza) e accetta le connessioni TCP in ingresso
+ * inoltrandone l'esecuzione al thread pool dinamico dei worker[cite: 50, 58]. Registra uno shutdown hook
+ * per rilasciare ordinatamente le risorse di rete ed eseguire il flush finale su disco[cite: 50].
  */
 public class ServerMain {
     private final ServerConfig config;
@@ -42,31 +44,26 @@ public class ServerMain {
     private volatile boolean running;
 
     /**
-     * Costruttore: carica i dati persistenti da disco (fail-fast) e
-     * inizializza le strutture dati condivise e il thread pool.
+     * Inizializza tutti i componenti del server, carica i dati persistenti da disco e predispone il thread pool.
      *
-     * @param config Configurazione caricata da file properties.
-     * @throws IOException Se il caricamento dei dati da disco fallisce o se il bind UDP fallisce.
+     * @param config configurazione caricata da file properties
+     * @throws IOException se si verificano errori nel caricamento da disco o nell'apertura del canale UDP
      */
     public ServerMain(ServerConfig config) throws IOException {
         this.config = config;
 
-        // 1. Inizializzazione e caricamento dati su memoria centrale
         this.userRepository = new UserRepository(config.getUserDbPath());
         this.gameRepository = new GameRepository(config.getGameDbPath());
 
         this.userRepository.loadFromDisk();
         this.gameRepository.loadFromDisk();
 
-        // 2. Caricamento template (firma reale: costruttore senza argomenti + loadTemplates(path))
         GameTemplateLoader templateLoader = new GameTemplateLoader();
         Map<Integer, GameTemplate> templates = templateLoader.loadTemplates(config.getWordsFilePath());
 
-        // 3. Inizializzazione gestore sessioni e canale UDP per notifiche asincrone
         this.sessionManager = new SessionManager();
         this.udpNotifier = new UdpNotifier(config.getUdpPort());
 
-        // 4. Inizializzazione GameManager con costruttore completo a 6 parametri
         long gameDurationMillis = TimeUnit.MINUTES.toMillis(config.getGameDurationMinutes());
         this.gameManager = new GameManager(
             templates, 
@@ -77,7 +74,6 @@ public class ServerMain {
             gameDurationMillis
         );
 
-        // 5. Inizializzazione del gestore del salvataggio periodico su disco
         this.persistenceManager = new PersistenceManager(
             this.userRepository,
             this.gameRepository,
@@ -85,32 +81,30 @@ public class ServerMain {
             TimeUnit.MINUTES
         );
 
-        // 6. Thread pool dinamico per gestire i thread worker dei client
         this.clientThreadPool = Executors.newCachedThreadPool();
         this.running = true;
     }
 
     /**
-     * Avvia il server TCP e i relativi servizi di background.
+     * Avvia i servizi in background, registra lo shutdown hook e si pone in ascolto bloccante sul socket TCP.
      *
-     * @throws IOException Se l'acquisizione della porta TCP fallisce (es. BindException).
+     * @throws IOException se fallisce il bind della porta TCP
      */
     public void start() throws IOException {
-        // Registrazione dello Shutdown Hook per la terminazione pulita
         registerShutdownHook();
 
-        // Apertura del socket TCP sulla porta configurata
         this.serverSocket = new ServerSocket(config.getTcpPort());
         System.out.println("[SERVER] In ascolto sulla porta TCP: " + config.getTcpPort() + " e porta UDP: " + config.getUdpPort());
 
-        // Avvio dei timer periodici per persistenza e turni di gioco
         this.persistenceManager.start();
         this.gameManager.start();
 
-        // Ciclo bloccante di ascolto e accettazione connessioni
         runServerLoop();
     }
 
+    /**
+     * Loop principale bloccante che accetta le connessioni TCP client e le delega al thread pool.
+     */
     private void runServerLoop() {
         while (running) {
             try {
@@ -125,7 +119,6 @@ public class ServerMain {
                 ));
 
             } catch (SocketException e) {
-                // Quando serverSocket viene chiuso durante lo shutdown, viene sollevata una SocketException
                 if (!running) {
                     break;
                 }
@@ -139,12 +132,14 @@ public class ServerMain {
         }
     }
 
+    /**
+     * Configura il thread di arresto ordinato (shutdown hook) della JVM per la chiusura a cascata delle risorse.
+     */
     private void registerShutdownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("\n[SHUTDOWN] Arresto del server avviato...");
             this.running = false;
 
-            // 1. Chiusura del ServerSocket TCP per non accettare nuove connessioni
             if (serverSocket != null && !serverSocket.isClosed()) {
                 try {
                     serverSocket.close();
@@ -153,7 +148,6 @@ public class ServerMain {
                 }
             }
 
-            // 2. Chiusura del thread pool dei client
             clientThreadPool.shutdown();
             try {
                 if (!clientThreadPool.awaitTermination(5, TimeUnit.SECONDS)) {
@@ -164,17 +158,14 @@ public class ServerMain {
                 Thread.currentThread().interrupt();
             }
 
-            // 3. Arresto di GameManager prima del socket UDP
             if (gameManager != null) {
                 gameManager.stop();
             }
 
-            // 4. Chiusura del socket UDP del server
             if (udpNotifier != null) {
                 udpNotifier.close();
             }
 
-            // 5. Arresto e flush finale su disco
             if (persistenceManager != null) {
                 persistenceManager.stop();
             }
@@ -183,6 +174,11 @@ public class ServerMain {
         }));
     }
 
+    /**
+     * Avvia l'applicazione server caricando la configurazione iniziale dal percorso predefinito.
+     *
+     * @param args argomenti passati da riga di comando (non utilizzati)
+     */
     public static void main(String[] args) {
         try {
             ServerConfig config = new ServerConfig(CONFIG_PATH);

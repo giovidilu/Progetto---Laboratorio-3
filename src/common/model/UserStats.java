@@ -1,9 +1,12 @@
 package common.model;
 
 /**
- * Mantiene e aggiorna le statistiche aggregate e storiche di un utente.
- * Tutti i metodi di lettura e scrittura sono sincronizzati sul monitor
- * dell'istanza (this) per garantire consistenza e visibilità in contesti concorrenti.
+ * Traccia e unisce le metriche storiche e le prestazioni complessive di un utente.
+ * <p>
+ * Mantiene il totale delle partite giocate, vinte, perse, le sequenze di vittorie (streak),
+ * i puzzle risolti senza errori e l'istogramma dettagliato degli errori.
+ * Thread-safe: tutte le operazioni di lettura e mutazione sono sincronizzate sul monitor
+ * dell'istanza ({@code this}).
  */
 public class UserStats {
     private int totalScore;
@@ -26,6 +29,13 @@ public class UserStats {
         this.mistakeHistogram = new MistakeHistogramData();
     }
 
+    /**
+     * Restituisce i dati dell'istogramma degli errori, istanziandoli se non presenti.
+     * <p>
+     * Thread-safe e sincronizzato.
+     *
+     * @return istanza di {@link MistakeHistogramData} associata all'utente
+     */
     public synchronized MistakeHistogramData getMistakeHistogramData() {
         if (this.mistakeHistogram == null) {
             this.mistakeHistogram = new MistakeHistogramData();
@@ -38,11 +48,14 @@ public class UserStats {
     }
 
     /**
-     * Registra l'esito di una partita conclusa aggiornando atomica-mente punteggio e metriche storiche.
+     * Registra l'esito di una partita conclusa, aggiornando atomicamente punteggio cumulativo,
+     * contatori di gioco, streak e istogramma degli errori.
+     * <p>
+     * Metodo con effetto collaterale (mutazione di stato), thread-safe e sincronizzato.
      *
-     * @param outcome  Esito della partita (WON, LOST_BY_MISTAKES, DID_NOT_FINISH).
-     * @param mistakes Numero di errori commessi durante la partita.
-     * @param score    Punteggio netto conseguito nella partita.
+     * @param outcome  esito della partita (se {@code null} viene trattato come {@link GameOutcome#DID_NOT_FINISH})
+     * @param mistakes numero di errori commessi durante il match
+     * @param score    punteggio netto conseguito (può essere positivo o negativo)
      */
     public synchronized void recordGameResult(GameOutcome outcome, int mistakes, int score) {
         this.totalScore += score;
@@ -125,6 +138,13 @@ public class UserStats {
         return perfectPuzzle;
     }
 
+    /**
+     * Calcola la percentuale di vittorie sulle partite giocate.
+     * <p>
+     * Query pura, thread-safe e sincronizzata.
+     *
+     * @return percentuale di vittorie (0.0 se non ci sono partite giocate)
+     */
     public synchronized double getWinRate() {
         if (gamesPlayed == 0) {
             return 0.0;
@@ -136,6 +156,13 @@ public class UserStats {
         return getLossRate();
     }
 
+    /**
+     * Calcola la percentuale di sconfitte sulle partite giocate.
+     * <p>
+     * Query pura, thread-safe e sincronizzata.
+     *
+     * @return percentuale di sconfitte (0.0 se non ci sono partite giocate)
+     */
     public synchronized double getLossRate() {
         if (gamesPlayed == 0) {
             return 0.0;

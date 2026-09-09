@@ -1,5 +1,14 @@
 package common.protocol.response.payload;
 
+/**
+ * Payload di risposta per l'operazione {@code requestPlayerStats}, modellato secondo
+ * le specifiche statistiche personali in stile New York Times Connections.
+ * <p>
+ * Riassume partite completate, percentuali di vittoria/sconfitta, serie di vittorie consecutive
+ * (corrente e massima), partite perfette a zero errori e istogramma dettagliato.
+ * <p>
+ * Classe immutabile e thread-safe.
+ */
 public class PlayerStatsPayload {
     private final int puzzlesCompleted;
     private final double winRate;

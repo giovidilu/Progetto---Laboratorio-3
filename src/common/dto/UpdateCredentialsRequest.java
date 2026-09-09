@@ -1,5 +1,11 @@
 package common.dto;
 
+/**
+ * Oggetto di trasferimento dati (DTO) per la richiesta di modifica credenziali dell'utente.
+ * <p>
+ * Consente l'aggiornamento separato o combinato di username e password,
+ * a fronte della presentazione valida delle credenziali correnti.
+ */
 public class UpdateCredentialsRequest {
     private String oldUsername;
     private String oldPsw;
@@ -31,6 +37,14 @@ public class UpdateCredentialsRequest {
         return newPsw;
     }
 
+    /**
+     * Valida la richiesta verificando la presenza delle credenziali correnti
+     * e che almeno uno dei due nuovi parametri sia specificato e valido
+     * <p>
+     * Query pura (nessun effetto collaterale).
+     *
+     * @return {@code true} se i vincoli formali sono soddisfatti, {@code false} altrimenti
+     */
     public boolean isValid(){
         if(oldUsername == null || oldUsername.isBlank() || oldPsw == null || oldPsw.isBlank()){
             return false;

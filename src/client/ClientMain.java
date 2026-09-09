@@ -6,9 +6,20 @@ import client.cli.CommandLineInterface;
 import client.config.ClientConfig;
 import client.network.ServerConnection;
 
+/**
+ * Entry point dell'applicazione client per il gioco Connections.
+ * <p>
+ * Inizializza la configurazione di rete leggendo il file di configurazione statico,
+ * stabilisce la connessione con il server e avvia l'interfaccia testuale interattiva
+ */
 public class ClientMain {
     private static final String CONFIG_PATH = "config/client.properties";
     
+    /**
+     * Punto di ingresso principale del processo client.
+     *
+     * @param args argomenti passati da riga di comando (non utilizzati)
+     */
     public static void main(String[] args){
         System.out.println("Avvio del client in corso...");
 

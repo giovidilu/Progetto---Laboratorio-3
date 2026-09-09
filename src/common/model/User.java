@@ -1,5 +1,12 @@
 package common.model;
 
+/**
+ * Rappresenta un account utente registrato nel sistema con credenziali e profilo statistico.
+ * <p>
+ * Memorizza hash crittografico e relativo salt per la verifica sicura della password,
+ * assieme all'oggetto {@link UserStats} per la tracciatura delle metriche di gioco.
+ * Non è thread-safe: l'accesso e l'aggiornamento devono essere coordinati tramite repository o servizi sincronizzati.
+ */
 public class User {
     private String username;
     private String passwordHash;
@@ -38,6 +45,11 @@ public class User {
         this.salt = salt;
     }
 
+    /**
+     * Restituisce le statistiche dell'utente garantendone l'inizializzazione difensiva se nulle.
+     *
+     * @return istanza di {@link UserStats} associata al profilo
+     */
     public UserStats getStats(){
         if(this.stats ==  null){
             this.stats = new UserStats();
