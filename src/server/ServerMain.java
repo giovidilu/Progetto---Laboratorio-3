@@ -35,6 +35,7 @@ public class ServerMain {
     private final UdpNotifier udpNotifier;
     private final PersistenceManager persistenceManager;
     private final GameManager gameManager;
+    private static final String CONFIG_PATH = "config/server.properties";
 
     private final ExecutorService clientThreadPool;
     private ServerSocket serverSocket;
@@ -183,13 +184,8 @@ public class ServerMain {
     }
 
     public static void main(String[] args) {
-        String configPath = "config/server.properties";
-        if (args.length > 0) {
-            configPath = args[0];
-        }
-
         try {
-            ServerConfig config = new ServerConfig(configPath);
+            ServerConfig config = new ServerConfig(CONFIG_PATH);
             ServerMain server = new ServerMain(config);
             server.start();
         } catch (IOException e) {

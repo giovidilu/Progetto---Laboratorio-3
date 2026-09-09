@@ -19,9 +19,10 @@ public class TestShutdownHookMain {
     private static final String GAMES_FILE_PATH = "data/test_shutdown_games.json";
 
     public static void main(String[] args) {
-        String mode = (args.length > 0) ? args[0] : "run";
-
-        if ("verify".equalsIgnoreCase(mode)) {
+        // Se il file generato da runShutdownSimulation esiste già, esegue la verifica di lettura;
+        // altrimenti esegue la simulazione di scrittura e forzatura di arresto con System.exit(0).
+        File testUserFile = new File(USERS_FILE_PATH);
+        if (testUserFile.exists()) {
             verifyPersistedData();
         } else {
             runShutdownSimulation();
