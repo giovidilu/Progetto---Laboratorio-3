@@ -16,6 +16,12 @@ public class PlayerGameState {
     private final List<WordGroup> correctGroups;
     private int mistakes;
 
+    /**
+     * Inizializza lo stato di gioco per l'utente azzerando errori e gruppi risolti.
+     *
+     * @param username identificativo del giocatore
+     * @param gameId identificativo della sessione di gioco
+     */
     public PlayerGameState(String username, int gameId){
         this.username = username;
         this.gameId = gameId;
@@ -23,18 +29,22 @@ public class PlayerGameState {
         this.mistakes = 0;
     }
 
+    /** Restituisce il nome utente del giocatore. */
     public String getUsername(){
         return username;
     }
 
+    /** Restituisce l'identificativo del gioco cui fa riferimento lo stato. */
     public int getGameId(){
         return gameId;
     }
 
+    /** Restituisce la vista immutabile dell'elenco di gruppi corretti trovati. */
     public List<WordGroup> getCorrectGroups(){
         return Collections.unmodifiableList(correctGroups);
     }
 
+    /** Restituisce il numero di errori commessi finora. */
     public int getMistakes(){
         return mistakes;
     }

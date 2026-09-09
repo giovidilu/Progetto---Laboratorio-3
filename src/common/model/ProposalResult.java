@@ -13,6 +13,14 @@ public class ProposalResult {
     private final WordGroup guessedGroup;
     private final PlayerGameState updatedState;
 
+    /**
+     * Costruisce il risultato dell'elaborazione di una proposta.
+     *
+     * @param moveOutcome esito della mossa singola (CORRECT, WRONG, MALFORMED, ecc.)
+     * @param gameOutcome eventuale esito conclusivo del round (WON, LOST, o null se in corso)
+     * @param guessedGroup eventuale gruppo tematico individuato con successo
+     * @param updatedState snapshot dello stato aggiornato del giocatore
+     */
     public ProposalResult(MoveOutcome moveOutcome, GameOutcome gameOutcome, WordGroup guessedGroup, PlayerGameState updatedState) {
         this.moveOutcome = moveOutcome;
         this.gameOutcome = gameOutcome;
@@ -20,18 +28,22 @@ public class ProposalResult {
         this.updatedState = updatedState;
     }
 
+    /** Restituisce l'esito della specifica mossa effettuata. */
     public MoveOutcome getMoveOutcome() {
         return moveOutcome;
     }
 
+    /** Restituisce l'eventuale esito terminale del round per l'utente. */
     public GameOutcome getGameOutcome() {
         return gameOutcome;
     }
 
+    /** Restituisce il gruppo tematico indovinato con la proposta. */
     public WordGroup getGuessedGroup() {
         return guessedGroup;
     }
 
+    /** Restituisce lo snapshot dello stato del giocatore conseguente alla mossa. */
     public PlayerGameState getUpdatedState() {
         return updatedState;
     }

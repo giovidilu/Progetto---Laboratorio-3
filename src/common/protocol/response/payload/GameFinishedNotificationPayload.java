@@ -29,14 +29,17 @@ public class GameFinishedNotificationPayload {
         this.gameStats = Objects.requireNonNull(gameStats, "gameStats non può essere null");
     }
 
+    /** Restituisce l'identificativo della partita conclusa. */
     public int getGameId() {
         return gameId;
     }
 
+    /** Restituisce il resoconto individuale e le soluzioni della partita. */
     public GameInfoPayload getGameInfo() {
         return gameInfo;
     }
 
+    /** Restituisce le statistiche aggregate di partecipazione della partita. */
     public GameStatsPayload getGameStats() {
         return gameStats;
     }

@@ -6,7 +6,7 @@ package common.model;
  * Mantiene il totale delle partite giocate, vinte, perse, le sequenze di vittorie (streak),
  * i puzzle risolti senza errori e l'istogramma dettagliato degli errori.
  * Thread-safe: tutte le operazioni di lettura e mutazione sono sincronizzate sul monitor
- * dell'istanza ({@code this}).
+ * dell'istanza ({@code this})[cite: 87].
  */
 public class UserStats {
     private int totalScore;
@@ -18,6 +18,9 @@ public class UserStats {
     private int perfectPuzzle;
     private MistakeHistogramData mistakeHistogram;
 
+    /**
+     * Costruisce una nuova istanza di statistiche azzerando tutti i contatori iniziali.
+     */
     public UserStats() {
         this.totalScore = 0;
         this.gamesPlayed = 0;
@@ -43,6 +46,11 @@ public class UserStats {
         return this.mistakeHistogram;
     }
 
+    /**
+     * Alias per {@link #getMistakeHistogramData()}; restituisce i dati dell'istogramma errori.
+     *
+     * @return l'oggetto {@link MistakeHistogramData}
+     */
     public synchronized MistakeHistogramData getMistakeHistogram() {
         return getMistakeHistogramData();
     }
@@ -94,46 +102,57 @@ public class UserStats {
         }
     }
 
+    /** Restituisce il punteggio cumulativo totale dell'utente. */
     public synchronized int getTotalScore() {
         return totalScore;
     }
 
+    /** Restituisce il numero totale di partite giocate. */
     public synchronized int getGamesPlayed() {
         return gamesPlayed;
     }
 
+    /** Restituisce il numero totale di partite completate. */
     public synchronized int getPuzzlesCompleted() {
         return gamesPlayed;
     }
 
+    /** Restituisce il numero di partite vinte dall'utente. */
     public synchronized int getGamesWon() {
         return gamesWon;
     }
 
+    /** Restituisce il numero di puzzle vinti dall'utente. */
     public synchronized int getPuzzlesWon() {
         return gamesWon;
     }
 
+    /** Restituisce il numero di partite perse dall'utente. */
     public synchronized int getGamesLost() {
         return gamesLost;
     }
 
+    /** Restituisce il numero di puzzle persi dall'utente. */
     public synchronized int getPuzzlesLost() {
         return gamesLost;
     }
 
+    /** Restituisce la serie attuale di vittorie consecutive. */
     public synchronized int getCurrentStreak() {
         return currentStreak;
     }
 
+    /** Restituisce la massima serie di vittorie consecutive mai registrata. */
     public synchronized int getMaxStreak() {
         return maxStreak;
     }
 
+    /** Restituisce il conteggio delle partite risolte senza commettere alcun errore. */
     public synchronized int getPerfectPuzzle() {
         return perfectPuzzle;
     }
 
+    /** Restituisce il conteggio dei puzzle perfetti (0 errori). */
     public synchronized int getPerfectPuzzles() {
         return perfectPuzzle;
     }
@@ -152,6 +171,7 @@ public class UserStats {
         return ((double) gamesWon / gamesPlayed) * 100.0;
     }
 
+    /** Calcola la percentuale di sconfitte sulle partite giocate. */
     public synchronized double getLostRate() {
         return getLossRate();
     }

@@ -31,10 +31,12 @@ public class GameTemplate {
         }
     }
 
+    /** Restituisce l'identificativo numerico del template. */
     public int getGameId() {
         return gameId;
     }
 
+    /** Restituisce la lista immutabile dei gruppi tematici che compongono il puzzle. */
     public List<WordGroup> getGroups() {
         
         if (this.groups == null) {

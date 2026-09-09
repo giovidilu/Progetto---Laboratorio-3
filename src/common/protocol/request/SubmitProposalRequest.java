@@ -20,6 +20,7 @@ public class SubmitProposalRequest extends Request{
         this.words = words;
     }
 
+    /** Restituisce la lista di parole inviate nella proposta. */
     public List<String> getWords(){
         return words;
     }

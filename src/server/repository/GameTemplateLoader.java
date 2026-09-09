@@ -20,6 +20,15 @@ import java.util.Map;
  */
 public class GameTemplateLoader {
 
+    /**
+     * Esegue il parsing di un singolo blocco JSON corrispondente a una categoria tematica.
+     * <p>
+     * Legge la chiave 'theme' e l'array 'words', incapsulandoli in una nuova istanza di {@link WordGroup}.
+     *
+     * @param reader lettore dello stream JSON posizionato all'inizio dell'oggetto gruppo
+     * @return istanza di {@link WordGroup} popolata con tema e vocaboli
+     * @throws IOException se si verificano anomalie sintattiche o di I/O nel flusso JSON
+     */
     private WordGroup readGroup(JsonReader reader) throws IOException {
         String theme = null;
         List<String> words = new ArrayList<>();

@@ -13,6 +13,7 @@ public class User {
     private String salt;
     private UserStats stats;
 
+    /** Costruttore di default che inizializza le statistiche vuote. */
     public User(){
         this.stats = new UserStats();
     }
@@ -24,23 +25,32 @@ public class User {
         this.stats = new UserStats();
     }
 
+    /** Restituisce il nome utente. */
     public String getUsername(){
         return username;
     }
+
+    /** Imposta il nome utente dell'account. */
     public void setUsername(String username){
         this.username = username;
     }
 
+    /** Restituisce l'hash esadecimale della password. */
     public String getPasswordHash(){
         return passwordHash;
     }
+
+    /** Aggiorna l'hash della password memorizzato. */
     public void setPasswordHash(String passwordHash){
         this.passwordHash = passwordHash;
     }
 
+    /** Restituisce il salt crittografico dell'account. */
     public String getSalt(){
         return salt;
     }
+
+    /** Aggiorna il salt crittografico memorizzato. */
     public void setSalt(String salt){
         this.salt = salt;
     }
@@ -57,6 +67,7 @@ public class User {
         return this.stats;
     }
 
+    /** Imposta l'oggetto contenitore delle statistiche utente. */
     public void setStats(UserStats stats){
         this.stats = stats;
     }

@@ -11,6 +11,12 @@ public class RequestLeaderboardRequest extends Request {
     private final String playerName;
     private final Integer topPlayers;
 
+    /**
+     * Costruttore privato. L'istanziazione avviene tramite i factory method statici.
+     *
+     * @param playerName eventuale username di cui richiedere la posizione
+     * @param topPlayers eventuale limite K dei migliori punteggi
+     */
     private RequestLeaderboardRequest(String playerName, Integer topPlayers) {
         super("requestLeaderboard");
         this.playerName = playerName;
@@ -27,7 +33,7 @@ public class RequestLeaderboardRequest extends Request {
     }
 
     /**
-     * Costruisce la richiesta per i primi {@code topPlayers} classificati.
+     * Costruisce la richiesta per i primi {@code topPlayers} classificati[cite: 99].
      *
      * @param topPlayers numero massimo di posizioni di testa da includere
      * @return istanza di {@link RequestLeaderboardRequest} configurata per i top K
@@ -46,10 +52,12 @@ public class RequestLeaderboardRequest extends Request {
         return new RequestLeaderboardRequest(playerName, null);
     }
 
+    /** Restituisce l'eventuale nome utente filtrato nella richiesta. */
     public String getPlayerName() {
         return playerName;
     }
 
+    /** Restituisce il numero limite K di giocatori richiesti in testa alla classifica. */
     public Integer getTopPlayers() {
         return topPlayers;
     }

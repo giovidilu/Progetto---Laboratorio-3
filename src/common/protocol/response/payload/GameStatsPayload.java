@@ -27,6 +27,9 @@ public class GameStatsPayload {
     private final Integer participantsWon;
     private final Double averageScore;
 
+    /**
+     * Costruttore privato; l'istanziazione avviene tramite factory method statici dedicati.
+     */
     private GameStatsPayload(GameState state, Integer timeRemaining, Integer playersStillPlaying,
                               Integer playersFinished, Integer playersWon, Integer totalParticipants,
                               Integer participantsFinished, Integer participantsWon, Double averageScore) {
@@ -71,13 +74,30 @@ public class GameStatsPayload {
                 totalParticipants, participantsFinished, participantsWon, averageScore);
     }
 
+    /** Restituisce lo stato temporale della partita. */
     public GameState getState() { return state; }
+
+    /** Restituisce i secondi residui prima della conclusione della partita attiva. */
     public Integer getTimeRemaining() { return timeRemaining; }
+
+    /** Restituisce il numero di partecipanti con la partita ancora in corso. */
     public Integer getPlayersStillPlaying() { return playersStillPlaying; }
+
+    /** Restituisce il numero di partecipanti che hanno concluso il turno in corso. */
     public Integer getPlayersFinished() { return playersFinished; }
+
+    /** Restituisce il numero di partecipanti che hanno concluso con una vittoria il turno in corso. */
     public Integer getPlayersWon() { return playersWon; }
+
+    /** Restituisce il totale complessivo dei partecipanti registrati alla partita terminata. */
     public Integer getTotalParticipants() { return totalParticipants; }
+
+    /** Restituisce il totale dei partecipanti che hanno completato la partita terminata. */
     public Integer getParticipantsFinished() { return participantsFinished; }
+
+    /** Restituisce il totale dei partecipanti che hanno vinto la partita terminata. */
     public Integer getParticipantsWon() { return participantsWon; }
+
+    /** Restituisce la media aritmetica dei punteggi ottenuti da tutti i partecipanti. */
     public Double getAverageScore() { return averageScore; }
 }

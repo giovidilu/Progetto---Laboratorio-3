@@ -45,7 +45,12 @@ public class Response {
         return new Response(false, errorMessage, null);
     }
 
+    /** Verifica se l'operazione ha avuto successo. */
     public boolean isSuccess(){ return success; }
+
+    /** Restituisce l'eventuale messaggio di errore. */
     public String getError(){ return error; }
+
+    /** Restituisce il payload allegato. */
     public Object getData(){ return data; }
 }

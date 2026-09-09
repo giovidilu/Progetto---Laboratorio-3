@@ -8,8 +8,8 @@ import java.util.Properties;
  * Gestore immutabile della configurazione del client.
  * <p>
  * Carica e valida all'istanziazione i parametri di rete dal file di proprietà.
- * È una classe thread-safe perchè, dopo la costruzione lo stato è costituito
- * da campi read-only.
+ * È una classe thread-safe perchè, dopo la costruzione, lo stato è costituito
+ * da campi in sola lettura.
  */
 public class ClientConfig {
     private String serverHost;
@@ -44,10 +44,12 @@ public class ClientConfig {
         }
     }
 
+    /** Restituisce l'indirizzo host del server. */
     public String getServerHost(){
         return serverHost;
     }
 
+    /** Restituisce la porta TCP del server. */
     public int getServerPort(){
         return serverPort;
     }

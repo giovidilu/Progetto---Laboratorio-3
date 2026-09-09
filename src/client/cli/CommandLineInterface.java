@@ -37,7 +37,7 @@ import common.protocol.response.payload.PlayerStatsPayload;
  * Gestore dell'interfaccia a riga di comando (CLI) per l'interazione dell'utente.
  * <p>
  * Coordina il ciclo di acquisizione dei comandi da console, l'inoltro delle richieste
- * sincrone al server tramite connessione TCP persistente e anche  della gestione dello stato
+ * sincrone al server tramite connessione TCP persistente e la gestione dello stato
  * di autenticazione locale del giocatore, inclusa la ricezione asincrona UDP.
  * Non è thread-safe ed è concepita per essere eseguita sul main thread del client.
  */
@@ -68,7 +68,7 @@ public class CommandLineInterface {
      * <p>
      * Il metodo è bloccante e termina solo quando l'utente sceglie esplicitamente di uscire
      * o a seguito di un errore fatale di I/O sulla connessione di rete.
-     * Prima di fare il return, garantisce sempre l'arresto e il rilascio delle risorse UDP ausiliarie.
+     * Prima di ritornare, garantisce sempre l'arresto e il rilascio delle risorse UDP ausiliarie.
      */
     public void run() {
         boolean running = true;
@@ -87,6 +87,9 @@ public class CommandLineInterface {
         System.out.println("Chiusura del client in corso...");
     }
 
+    /**
+     * Stampa su standard output le opzioni del menu disponibili in base allo stato di login.
+     */
     private void printMenu() {
         System.out.println("\n--- MENU ---");
         if (!loggedIn) {
@@ -548,6 +551,12 @@ public class CommandLineInterface {
         }
     }
 
+    /**
+     * Legge e valida un numero intero da standard input preceduto da un prompt di testo.
+     *
+     * @param prompt messaggio visualizzato prima dell'acquisizione
+     * @return il valore intero inserito, oppure {@code null} se la riga inserita è vuota o non numerica
+     */
     private Integer readInt(String prompt) {
         if (!prompt.isEmpty()) {
             System.out.print(prompt);
@@ -564,6 +573,12 @@ public class CommandLineInterface {
         }
     }
 
+    /**
+     * Acquisisce una stringa di testo da console preceduta da un prompt.
+     *
+     * @param prompt messaggio mostrato all'utente
+     * @return la stringa letta priva di spazi superflui iniziali e finali
+     */
     private String readString(String prompt) {
         if (!prompt.isEmpty()) {
             System.out.print(prompt);
@@ -571,6 +586,9 @@ public class CommandLineInterface {
         return scanner.nextLine().trim();
     }
 
+    /**
+     * Rilascia e arresta il ricevitore di notifiche UDP asincrone se attivo.
+     */
     private void stopUdpListener() {
         if (this.udpListener != null) {
             this.udpListener.stop();

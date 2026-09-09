@@ -101,6 +101,9 @@ public class SessionManager {
         return endpoints;
     }
 
+    /**
+     * Invalida e rimuove tutte le sessioni correntemente attive.
+     */
     public void clear() {
         activeSessions.clear();
     }

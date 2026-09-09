@@ -37,12 +37,17 @@ public class UdpNotificationListener {
         this.running = false;
     }
 
+    /**
+     * Restituisce la porta locale effimera allocata dal sistema operativo per il socket UDP.
+     *
+     * @return numero di porta UDP locale
+     */
     public int getLocalPort() {
         return this.socket.getLocalPort();
     }
 
     /**
-     * Avvia il thread daemon di ascolto dei pacchetti UDP se non è già in esecuzione.
+     * Avvia il thread daemon di ascolto dei pacchetti UDP se non già in esecuzione.
      * <p>
      * Metodo thread-safe con side-effect sull'avvio del thread di background.
      */
@@ -111,6 +116,11 @@ public class UdpNotificationListener {
         }
     }
 
+    /**
+     * Formatta e stampa su standard output i dati contenuti nella notifica asincrona di fine partita ricevuta.
+     *
+     * @param payload dati aggregati di riepilogo e soluzioni del round terminato
+     */
     private void displayNotification(GameFinishedNotificationPayload payload) {
         GameInfoPayload info = payload.getGameInfo();
         GameStatsPayload stats = payload.getGameStats();

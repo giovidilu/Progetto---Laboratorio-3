@@ -43,19 +43,34 @@ public class MistakeHistogramData {
         }
     }
 
+    /** Incrementa il contatore delle partite perse per aver esaurito i tentativi consentiti. */
     public void incrementFailed() {
         failed++;
     }
 
+    /** Incrementa il conteggio delle partite concluse per decorrenza del tempo limite. */
     public void incrementNotFinished() {
         notFinished++;
     }
 
+    /** Restituisce il numero di partite risolte senza commettere errori. */
     public int getSolvedWith0Mistakes() { return solvedWith0Mistakes; }
+
+    /** Restituisce il numero di partite risolte con 1 errore. */
     public int getSolvedWith1Mistake() { return solvedWith1Mistake; }
+
+    /** Restituisce il numero di partite risolte con 2 errori. */
     public int getSolvedWith2Mistakes() { return solvedWith2Mistakes; }
+
+    /** Restituisce il numero di partite risolte con 3 errori. */
     public int getSolvedWith3Mistakes() { return solvedWith3Mistakes; }
+
+    /** Restituisce il numero di partite risolte con 4 errori. */
     public int getSolvedWith4Mistakes() { return solvedWith4Mistakes; }
+
+    /** Restituisce il numero di partite perse per raggiungimento del limite errori. */
     public int getFailed() { return failed; }
+
+    /** Restituisce il numero di partite non completate prima dello scadere del tempo. */
     public int getNotFinished() { return notFinished; }
 }

@@ -15,6 +15,13 @@ public class ServerResponse<T> {
     private final String message;
     private final T payload;
 
+    /**
+     * Costruttore privato; l'istanziazione avviene tramite factory method statici.
+     *
+     * @param status codice di stato o errore
+     * @param message messaggio descrittivo opzionale
+     * @param payload dati associati alla risposta
+     */
     private ServerResponse(ResponseCode status, String message, T payload){
         this.status = status;
         this.message = message;
@@ -56,14 +63,17 @@ public class ServerResponse<T> {
         return new ServerResponse<>(status,null,null);
     }
 
+    /** Restituisce il codice di stato della risposta. */
     public ResponseCode getStatus(){
         return status;
     }
 
+    /** Restituisce l'eventuale messaggio di dettaglio o errore associato. */
     public String getMessage(){
         return message;
     }
 
+    /** Restituisce il payload allegato alla risposta. */
     public T getPayload(){
         return payload;
     }

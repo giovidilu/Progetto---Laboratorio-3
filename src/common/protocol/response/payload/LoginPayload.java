@@ -35,19 +35,27 @@ public class LoginPayload {
         this.score = score;
     }
 
+    /** Restituisce l'insieme delle 16 parole della partita attiva in ordine casuale. */
     public List<String> getWords(){
         return words;
     }
 
+    /** Restituisce i gruppi già scoperti dall'utente nella sessione corrente. */
     public List<List<String>> getCorrectGroups(){
         return correctGroups;
     }
+
+    /** Restituisce il numero di errori commessi dall'utente nella sessione corrente. */
     public int getErrors(){
         return errors;
     }
+
+    /** Restituisce i secondi rimanenti prima del termine della sessione. */
     public int getTimeRemaining(){
         return timeRemaining;
     }
+
+    /** Restituisce il punteggio provvisorio accumulato nel round attivo. */
     public int getScore(){
         return score;
     }

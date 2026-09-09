@@ -20,6 +20,7 @@ public class LeaderboardPayload {
         this.entries = entries;
     }
 
+    /** Restituisce la lista delle voci che compongono la classifica. */
     public List<LeaderboardEntry> getEntries() {
         return entries;
     }

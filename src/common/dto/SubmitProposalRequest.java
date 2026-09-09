@@ -9,13 +9,16 @@ import java.util.List;
 public class SubmitProposalRequest {
     private List<String> words;
 
+    /** Costruttore vuoto per deserializzazione JSON. */
     public SubmitProposalRequest() {
     }
 
+    /** Costruisce la richiesta a partire da una lista di vocaboli. */
     public SubmitProposalRequest(List<String> words) {
         this.words = words;
     }
 
+    /** Restituisce l'elenco dei termini della proposta. */
     public List<String> getWords() {
         return words;
     }

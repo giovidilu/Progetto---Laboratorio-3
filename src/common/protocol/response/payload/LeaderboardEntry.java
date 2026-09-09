@@ -24,7 +24,12 @@ public class LeaderboardEntry {
         this.score = score;
     }
 
+    /** Restituisce la posizione in classifica (1-based). */
     public int getRank() { return rank; }
+
+    /** Restituisce il nome utente del giocatore. */
     public String getUsername() { return username; }
+
+    /** Restituisce il punteggio totale conseguito. */
     public int getScore() { return score; }
 }

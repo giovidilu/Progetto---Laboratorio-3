@@ -14,6 +14,14 @@ public class UpdateCredentialsRequest extends Request {
     private final String newUsername;
     private final String newPsw;
 
+    /**
+     * Costruttore privato. L'istanziazione dall'esterno deve avvenire tramite factory method statici.
+     *
+     * @param oldUsername username corrente
+     * @param oldPsw password corrente
+     * @param newUsername eventuale nuovo username
+     * @param newPsw eventuale nuova password
+     */
     private UpdateCredentialsRequest(String oldUsername, String oldPsw, String newUsername, String newPsw) {
         super("updateCredentials");
         this.oldUsername = oldUsername;
@@ -59,18 +67,22 @@ public class UpdateCredentialsRequest extends Request {
         return new UpdateCredentialsRequest(oldUsername, oldPsw, null, newPsw);
     }
 
+    /** Restituisce lo username corrente fornito per la verifica. */
     public String getOldUsername() {
         return oldUsername;
     }
 
+    /** Restituisce la password corrente fornita per la verifica. */
     public String getOldPsw() {
         return oldPsw;
     }
 
+    /** Restituisce il nuovo username da impostare, oppure {@code null}. */
     public String getNewUsername() {
         return newUsername;
     }
 
+    /** Restituisce la nuova password da impostare, oppure {@code null}. */
     public String getNewPsw() {
         return newPsw;
     }

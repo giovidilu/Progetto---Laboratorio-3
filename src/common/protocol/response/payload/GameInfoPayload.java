@@ -30,6 +30,9 @@ public class GameInfoPayload {
     private final List<List<String>> finalAllocations;
     private final Integer numberCorrectGroups;
 
+    /**
+     * Costruttore privato; l'istanziazione avviene tramite factory method statici dedicati.
+     */
     private GameInfoPayload(GameState state, Integer errors, Integer  score,
                             Integer  timeRemaining, List<String> words,
                             List<List<String>> correctGroups, List<List<String>> finalAllocations,
@@ -78,34 +81,42 @@ public class GameInfoPayload {
         return  new GameInfoPayload(GameState.FINISHED, errors, score, null, null, null, finalAllocations, numberCorrectGroups); 
     }
 
+    /** Restituisce lo stato temporale della partita (ONGOING o FINISHED). */
     public GameState getState(){
         return state;
     }
 
+    /** Restituisce il numero di errori commessi dall'utente nella partita. */
     public Integer getErrors(){
         return errors;
     }
 
+    /** Restituisce il punteggio maturato dall'utente nella partita. */
     public Integer getScore(){
         return score;
     }
 
+    /** Restituisce i secondi rimanenti prima del termine del match (null se concluso). */
     public Integer getTimeRemaining(){
         return timeRemaining;
     }
 
+    /** Restituisce le liste di parole dei gruppi già indovinati dal giocatore. */
     public List<List<String>> getCorrectGroups() {
         return correctGroups;
     }
 
+    /** Restituisce le parole non ancora raggruppate della partita corrente. */
     public List<String> getWords() {
         return words;
     }
 
+    /** Restituisce la composizione integrale corretta dei 4 gruppi di parole. */
     public List<List<String>> getFinalAllocation() {
         return finalAllocations;
     }
 
+    /** Restituisce il conteggio totale di gruppi individuati con successo. */
     public Integer getNumberCorrectGroups() {
         return numberCorrectGroups;
     }

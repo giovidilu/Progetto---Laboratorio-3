@@ -8,7 +8,10 @@ public class AuthRequest {
     private String psw;
     private Integer udpPort;
 
+    /** Restituisce lo username richiesto. */
     public String getUsername(){ return username; }
+
+    /** Restituisce la password in chiaro inviata. */
     public String getPsw(){ return psw; }
 
     /**
@@ -22,6 +25,7 @@ public class AuthRequest {
         return username != null && !username.isBlank() && psw != null && !psw.isBlank();
     }
 
+    /** Restituisce la porta UDP locale per la ricezione notifiche. */
     public Integer getUdpPort() {
         return udpPort;
     }

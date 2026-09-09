@@ -12,8 +12,17 @@ public class UpdateCredentialsRequest {
     private String newUsername;
     private String newPsw;
 
+    /** Costruttore di default per la deserializzazione JSON. */
     public UpdateCredentialsRequest(){}
 
+    /**
+     * Costruisce la richiesta specificando credenziali attuali e nuovi valori desiderati.
+     *
+     * @param oldUsername nome utente corrente
+     * @param oldPsw password corrente
+     * @param newUsername nuovo nome utente (può essere nullo se invariato)
+     * @param newPsw nuova password (può essere nulla se invariata)
+     */
     public UpdateCredentialsRequest(String oldUsername, String oldPsw, String newUsername, String newPsw){
         this.oldUsername = oldUsername;
         this.oldPsw = oldPsw;
@@ -21,18 +30,22 @@ public class UpdateCredentialsRequest {
         this.newPsw = newPsw;
     }
 
+    /** Restituisce l'attuale nome utente associato all'account. */
     public String getOldUsername(){
         return oldUsername;
     }
 
+    /** Restituisce l'attuale password dell'account. */
     public String getOldPsw(){
         return oldPsw;
     }
 
+    /** Restituisce il nuovo username specificato. */
     public String getNewUsername(){
         return newUsername;
     }
 
+    /** Restituisce la nuova password specificata. */
     public String getNewPsw(){
         return newPsw;
     }

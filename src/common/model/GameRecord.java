@@ -56,26 +56,32 @@ public class GameRecord {
         }
     }
 
+    /** Restituisce l'identificativo della partita registrata. */
     public int getGameId() {
         return gameId;
     }
 
+    /** Restituisce il numero totale di giocatori che hanno partecipato al round. */
     public int getTotalParticipants() {
         return totalParticipants;
     }
 
+    /** Restituisce il numero di partecipanti che hanno concluso la partita in anticipo. */
     public int getParticipantsFinished() {
         return participantsFinished;
     }
 
+    /** Restituisce il numero di partecipanti che hanno vinto la sessione. */
     public int getParticipantsWon() {
         return participantsWon;
     }
 
+    /** Restituisce il punteggio medio calcolato su tutti i partecipanti. */
     public double getAverageScore() {
         return averageScore;
     }
 
+    /** Restituisce la vista immutabile della soluzione completa dei 4 gruppi. */
     public List<WordGroup> getAllGroups() {
         if (this.allGroups == null) {
             return Collections.emptyList();
@@ -83,6 +89,7 @@ public class GameRecord {
         return Collections.unmodifiableList(this.allGroups);
     }
 
+    /** Restituisce la mappa immutabile degli stati finali di ciascun partecipante. */
     public Map<String, PlayerGameState> getPlayerStates() {
         if (this.playerStates == null) {
             return Collections.emptyMap();

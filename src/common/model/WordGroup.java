@@ -28,6 +28,7 @@ public class WordGroup {
         }
     }
 
+    /** Restituisce l'etichetta del tema del gruppo. */
     public String getTheme(){
         return theme;
     }

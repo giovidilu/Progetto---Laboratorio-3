@@ -94,34 +94,42 @@ public class ServerConfig {
         }
     }
 
+    /** Restituisce l'hostname o indirizzo di ascolto configurato per il server. */
     public String getServerHost() {
         return serverHost;
     }
 
+    /** Restituisce la porta TCP principale per le connessioni client. */
     public int getTcpPort() {
         return tcpPort;
     }
 
+    /** Restituisce la porta UDP configurata per le notifiche asincrone. */
     public int getUdpPort() {
         return udpPort;
     }
 
+    /** Restituisce il percorso del file JSON per la persistenza degli utenti. */
     public String getUserDbPath() {
         return userDbPath;
     }
 
+    /** Restituisce il percorso del file JSON per la persistenza dello storico partite. */
     public String getGameDbPath() {
         return gameDbPath;
     }
 
+    /** Restituisce il percorso del file contenente il dizionario delle parole e categorie. */
     public String getWordsFilePath() {
         return wordsFilePath;
     }
 
+    /** Restituisce l'intervallo periodico (in minuti) per il salvataggio su disco. */
     public long getFlushInterval() {
         return flushInterval;
     }
 
+    /** Restituisce la durata prefissata di ogni singola partita in minuti. */
     public long getGameDurationMinutes() {
         return gameDurationMinutes;
     }

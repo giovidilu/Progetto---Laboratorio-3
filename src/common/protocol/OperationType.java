@@ -8,6 +8,7 @@ package common.protocol;
  */
 public final class OperationType {
 
+    /** Costruttore privato per impedire l'istanziazione diretta. */
     private OperationType() {
     }
 

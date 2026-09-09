@@ -18,6 +18,17 @@ public class PlayerStatsPayload {
     private final int perfectPuzzles;
     private final MistakeHistogram mistakeHistogram;
 
+    /**
+     * Costruisce il payload aggregato con le statistiche personali dell'utente.
+     *
+     * @param puzzlesCompleted totale delle partite giocate
+     * @param winRate percentuale di vittorie
+     * @param lossRate percentuale di sconfitte per errori
+     * @param currentStreak sequenza corrente di vittorie consecutive
+     * @param maxStreak massima sequenza storica di vittorie consecutive
+     * @param perfectPuzzles totale di partite vinte con zero errori
+     * @param mistakeHistogram distribuzione statistica degli errori
+     */
     public PlayerStatsPayload(int puzzlesCompleted, double winRate, double lossRate, int currentStreak,
                                int maxStreak, int perfectPuzzles, MistakeHistogram mistakeHistogram) {
         this.puzzlesCompleted = puzzlesCompleted;
@@ -29,11 +40,24 @@ public class PlayerStatsPayload {
         this.mistakeHistogram = mistakeHistogram;
     }
 
+    /** Restituisce il numero totale di puzzle completati o tentati. */
     public int getPuzzlesCompleted() { return puzzlesCompleted; }
+
+    /** Restituisce la percentuale di puzzle vinti. */
     public double getWinRate() { return winRate; }
+
+    /** Restituisce la percentuale di puzzle persi. */
     public double getLossRate() { return lossRate; }
+
+    /** Restituisce la serie di vittorie consecutive attiva. */
     public int getCurrentStreak() { return currentStreak; }
+
+    /** Restituisce la massima serie di vittorie consecutive raggiunta. */
     public int getMaxStreak() { return maxStreak; }
+
+    /** Restituisce il conteggio di puzzle risolti con 0 errori. */
     public int getPerfectPuzzles() { return perfectPuzzles; }
+
+    /** Restituisce l'istogramma dettagliato degli errori e degli esiti. */
     public MistakeHistogram getMistakeHistogram() { return mistakeHistogram; }
 }

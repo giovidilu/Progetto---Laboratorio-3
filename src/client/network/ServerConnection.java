@@ -44,7 +44,7 @@ public class ServerConnection implements AutoCloseable {
     /**
      * Serializza la richiesta in formato JSON e la trasmette integralmente sul canale TCP.
      * <p>
-     * Metodo con side-effect sul socket sottostante, garantisce lo svuotamento completo
+     * Metodo con side-effect sul socket sottostante; garantisce lo svuotamento completo
      * del payload sul canale prima di ritornare.
      *
      * @param request oggetto richiesta da trasmettere

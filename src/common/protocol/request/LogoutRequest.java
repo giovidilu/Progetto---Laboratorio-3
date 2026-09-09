@@ -7,6 +7,7 @@ package common.protocol.request;
  */
 public class LogoutRequest extends Request{
 
+    /** Costruisce la richiesta impostando l'operazione di logout. */
     public LogoutRequest(){
         super("logout");
     }

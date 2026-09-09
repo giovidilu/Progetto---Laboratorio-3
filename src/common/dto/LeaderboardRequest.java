@@ -8,17 +8,21 @@ public class LeaderboardRequest {
     private String playerName;
     private Integer topPlayers;
 
+    /** Costruttore di default per deserializzazione. */
     public LeaderboardRequest(){}
 
+    /** Costruisce la richiesta specificando giocatore e limite posizioni. */
     public LeaderboardRequest(String playerName, Integer topPlayers){
         this.playerName = playerName;
         this.topPlayers = topPlayers;
     }
 
+    /** Restituisce il nome del giocatore di cui richiedere la posizione. */
     public String getPlayerName(){
         return playerName;
     }
 
+    /** Restituisce il limite di giocatori per i quali estrarre il podio. */
     public Integer getTopPlayer(){
         return topPlayers;
     }

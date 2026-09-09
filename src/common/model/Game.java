@@ -58,6 +58,7 @@ public class Game {
         this.shuffledWords = Collections.unmodifiableList(tempWords);
     }
 
+    /** Restituisce il template di gioco associato alla partita. */
     public GameTemplate getGameTemplate() {
         return gameTemplate;
     }
@@ -76,10 +77,12 @@ public class Game {
         return Collections.unmodifiableList(this.shuffledWords);
     }
 
+    /** Restituisce il timestamp epoch di avvio della partita in millisecondi. */
     public long getStartTime() {
         return startTime;
     }
 
+    /** Restituisce il timestamp epoch di conclusione della partita in millisecondi. */
     public long getEndTime() {
         return endTime;
     }

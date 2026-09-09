@@ -10,7 +10,7 @@ import client.network.ServerConnection;
  * Entry point dell'applicazione client per il gioco Connections.
  * <p>
  * Inizializza la configurazione di rete leggendo il file di configurazione statico,
- * stabilisce la connessione con il server e avvia l'interfaccia testuale interattiva
+ * stabilisce la connessione con il server e avvia l'interfaccia testuale interattiva.
  */
 public class ClientMain {
     private static final String CONFIG_PATH = "config/client.properties";

@@ -80,6 +80,9 @@ public class ClientHandler implements Runnable {
         initCommandMap();
     }
 
+    /**
+     * Registra i riferimenti a metodo per ciascuna operazione supportata nella tabella di dispatching.
+     */
     private void initCommandMap() {
         commandMap.put("register", this::handleRegister);
         commandMap.put("login", this::handleLogin);
@@ -127,6 +130,11 @@ public class ClientHandler implements Runnable {
 
     /**
      * Valida sintatticamente la stringa JSON e ne indirizza l'elaborazione al gestore associato.
+     * <p>
+     * Cattura e mappa eventuali errori sintattici in codici di errore BAD_REQUEST o INTERNAL_SERVER_ERROR.
+     *
+     * @param rawJson riga di testo ricevuta dal client
+     * @return risposta formattata prodotta dall'handler o risposta di errore
      */
     private ServerResponse<?> processRequest(String rawJson) {
         try {
@@ -173,6 +181,12 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    /**
+     * Gestisce la richiesta di registrazione di un nuovo utente generando salt e password hash.
+     *
+     * @param request payload JSON della richiesta contenente username e password
+     * @return esito SUCCESS se registrato, USERNAME_ALREADY_TAKEN se duplicato, o BAD_REQUEST se non valido
+     */
     private ServerResponse<?> handleRegister(JsonObject request) {
         AuthRequest authReq = gson.fromJson(request, AuthRequest.class);
         if (authReq == null || !authReq.isValid()) {
@@ -191,6 +205,12 @@ public class ClientHandler implements Runnable {
         return ServerResponse.successWithoutPayload(ResponseCode.SUCCESS);
     }
 
+    /**
+     * Autentica il client verificando hash e credenziali, registrando l'endpoint UDP in sessione.
+     *
+     * @param request payload JSON contenente username, password e porta UDP del client
+     * @return esito SUCCESS o codice di errore (INVALID_CREDENTIALS, BAD_REQUEST se già connesso
+     */
     private ServerResponse<?> handleLogin(JsonObject request) {
         if (this.loggedInUsername != null) {
             return ServerResponse.failWithMessage(ResponseCode.BAD_REQUEST, "Client già autenticato con l'utente: " + this.loggedInUsername);
@@ -226,6 +246,12 @@ public class ClientHandler implements Runnable {
         return ServerResponse.successWithoutPayload(ResponseCode.SUCCESS);
     }
 
+    /**
+     * Elabora l'aggiornamento sicuro di username e/o password previa verifica delle credenziali attuali.
+     *
+     * @param request payload JSON con vecchie e nuove credenziali
+     * @return risposta di conferma o errore relativo a credenziali errate o nome utente occupato
+     */
     private ServerResponse<?> handleUpdateCredentials(JsonObject request) {
         UpdateCredentialsRequest updateReq = gson.fromJson(request, UpdateCredentialsRequest.class);
         if (updateReq == null || !updateReq.isValid()) {
@@ -276,6 +302,12 @@ public class ClientHandler implements Runnable {
         return ServerResponse.successWithoutPayload(ResponseCode.SUCCESS);
     }
 
+    /**
+     * Termina la sessione dell'utente connesso liberando la risorsa sul SessionManager.
+     *
+     * @param request payload JSON della richiesta di logout
+     * @return esito SUCCESS se disconnesso, NOT_LOGGED_IN se il client non era autenticato
+     */
     private ServerResponse<?> handleLogout(JsonObject request) {
         if (this.loggedInUsername == null) {
             return ServerResponse.failWithMessage(ResponseCode.NOT_LOGGED_IN, "Operazione non valida: nessun utente autenticato su questa connessione.");
@@ -290,6 +322,12 @@ public class ClientHandler implements Runnable {
         return ServerResponse.successWithoutPayload(ResponseCode.SUCCESS);
     }
 
+    /**
+     * Sottomette a GameManager la proposta di 4 parole per la partita corrente da parte dell'utente.
+     *
+     * @param request payload JSON contenente l'array di parole proposte
+     * @return payload con ProposalResult se valido, o codice di errore di protocollo
+     */
     private ServerResponse<?> handleSubmitProposal(JsonObject request) {
         if (this.loggedInUsername == null) {
             return ServerResponse.failWithMessage(ResponseCode.NOT_LOGGED_IN, "Operazione non consentita: utente non autenticato.");
@@ -320,6 +358,12 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    /**
+     * Interroga lo stato della partita corrente o archiviata per il giocatore autenticato.
+     *
+     * @param request payload JSON con l'eventuale gameId desiderato
+     * @return risposta contenente {@link GameInfoPayload}, oppure GAME_NOT_FOUND
+     */
     private ServerResponse<?> handleRequestGameInfo(JsonObject request) {
         if (this.loggedInUsername == null) {
             return ServerResponse.failWithMessage(ResponseCode.NOT_LOGGED_IN, "Operazione non consentita: utente non autenticato.");
@@ -343,6 +387,12 @@ public class ClientHandler implements Runnable {
         return ServerResponse.successWithPayload(ResponseCode.SUCCESS, payload);
     }
 
+    /**
+     * Recupera le statistiche aggregate di una partita specifica o di quella in corso.
+     *
+     * @param request payload JSON con l'eventuale gameId
+     * @return risposta contenente {@link GameStatsPayload} o errore
+     */
     private ServerResponse<?> handleRequestGameStats(JsonObject request) {
         if(this.loggedInUsername == null){
             return ServerResponse.failWithMessage(ResponseCode.NOT_LOGGED_IN, "Operazione non consentita: utente non autenticato. ");
@@ -366,6 +416,12 @@ public class ClientHandler implements Runnable {
         return ServerResponse.successWithPayload(ResponseCode.SUCCESS, payload);
     }
 
+    /**
+     * Calcola ed estrae i dati della classifica globale, dei primi K utenti o del singolo utente.
+     *
+     * @param request payload JSON contenente i criteri di ordinamento/filtro
+     * @return risposta contenente {@link LeaderboardPayload} o PLAYER_NOT_FOUND
+     */
     private ServerResponse<?> handleRequestLeaderboard(JsonObject request) {
         if (this.loggedInUsername == null) {
             return ServerResponse.failWithMessage(ResponseCode.NOT_LOGGED_IN, "Operazione non consentita: utente non autenticato.");
@@ -391,6 +447,12 @@ public class ClientHandler implements Runnable {
         return ServerResponse.successWithPayload(ResponseCode.SUCCESS, payload);
     }
 
+    /**
+     * Recupera le statistiche personali storiche del giocatore attualmente loggato.
+     *
+     * @param request payload JSON della richiesta
+     * @return risposta contenente {@link PlayerStatsPayload} con percentuali e istogramma
+     */
     private ServerResponse<?> handleRequestPlayerStats(JsonObject request) {
         if (this.loggedInUsername == null) {
             return ServerResponse.failWithMessage(ResponseCode.NOT_LOGGED_IN, "Operazione non consentita: utente non autenticato.");

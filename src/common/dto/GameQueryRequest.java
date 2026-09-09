@@ -6,12 +6,15 @@ package common.dto;
 public class GameQueryRequest {
     private Integer gameId;
 
+    /** Costruttore vuoto per deserializzazione JSON. */
     public GameQueryRequest(){}
 
+    /** Costruisce la richiesta per uno specifico identificativo di gioco. */
     public GameQueryRequest(Integer gameId){
         this.gameId = gameId;
     }
 
+    /** Restituisce l'id della partita richiesta. */
     public Integer getGameId(){
         return gameId;
     }

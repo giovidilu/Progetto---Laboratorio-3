@@ -122,6 +122,16 @@ public class GameManager {
         this.activePlayerStates.clear();
     }
 
+    /**
+     * Aggiorna atomicamente le statistiche persistenti dell'utente salvate nel repository.
+     * <p>
+     * Metodo interno con effetto collaterale sul profilo utente.
+     *
+     * @param username identificativo del giocatore
+     * @param outcome esito della partita (vinta, persa per errori o non conclusa)
+     * @param mistakes numero totale di errori commessi
+     * @param score punteggio complessivo maturato
+     */
     private void updateUserStats(String username, GameOutcome outcome, int mistakes, int score) {
         User user = this.userRepository.getUser(username);
         if (user != null) {
@@ -190,6 +200,14 @@ public class GameManager {
         return GameInfoPayload.FinishedGame(finalAllocations, numberCorrectGroups, errors, score);
     }
 
+    /**
+     * Calcola la lista delle parole rimanenti escludendo quelle appartenenti ai gruppi già indovinati.
+     * <p>
+     * Query pura (nessun effetto collaterale).
+     *
+     * @param playerState stato corrente del giocatore
+     * @return lista dei vocaboli ancora da collocare
+     */
     private List<String> calculateRemainingWords(PlayerGameState playerState) {
         if (playerState == null || playerState.getCorrectGroups().isEmpty()) {
             return new ArrayList<>(this.activeGame.getShuffledWords());
@@ -211,6 +229,14 @@ public class GameManager {
         return remaining;
     }
 
+    /**
+     * Converte una lista di oggetti di dominio {@link WordGroup} in una struttura serializzabile di liste di stringhe.
+     * <p>
+     * Query pura di trasformazione dati.
+     *
+     * @param groups lista di gruppi tematici
+     * @return matrice di stringhe rappresentante le parole per ciascun gruppo
+     */
     private List<List<String>> convertToWordLists(List<WordGroup> groups) {
         if (groups == null || groups.isEmpty()) {
             return Collections.emptyList();
@@ -564,10 +590,12 @@ public class GameManager {
         );
     }
 
+    /** Restituisce l'identificativo progressivo della partita attualmente attiva. */
     public synchronized int getCurrentGameId() {
         return this.currentGameId;
     }
 
+    /** Restituisce l'istanza della sessione di gioco attiva a livello globale (package-private per test). */
     synchronized Game getActiveGame() {
         return this.activeGame;
     }
@@ -592,6 +620,11 @@ public class GameManager {
         }
     }
 
+    /**
+     * Wrapper protetto per l'invocazione periodica di {@link #rotateGame()}.
+     * <p>
+     * Intercetta qualsiasi eccezione o errore a runtime per evitare che il thread schedulato si interrompa.
+     */
     private void safeRotate() {
         try {
             rotateGame();
