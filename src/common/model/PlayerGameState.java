@@ -80,6 +80,11 @@ public class PlayerGameState {
      * Calcola il punteggio attuale in base ai gruppi indovinati e agli errori commessi.
      * <p>
      * Formula applicata da specifica: +6 per ogni gruppo corretto (fino a 3) e -4 per ogni errore.
+     * Il conteggio dei gruppi validi ai fini del punteggio è limitato a 3 ({@code Math.min(size, 3)})
+     * perché, alla vittoria con 3 gruppi risolti esplicitamente, il 4° gruppo rimanente viene
+     * aggiunto automaticamente a {@code correctGroups} (vedi {@link #addCorrectGroup}) per motivi di
+     * coerenza dello stato archiviato: senza questo limite risulterebbero erroneamente assegnati
+     * punti anche per un gruppo che il giocatore non ha sottomesso.
      * Query pura (nessun effetto collaterale).
      *
      * @return punteggio corrente del giocatore

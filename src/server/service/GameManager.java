@@ -508,7 +508,10 @@ public class GameManager {
      * Supporta il filtraggio per podio/top-K o per singolo giocatore.
      * Query pura (nessun effetto collaterale) e thread-safe.
      *
-     * @param topPlayers numero massimo di posizioni da restituire (o {@code null} per tutti)
+     * @param topPlayers numero massimo di posizioni da restituire; sia {@code null} sia {@code 0}
+     *                    sono trattati come sentinel equivalenti che significano "restituisci tutti
+     *                    i giocatori" (per {@code 0} la condizione {@code topPlayers > 0} è falsa e
+     *                    si ricade nel ramo che non applica alcun troncamento della lista)
      * @param playerName eventuale username per cui estrarre solo la posizione individuale
      * @return il payload {@link LeaderboardPayload}; {@code null} se {@code playerName} non esiste a sistema
      */
